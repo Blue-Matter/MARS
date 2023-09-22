@@ -59,7 +59,7 @@ observed catch and the value predicted by the Baranov equation.</p>
 <span>  <span class="va">wt</span>,</span>
 <span>  <span class="va">M</span>,</span>
 <span>  <span class="va">fleet_area</span>,</span>
-<span>  <span class="va">q_sf</span>,</span>
+<span>  <span class="va">q_fs</span>,</span>
 <span>  delta <span class="op">=</span> <span class="fl">1</span>,</span>
 <span>  na <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/dim.html" class="external-link">dim</a></span><span class="op">(</span><span class="va">N</span><span class="op">)</span><span class="op">[</span><span class="fl">1</span><span class="op">]</span>,</span>
 <span>  nr <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/dim.html" class="external-link">dim</a></span><span class="op">(</span><span class="va">N</span><span class="op">)</span><span class="op">[</span><span class="fl">2</span><span class="op">]</span>,</span>
@@ -82,7 +82,7 @@ observed catch and the value predicted by the Baranov equation.</p>
 
 
 <dt>sel</dt>
-<dd><p>Selectivity. Array <code>[a, f]</code></p></dd>
+<dd><p>Selectivity. Array <code>[a, f, s]</code></p></dd>
 
 
 <dt>wt</dt>
@@ -95,6 +95,10 @@ observed catch and the value predicted by the Baranov equation.</p>
 
 <dt>fleet_area</dt>
 <dd><p>Integers that specify the region <code>r</code> in which fleet <code>f</code> operates. Vector by <code>f</code></p></dd>
+
+
+<dt>q_fs</dt>
+<dd><p>Relative catchability of stock <code>s</code> for fleet <code>f</code>. Matrix <code>[f, s]</code></p></dd>
 
 
 <dt>delta</dt>
@@ -128,10 +132,6 @@ observed catch and the value predicted by the Baranov equation.</p>
 <dt>trans</dt>
 <dd><p>Whether to perform the search in log or logit space</p></dd>
 
-
-<dt>q_fs</dt>
-<dd><p>Relative catchability of stock <code>s</code> for fleet <code>f</code>. Matrix <code>[f, s]</code></p></dd>
-
 </dl></div>
     <div id="value">
     <h2>Value</h2>
@@ -144,27 +144,27 @@ observed catch and the value predicted by the Baranov equation.</p>
 <li><p><code>CN_afs</code> Catch (abundance) array</p></li>
 <li><p><code>VB_afs</code> Vulnerable biomass at the beginning of the time step.</p></li>
 <li><p><code>penalty</code> Penalty term returned by posfun when <code>F_index</code> exceeds <code>Fmax</code></p></li>
-<li><p><code>f</code> Difference between predicted and observed catch. Vector by <code>f</code></p></li>
-<li><p><code>g</code> Gradient of <code>f</code> with respect to <code>F_index</code> in either log or logit space. Vector by <code>f</code></p></li>
+<li><p><code>fn</code> Difference between predicted and observed catch at the last iteration. Vector by <code>f</code></p></li>
+<li><p><code>gr</code> Gradient of <code>fn</code> with respect to <code>F_index</code> in either log or logit space at the last iteration. Vector by <code>f</code></p></li>
 </ul></div>
     <div id="details">
     <h2>Details</h2>
     <p>The predicted catch for fleet <code>f</code> is
 $$
-C^{\textrm{pred}}_f = \sum_s \sum_a v_{a,f} q_{f,s} F_f \dfrac{1 - \exp(-Z_{a,s})}{Z_{a,s}} N_{a,f,s} w_{a,f,s}
+C^{\textrm{pred}}_f = \sum_s \sum_a v_{a,f,s} q_{f,s} F_f \dfrac{1 - \exp(-Z_{a,s})}{Z_{a,s}} N_{a,f,s} w_{a,f,s}
 $$</p>
 <p>The Newton-Raphson routine minimizes \(f(\vec{x}) = \vec{C}^{\textrm{pred}} - \vec{C}^{\textrm{obs}}\) where the vector arrow indexes fleet.</p>
 <p>If <code>trans = "log"</code>, \(\vec{F} = \exp(\vec{x})\).</p>
 <p>If <code>trans = "logit"</code>, \(\vec{F} = F_{\textrm{max}}/(1 + \exp(-\vec{x}))\).</p>
 <p>The gradient with respect to \(\vec{x}\) is
 $$
-f'(\vec{x}) = \sum_s \sum_a v_{a,f} q_{f,s} N_{a,f,s} w_{a,f,s} \left(\dfrac{\alpha\gamma}{\beta}\right)'
+f'(\vec{x}) = \sum_s \sum_a v_{a,f,s} q_{f,s} N_{a,f,s} w_{a,f,s} \left(\dfrac{\alpha\gamma}{\beta}\right)'
 $$</p>
 <p>$$
 \left(\dfrac{\alpha\gamma}{\beta}\right)' = \dfrac{(\alpha\gamma' + \alpha'\gamma)\beta - \alpha\gamma\beta'}{\beta^2}
 $$</p>
 <p>where</p>
-<table class="table table"><tr><td>\(\alpha_f = F_f\)</td></tr><tr><td>\(\beta_{a,s} = Z_{a,s} = M_{a,s} + \sum_f v_{a,f} q_{f,s} F_f\)</td></tr><tr><td>\(\gamma_{a,s} = 1 - \exp(-Z_{a,s})\)</td></tr><tr><td>\(\beta'_{a,f,s} = v_{a,f} q_{f,s} \alpha'_f\)</td></tr><tr><td>\(\gamma'_{a,f,s} = \exp(-Z_{a,s})\beta'_{a,f,s}\)</td></tr></table><p>If <code>trans = "log"</code>, \(\alpha'_f = \alpha_f\).</p>
+<table class="table table"><tr><td>\(\alpha_f = F_f\)</td></tr><tr><td>\(\beta_{a,s} = Z_{a,s} = M_{a,s} + \sum_f v_{a,f,s} q_{f,s} F_f\)</td></tr><tr><td>\(\gamma_{a,s} = 1 - \exp(-Z_{a,s})\)</td></tr><tr><td>\(\beta'_{a,f,s} = v_{a,f} q_{f,s} \alpha'_f\)</td></tr><tr><td>\(\gamma'_{a,f,s} = \exp(-Z_{a,s})\beta'_{a,f,s}\)</td></tr></table><p>If <code>trans = "log"</code>, \(\alpha'_f = \alpha_f\).</p>
 <p>If <code>trans = "logit"</code>, \(\alpha'_f = F_{\textrm{max}}\exp(-x_f)/(1 + \exp(-x_f))^2\).</p>
 <p>This function solves for \(\vec{x}\) by iterating until \(f(\vec{x})\) approaches zero. In iteration \(i+1\):
 $$\vec{x}_{i+1} = \vec{x}_i - \dfrac{f(\vec{x}_i)}{f'(\vec{x}_i)}$$.</p>
