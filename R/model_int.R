@@ -223,9 +223,19 @@ calc_sel_age <- function(sel_par, sel_len, nf, type) {
 
 }
 
-calc_phi <- function() {
-
+calc_phi <- function(Z, fec, spawn_time_frac = 0) {
+  NPR <- calc_NPR(exp(-Z))
+  sum(NPR * fec * exp(-Z * spawn_time_frac))
 }
+
+calc_NPR <- function(surv, na = length(surv), plusgroup = TRUE) {
+  NPR <- numeric(na)
+  NPR[1] <- 1
+  for(a in 2:na) NPR[a] <- NPR[a-1] * surv[a-1]
+  if (plusgroup) NPR[na] <- NPR[na]/(1 - surv[na])
+  return(NPR)
+}
+
 
 predict_recruitment <- function(x, SRR = c("BH", "Ricker"), eq = FALSE, ...) {
   SRR <- match.arg(SRR)

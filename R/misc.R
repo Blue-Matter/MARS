@@ -131,3 +131,33 @@ make_unique_names <- function(par_names) {
   do.call(c, par_new)
 }
 
+
+
+message <- function(...) {
+  if (requireNamespace("usethis", quietly = TRUE)) {
+    dots <- list(...)
+    do.call(c, dots) %>% paste0(collapse = "") %>% usethis::ui_done()
+  } else {
+    base::message(...)
+  }
+}
+
+warning <- function(...) {
+  if (requireNamespace("usethis", quietly = TRUE)) {
+    dots <- list(...)
+    do.call(c, dots) %>% paste0(collapse = "") %>% usethis::ui_warn()
+  } else {
+    base::warning(...)
+  }
+}
+
+
+stop <- function(..., call. = TRUE, domain = NULL) {
+  if (requireNamespace("usethis", quietly = TRUE)) {
+    dots <- list(...)
+    do.call(c, dots) %>% paste0(collapse = "") %>% usethis::ui_stop()
+  } else {
+    base::stop(..., call. = call., domain = domain)
+  }
+}
+

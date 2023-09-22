@@ -11,9 +11,11 @@ License: GPL (>= 3)
 Depends: R (>= 3.5.0)
 Imports: 
   dplyr, 
+  graphics,
+  stats
   RTMB, 
   TMB,
-  stats
+Suggests: usethis
 LazyData: yes
 LazyLoad: yes
 Encoding: UTF-8
