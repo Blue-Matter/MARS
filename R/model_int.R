@@ -173,3 +173,131 @@ Newton_F <- function(Cobs, N, sel, wt, M, fleet_area, q_fs, delta = 1,
        penalty = penalty, fr = fn[i+1, ], gr = gr[i+1, ])
 }
 
+
+
+conv_selpar <- function(x, type, nf = length(type), na, Lmax) {
+
+  sel_par <- sapply(1:nf, function(f) {
+    sd_asc <- exp(x[2, f])
+    sd_desc <- exp(x[3, f])
+    if (grepl("age", type[f])) {
+      Aapical <- na * plogis(x[1, f])
+      v <- c(Aapical, sd_asc, sd_desc)
+    } else {
+      Lapical <- Lmax * plogis(x[1, f])
+      v <- c(Lapical, sd_asc, sd_desc)
+    }
+    return(v)
+  })
+
+  return(sel_par)
+}
+
+calc_sel_len <- function(sel_par, lmid, type, nf = length(type)) {
+
+  sel_len <- sapply(1:nf, function(f) {
+
+    if (grepl("length", type[f])) {
+      ex_asc <- (lmid - sel_par[1, f])/sel_par[2, f]
+      ex2_asc <- -1 * ex_asc^2
+      asc <- 2^ex2_asc
+
+      if (grepl("logistic", type[f])) {
+        desc <- 1
+      } else {
+        ex_desc <- (lmid - sel_par[1, f])/sel_par[3, f]
+        ex2_desc <- -1 * ex_desc^2
+        desc <- 2^ex2_desc
+      }
+      v <- CondExpLt(lmid, sel_par[1, f], asc, desc)
+    } else {
+      v <- rep(NA_real_, length(lmid))
+    }
+    return(v)
+  })
+
+  return(sel_len)
+}
+
+calc_sel_age <- function(sel_par, sel_len, nf, type) {
+
+}
+
+calc_phi <- function() {
+
+}
+
+predict_recruitment <- function(x, SRR = c("BH", "Ricker"), eq = FALSE, ...) {
+  SRR <- match.arg(SRR)
+  dots <- list(...)
+
+  if (all(names(dots) %in% c("h", "R0", "phi0"))) {
+    h <- dots$h
+    R0 <- dots$R0
+    phi0 <- dots$phi0
+
+    if (SRR == "BH") {
+      a <- 4*h/(1-h)/phi0
+      b <- (5*h)/(1-h)/phi0/R0
+    } else {
+      a <- (5*h)^1.25/phi0
+      b <- log((5*h)^1.25)/phi0/R0
+    }
+
+  } else if (all(names(dots) %in% c("a", "b"))) {
+    a <- dots$a
+    b <- dots$b
+  } else {
+    stop("No stock recruit parameters found")
+  }
+
+  if (SRR == "BH") {
+    val <- if (eq) a*x/(1 + b*x) else (a*x - 1)/b/x
+  } else {
+    val <- if (eq) a*x*exp(-b*x) else log(a*x)/b/x
+  }
+  return(val)
+}
+
+SRalphaconv <- function(h, phi, SRR = c("BH", "Ricker")) {
+  SRR <- match.arg(SRR)
+  switch(
+    SRR,
+    "BH" = 4*h/(1-h)/phi,
+    "Ricker" = (5*h)^1.25/phi
+  )
+}
+
+SRbetaconv <- function(h, R0, phi, SRR = c("BH", "Ricker")) {
+  SRR <- match.arg(SRR)
+  switch(
+    SRR,
+    "BH" = (5*h-1)/(1-h)/phi/R0,
+    "Ricker" = log((5*h)^1.25)/phi/R0
+  )
+}
+
+SRhconv <- function(k, SRR = c("BH", "Ricker")) {
+  SRR <- match.arg(SRR)
+  switch(
+    SRR,
+    "BH" = k/(4+k),
+    "Ricker" = 0.2*k^0.8
+  )
+}
+
+calc_LAK <- function(len_a, sd_la, lbin, nl = length(lbin) - 1) {
+  stopifnot(length(sd_la) == length(len_a))
+
+  lak_al <- sapply(1:nl, function(j) {
+    if (j == nl) {
+      1 - pnorm(lbin[j], len_a, sd_la)
+    } else if (j == 1) {
+      pnorm(lbin[j+1], len_a, sd_la)
+    } else {
+      pnorm(lbin[j+1], len_a, sd_la) - pnorm(lbin[j], len_a, sd_la)
+    }
+  })
+
+  return(lak_al)
+}

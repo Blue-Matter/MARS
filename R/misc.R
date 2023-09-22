@@ -16,7 +16,6 @@ optimize_RTMB_model <- function(obj, use_hessian = FALSE, restart = 0, do_sd = T
 
   if (is.null(obj$env$random) && use_hessian) h <- obj$he else h <- NULL
 
-
   opt <- tryCatch(
     nlminb(obj$par, obj$fn, obj$gr, h, control = control, lower = lower, upper = upper),
     error = function(e) as.character(e)
