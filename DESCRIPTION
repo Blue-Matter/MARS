@@ -9,7 +9,11 @@ Maintainer: Quang Huynh <quang@bluematterscience.com>
 Description: What the package does (one paragraph).
 License: GPL (>= 3)
 Depends: R (>= 3.5.0)
-Imports: dplyr, RTMB
+Imports: 
+  dplyr, 
+  RTMB, 
+  TMB,
+  stats
 LazyData: yes
 LazyLoad: yes
 Encoding: UTF-8
