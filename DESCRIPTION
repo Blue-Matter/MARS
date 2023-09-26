@@ -12,9 +12,9 @@ Depends: R (>= 3.5.0)
 Imports: 
   dplyr, 
   graphics,
-  stats
+  stats,
   RTMB, 
-  TMB,
+  TMB
 Suggests: usethis
 LazyData: yes
 LazyLoad: yes

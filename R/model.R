@@ -63,7 +63,7 @@ model <- function(data, parameters, map = list(), random = NULL, silent = TRUE, 
 
   B0_s <- R0_s * phi_s
 
-  Rdev_ys[] <- exp(p$log_Rdev)
+  Rdev_ys[] <- exp(p$log_rdev_ys)
 
   # Fishery selectivity
   fsel_val <- conv_selpar(p$fsel, type = fsel_type, na = na, Lmax = 0.9 * max(len_ymas))
@@ -92,7 +92,7 @@ model <- function(data, parameters, map = list(), random = NULL, silent = TRUE, 
       ## This season's mortality ----
       Fsearch <- Newton_F(
         Cobs = Cobs_ymf[y, m, ], N = N_ymars[y, m, , , ], sel = sel_ymafs[y, m, , , ],
-        wt = wt_yafs[y, , , ], M = M_yas[y, , s],
+        wt = fwt_yafs[y, , , ], M = M_yas[y, , s],
         fleet_area = fleet_area, q_fs = q_fs, delta = delta,
         na = na, nr = nr, nf = nf, ns = ns, Fmax = Fmax, nitF = nitF, trans = trans
       )
@@ -111,6 +111,7 @@ model <- function(data, parameters, map = list(), random = NULL, silent = TRUE, 
       })
       CB_ymfs[y, m, , ] <- Fsearch[["CB_fs"]]
       VB_ymfs[y, m, , ] <- apply(Fsearch[["VB_afs"]], 2:3, sum)
+      B_ymrs[y, m, , ] <- sapply(1:nr, function(r) rowSums(N_ymars[y, m, , r, ] * swt_ymas[y, m, , ])) %>% t()
 
       ## This year's spawning and recruitment ----
       if (m == m_spawn) {
@@ -123,13 +124,21 @@ model <- function(data, parameters, map = list(), random = NULL, silent = TRUE, 
         })
       }
 
-      ## Next season's abundance ----
-      # Need to advance ages, assign recruitment, and merge plus group
-      Nnext_as <- array(N_ymars[y, m, , , ] * exp(-Z_ymars[y, m, , , ]), c(na, nr, ns)) %>% apply(c(1, 3), sum)
+      ## Next season's abundance and total biomass ----
       if (m == nm) {
-        N_ymars[y+1, 1, , , ] <- sapply2(1:ns, function(s) Nnext_as[, s] * dist_ymars[y+1, 1, , , s])
+        N_ymars[y+1, 1, , , ] <- calc_nextN(
+          N = N_ymars[y, m, , , ], surv = exp(-Z_ymars[y, m, , , ]),
+          na = na, nr = nr, ns = ns,
+          advance_age = m == m_spawn, type = "dist",
+          R = R_ys[y, ], dist = dist_ymars[y+1, 1, , , ], mov = mov_ymarrs[y, m, , , , ]
+        )
       } else {
-        N_ymars[y, m+1, , , ] <- sapply2(1:ns, function(s) Nnext_as[, s] * dist_ymars[y, m+1, , , s])
+        N_ymars[y, m+1, , , ] <- calc_nextN(
+          N = N_ymars[y, m, , , ], surv = exp(-Z_ymars[y, m, , , ]),
+          na = na, nr = nr, ns = ns,
+          advance_age = m == m_spawn, type = "dist",
+          R = R_ys[y, ], dist = dist_ymars[y, m+1, , , ], mov = mov_ymarrs[y, m, , , , ]
+        )
       }
     }
   }
@@ -147,14 +156,13 @@ model <- function(data, parameters, map = list(), random = NULL, silent = TRUE, 
   #log_like_CAA <- 0
   #log_like_CAL <- 0
   #log_like_SOO <- 0
+  #log_like_CKMR <- 0
   #log_like_tag <- 0
   #log_like <- sum(log_like_index) + sum(log_like_IAA) + sum(log_like_IAL) +
-  #  sum(log_like_CAA) + sum(log_like_CAL) + sum(log_like_SOO) + sum(log_like_tag)
+  #  sum(log_like_CAA) + sum(log_like_CAL) + sum(log_like_SOO) + sum(log_like_CKMR) + sum(log_like_tag)
 
   # Priors ----
-  log_prior_rdev <- sapply(1:ns, function(s) {
-    ifelse(est_rdev[, s], dnorm(p$log_rdev[, s], -0.5*sdr*sdr, sdr, log = TRUE), 0)
-  })
+  log_prior_rdev <- ifelse(is.na(map$log_rdev_ys), dnorm(p$log_rdev_ys, -0.5*sdr*sdr, sdr, log = TRUE), 0)
   #log_prior_dist <- sapply(1:ns, function(s))
   log_prior <- sum(log_prior_rdev) + sum(log_prior_dist)
 
@@ -162,6 +170,7 @@ model <- function(data, parameters, map = list(), random = NULL, silent = TRUE, 
   fn <- -1 * (log_prior + log_like) + penalty
 
   # Report out variables ----
+  REPORT(log_prior_rdev)
 
 
   return(fn)

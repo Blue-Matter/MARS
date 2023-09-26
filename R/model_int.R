@@ -311,3 +311,59 @@ calc_LAK <- function(len_a, sd_la, lbin, nl = length(lbin) - 1) {
 
   return(lak_al)
 }
+
+
+#' Calculate abundance at the next time step
+#'
+#' This function generates the abundance array by calculating survival from current mortality and then
+#' re-distributing the stock.
+#'
+#' @param N Abundance at current time step. Array `[a, r, s]`
+#' @param surv Survival during the current time step. Array `[a, r, s]`
+#' @param na Integer, number of age classes
+#' @param nr Integer, number of regions
+#' @param ns Integer, number of stocks
+#' @param advance_age Logical, whether the animals advance to their next age class
+#' @param R Incoming recruitment. Only assigned if `advance_age = TRUE`. Vector of `s`
+#' @param type Character that indicates whether the stock distribution is assigned based on a distribution array or a movement array.
+#' @param dist Distribution of the stock in the next time step. Array `[a, r, s]`
+#' @param mov Movement array in the next time step. Array `[a, r, r, s]`
+#' @return Abundance at the next time step. Array `[a, r, s]`
+#' @export
+calc_nextN <- function(N, surv, na = dim(N_ars)[1], nr = dim(N_ars)[2], ns = dim(N_ars)[3],
+                              advance_age = FALSE, R = numeric(ns),
+                              type = c("dist", "mov"), dist = array(1/nr, c(na, nr, ns)), mov) {
+
+  type <- match.arg(type)
+
+  N <- array(N, c(na, nr, ns))
+  surv <- array(surv, c(na, nr, ns))
+  dist <- array(dist, c(na, nr, ns))
+  mov <- array(mov, c(na, nr, nr, ns))
+
+  # Apply survival and advance age class ----
+  if (advance_age) {
+    Nsurv_ars <- array(NA_real_, c(na, nr, ns))
+    Nsurv_ars[2:na, , ] <- N[2:na - 1, , ] * surv[2:na - 1, , ]
+    Nsurv_ars[na, , ] <- Nsurv_ars[na, , ] + N[na, , ] * surv[na, , ]
+  } else {
+    Nsurv_ars <- array(N * surv, c(na, nr, ns))
+  }
+
+  # Distribute stock ----
+  Nnext_ars <- sapply2(1:ns, function(s) {
+
+    if (type == "dist") { # Distribution vectors
+      Ntotal <- apply(Nsurv_ars[, , s], 1, sum)
+      if (advance_age) Ntotal[1] <- R_s
+      Nout_ar <- Ntotal * dist[, , s]
+    } else { # Movement matrix
+      Nout_ra <- sapply(2:na, function(a) Nsurv_ars[a, , s] %*% mov[a, , , s])
+      if (advance_age) R_r <- R[s] * dist[1, , s]
+      Nout_ar <- rbind(R_r, t(Nout_ra))
+    }
+    return(Nout_ar)
+  })
+
+  return(Nnext_ars)
+}
