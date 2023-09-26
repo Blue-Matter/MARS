@@ -313,10 +313,10 @@ calc_LAK <- function(len_a, sd_la, lbin, nl = length(lbin) - 1) {
 }
 
 
-#' Calculate abundance at the next time step
+#' Project stock abundance to the next time step
 #'
-#' This function generates the abundance array by calculating survival from current mortality and then
-#' re-distributing the stock.
+#' This function generates the abundance array by calculating survival from current mortality, then advances
+#' age classes, re-distributes the stock, and adds recruitment.
 #'
 #' @param N Abundance at current time step. Array `[a, r, s]`
 #' @param surv Survival during the current time step. Array `[a, r, s]`
@@ -330,9 +330,9 @@ calc_LAK <- function(len_a, sd_la, lbin, nl = length(lbin) - 1) {
 #' @param mov Movement array in the next time step. Array `[a, r, r, s]`
 #' @return Abundance at the next time step. Array `[a, r, s]`
 #' @export
-calc_nextN <- function(N, surv, na = dim(N_ars)[1], nr = dim(N_ars)[2], ns = dim(N_ars)[3],
-                              advance_age = FALSE, R = numeric(ns),
-                              type = c("dist", "mov"), dist = array(1/nr, c(na, nr, ns)), mov) {
+calc_nextN <- function(N, surv, na = dim(N)[1], nr = dim(N)[2], ns = dim(N)[3],
+                       advance_age = TRUE, R = numeric(ns),
+                       type = c("dist", "mov"), dist = array(1/nr, c(na, nr, ns)), mov) {
 
   type <- match.arg(type)
 

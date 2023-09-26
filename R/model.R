@@ -1,10 +1,25 @@
 
 
-model <- function(data, parameters, map = list(), random = NULL, silent = TRUE, control = list(),
-                  run_model = TRUE, do_sd = TRUE, ...) {
+#' Fit MARS model
+#' 
+#' Wrapper function that calls RTMB to create the model and perform the numerical optimization
+#'
+#' @param data List of data inputs, validated by \link{check_data}
+#' @param parameters List of parameters, validated by \link{check_parameters}
+#' @param map List of parameters indicated whether they are fixed and/or how they are shared. See \link[TMB]{MakeADFun}.
+#' @param random Character vector indicating the parameters that are random effects.
+#' @param run_model Logical, indicates whether the model will be fitted through \link[stats]{nlminb}.
+#' @param do_sd Logical, indicates whether the standard deviations of parameters will be calculated with \link[TMB]{sdreport}.
+#' @param ... Other arguments to \link[RTMB]{MakeADFun}.
+#' @export
+MARS <- function(data, parameters, map = list(), random = NULL, silent = TRUE, control = list(),
+                 run_model = TRUE, do_sd = TRUE, ...) {
+
+  data[["map"]] <- map
+  data[["random"]] <- random
 
   RTMB::TapeConfig(comparison = "tape")
-  func <- function(p) .model(p, d = data)
+  func <- function(p) .MARS(p, d = data)
 
   obj <- MakeADFun(
     func = func, parameters = parameters,
@@ -24,7 +39,7 @@ model <- function(data, parameters, map = list(), random = NULL, silent = TRUE, 
   return(m)
 }
 
-.model <- function(p = list(), d = list()) {
+.MARS <- function(p = list(), d = list()) {
 
   # Assign data variables to environment, see OBS() for simulation ----
   getAll(d)
@@ -104,7 +119,7 @@ model <- function(data, parameters, map = list(), random = NULL, silent = TRUE, 
       }) %>%
         aperm(c(1, 3, 2))
 
-      ## This season's fishery catch ----
+      ## This season's fishery catch, vulnerable biomass, and total biomass ----
       CN_ymafs[y, m, , , ] <- Fsearch[["CN_afs"]]
       CN_ymlfs[y, m, , , ] <- sapply2(1:ns, function(s) {
         sapply(1:nf, function(f) CN_ymafs[y, m, , f, s] %*% LAK_ymals[y, m, , , s])

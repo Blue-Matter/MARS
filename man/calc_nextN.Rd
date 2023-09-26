@@ -2,15 +2,15 @@
 % Please edit documentation in R/model_int.R
 \name{calc_nextN}
 \alias{calc_nextN}
-\title{Calculate abundance at the next time step}
+\title{Project stock abundance to the next time step}
 \usage{
 calc_nextN(
   N,
   surv,
-  na = dim(N_ars)[1],
-  nr = dim(N_ars)[2],
-  ns = dim(N_ars)[3],
-  advance_age = FALSE,
+  na = dim(N)[1],
+  nr = dim(N)[2],
+  ns = dim(N)[3],
+  advance_age = TRUE,
   R = numeric(ns),
   type = c("dist", "mov"),
   dist = array(1/nr, c(na, nr, ns)),
@@ -42,6 +42,6 @@ calc_nextN(
 Abundance at the next time step. Array \verb{[a, r, s]}
 }
 \description{
-This function generates the abundance array by calculating survival from current mortality and then
-re-distributing the stock.
+This function generates the abundance array by calculating survival from current mortality, then advances
+age classes, re-distributes the stock, and adds recruitment.
 }
