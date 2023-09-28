@@ -71,9 +71,9 @@
 #' \deqn{\vec{x}_{i+1} = \vec{x}_i - \dfrac{f(\vec{x}_i)}{f'(\vec{x}_i)}}.
 #' @author Q. Huynh
 #' @export
-Newton_F <- function(Cobs, N, sel, wt, M, fleet_area, q_fs, delta = 1,
-                     na = dim(N)[1], nr = dim(N)[2], ns = dim(N)[3], nf = length(Cobs),
-                     Fmax = 2, nitF = 5L, trans = c("log", "logit")) {
+calc_F <- function(Cobs, N, sel, wt, M, fleet_area, q_fs, delta = 1,
+                   na = dim(N)[1], nr = dim(N)[2], ns = dim(N)[3], nf = length(Cobs),
+                   Fmax = 2, nitF = 5L, trans = c("log", "logit")) {
 
   trans <- match.arg(trans)
   if (missing(fleet_area) && ns == 1 && nr == 1 && nf == 1) fleet_area <- 1
@@ -155,9 +155,7 @@ Newton_F <- function(Cobs, N, sel, wt, M, fleet_area, q_fs, delta = 1,
 
     gr[i, ] <- apply(constants * deriv4, 3, sum)
 
-    if (i < nitF + 1) {
-      x_loop[i+1, ] <- x_loop[i, ] - fn[i, ]/gr[i, ]
-    }
+    if (i <= nitF) x_loop[i+1, ] <- x_loop[i, ] - fn[i, ]/gr[i, ]
   }
 
   F_ars <- sapply2(1:nr, function(r) { # a s r before aperm
@@ -237,7 +235,7 @@ calc_NPR <- function(surv, na = length(surv), plusgroup = TRUE) {
 }
 
 
-predict_recruitment <- function(x, SRR = c("BH", "Ricker"), eq = FALSE, ...) {
+calc_recruitment <- function(x, SRR = c("BH", "Ricker"), eq = FALSE, ...) {
   SRR <- match.arg(SRR)
   dots <- list(...)
 
