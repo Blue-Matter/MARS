@@ -4,12 +4,11 @@
 #' Performs a root finding routine to find the index of F that minimizes the difference between
 #' observed catch and the value predicted by the Baranov equation.
 #'
-#' @param Cobs Observed catch. Vector by `f`
+#' @param Cobs Observed catch. Matrix `[f, r]`
 #' @param N Stock abundance at the beginning of the time step. Array `[a, r, s]`
 #' @param sel Selectivity. Array `[a, f, s]`
 #' @param wt Fishery weight at age. Array `[a, f, s]`
 #' @param M Instantaneous natural mortality. Units of per year `[a, s]`
-#' @param fleet_area Integers that specify the region `r` in which fleet `f` operates. Vector by `f`
 #' @param q_fs Relative catchability of stock `s` for fleet `f`. Matrix `[f, s]`
 #' @param delta Numeric, the duration of time in years corresponding to the observed catch, e.g., 0.25 is a quarterly time step.
 #' @param na Integer, number of age classes
@@ -22,31 +21,32 @@
 #' @return
 #' A list containing:
 #'
-#' - `F_afs` Fishing mortality array
-#' - `F_ars` Fishing mortality array
-#' - `F_index` Index of fishing mortality. Vector by `f`
-#' - `CB_fs` Catch (biomass) matrix
-#' - `CN_afs` Catch (abundance) array
-#' - `VB_afs` Vulnerable biomass at the beginning of the time step.
+#' - `F_afrs` Fishing mortality array
+#' - `F_ars` Fishing mortality array (summed across fleets)
+#' - `Z_ars` Total mortality array
+#' - `F_index` Index of fishing mortality. Matrix `[f, r]`
+#' - `CB_frs` Catch (biomass) array
+#' - `CN_afrs` Catch (abundance) array
+#' - `VB_afrs` Vulnerable biomass at the beginning of the time step. Array
 #' - `penalty` Penalty term returned by \link{posfun} when `F_index` exceeds `Fmax`
-#' - `fn` Difference between predicted and observed catch at the last iteration. Vector by `f`
-#' - `gr` Gradient of `fn` with respect to `F_index` in either log or logit space at the last iteration. Vector by `f`
+#' - `fn` Difference between predicted and observed catch at the last iteration. Matrix `[f, r]`
+#' - `gr` Gradient of `fn` with respect to `F_index` in either log or logit space at the last iteration. Vector by `[f, r]`
 #'
 #' @details
-#' The predicted catch for fleet `f` is
+#' The predicted catch for fleet `f` in region `r` is
 #' \deqn{
-#' C^{\textrm{pred}}_f = \sum_s \sum_a v_{a,f,s} q_{f,s} F_f \dfrac{1 - \exp(-Z_{a,s})}{Z_{a,s}} N_{a,f,s} w_{a,f,s}
+#' C^{\textrm{pred}}_{f,r} = \sum_s \sum_a v_{a,f,s} q_{f,s} F_{f,r} \dfrac{1 - \exp(-Z_{a,r,s})}{Z_{a,r,s}} N_{a,r,s} w_{a,f,s}
 #' }
 #'
-#' The Newton-Raphson routine minimizes \eqn{f(\vec{x}) = \vec{C}^{\textrm{pred}} - \vec{C}^{\textrm{obs}}} where the vector arrow indexes fleet.
+#' The Newton-Raphson routine minimizes \eqn{f(x_{f,r}) = C_{f,r}^{\textrm{pred}} - C_{f,r}^{\textrm{obs}}}.
 #'
-#' If `trans = "log"`, \eqn{\vec{F} = \exp(\vec{x})}.
+#' If `trans = "log"`, \eqn{F_{f,r} = \exp(x_{f,r})}.
 #'
-#' If `trans = "logit"`, \eqn{\vec{F} = F_{\textrm{max}}/(1 + \exp(-\vec{x}))}.
+#' If `trans = "logit"`, \eqn{F_{f,r} = F_{\textrm{max}}/(1 + \exp(x_{f,r}))}.
 #'
 #' The gradient with respect to \eqn{\vec{x}} is
 #' \deqn{
-#' f'(\vec{x}) = \sum_s \sum_a v_{a,f,s} q_{f,s} N_{a,f,s} w_{a,f,s} \left(\dfrac{\alpha\gamma}{\beta}\right)'
+#' f'(x_{f,r}) = \sum_s \sum_a v_{a,f,s} q_{f,s} N_{a,r,s} w_{a,f,s} \left(\dfrac{\alpha\gamma}{\beta}\right)'
 #' }
 #'
 #' \deqn{
@@ -56,18 +56,19 @@
 #' where
 #'
 #' \tabular{l}{
-#' \eqn{\alpha_f = F_f} \cr
-#' \eqn{\beta_{a,s} = Z_{a,s} = M_{a,s} + \sum_f v_{a,f,s} q_{f,s} F_f} \cr
-#' \eqn{\gamma_{a,s} = 1 - \exp(-Z_{a,s})} \cr
-#' \eqn{\beta'_{a,f,s} = v_{a,f} q_{f,s} \alpha'_f} \cr
-#' \eqn{\gamma'_{a,f,s} = \exp(-Z_{a,s})\beta'_{a,f,s}}
+#' \eqn{\alpha_{f,r} = F_{f,r}} \cr
+#' \eqn{\beta_{a,r,s} = Z_{a,r,s} = M_{a,s} + \sum_f v_{a,f,s} q_{f,s} F_{f,r}} \cr
+#' \eqn{\gamma_{a,r,s} = 1 - \exp(-Z_{a,r,s})} \cr
+#' \eqn{\beta'_{a,f,r,s} = v_{a,f} q_{f,s} \alpha'_{f,r}} \cr
+#' \eqn{\gamma'_{a,f,r,s} = \exp(-Z_{a,r,s})\beta'_{a,f,r,s}}
 #' }
 #'
-#' If `trans = "log"`, \eqn{\alpha'_f = \alpha_f}.
+#' If `trans = "log"`, \eqn{\alpha'_{f,r} = \alpha_{f,r}}.
 #'
-#' If `trans = "logit"`, \eqn{\alpha'_f = F_{\textrm{max}}\exp(-x_f)/(1 + \exp(-x_f))^2}.
+#' If `trans = "logit"`, \eqn{\alpha'_{f,r} = F_{\textrm{max}}\exp(-x_{f,r})/(1 + \exp(-x_{f,r}))^2}.
 #'
-#' This function solves for \eqn{\vec{x}} by iterating until \eqn{f(\vec{x})} approaches zero. In iteration \eqn{i+1}:
+#' This function solves for \eqn{\vec{x}} by iterating until \eqn{f(\vec{x})} approaches zero, where the vector arrow
+#' indexes over fleet and region. In iteration \eqn{i+1}:
 #' \deqn{\vec{x}_{i+1} = \vec{x}_i - \dfrac{f(\vec{x}_i)}{f'(\vec{x}_i)}}.
 #' @author Q. Huynh
 #' @export
@@ -78,7 +79,7 @@ calc_F <- function(Cobs, N, sel, wt, M, fleet_area, q_fs, delta = 1,
   trans <- match.arg(trans)
   if (missing(fleet_area) && ns == 1 && nr == 1 && nf == 1) fleet_area <- 1
   if (missing(q_fs) && ns == 1 && nr == 1 && nf == 1) q_fs <- 1
-  if (any(fleet_area > nr)) stop("Values in fleet_area vector can't exceed ", nr)
+  if (is.null(dim(Cobs)) && nr == 1 && nf == 1) Cobs <- matrix(Cobs, nf, nr)
 
   N <- array(N, c(na, nr, ns))
   sel <- array(sel, c(na, nf, ns))
@@ -87,18 +88,21 @@ calc_F <- function(Cobs, N, sel, wt, M, fleet_area, q_fs, delta = 1,
   q_fs <- matrix(q_fs, nf, ns)
 
   # Initialize search ----
-  fn <- gr <- x_loop <- matrix(NA_real_, nitF + 1, nf)
+  fn <- gr <- x_loop <- list()
+  #matrix(NA_real_, nitF + 1, nf)
 
-  VB_afs <- sapply2(1:ns, function(s) {
-    sapply(1:nf, function(f) N[, fleet_area[f], s] * sel[, f, s] * wt[, f, s])
+  VB_afrs <- sapply2(1:ns, function(s) {
+    sapply2(1:nf, function(r) {
+      sapply(1:nf, function(f) N[, r, s] * sel[, f, s] * wt[, f, s])
+    })
   })
-  VB_init <- apply(VB_afs, 2, sum)
-  F_init <- Cobs/(Cobs + VB_init)
+  VB_fr <- apply(VB_afrs, c(2, 3), sum)
+  F_init <- Cobs/(Cobs + VB_fr)
 
   if (trans == "log") {
-    x_loop[1, ] <- log(F_init)
+    x_loop[[1]] <- log(F_init)
   } else {
-    x_loop[1, ] <- qlogis(F_init/Fmax)
+    x_loop[[1]] <- qlogis(F_init/Fmax)
   }
 
   # Run search for Findex ----
@@ -107,68 +111,78 @@ calc_F <- function(Cobs, N, sel, wt, M, fleet_area, q_fs, delta = 1,
   for(i in seq(1, nitF + 1)) {
     if (trans == "log") {
       if (i < nitF + 1) {
-        F_loop <- exp(x_loop[i, ])
+        F_loop <- exp(x_loop[[1]])
       } else {  # Last iteration just calculates f and g
-        F_loop <- CondExpGt(x_loop[i, ], ln_Fmax, Fmax, exp(x_loop[i, ]))
-        penalty <- penalty + sum(posfun(ln_Fmax, x_loop[i, ]))
+        F_loop <- CondExpGt(x_loop[[i]], ln_Fmax, Fmax, exp(x_loop[[i]]))
+        F_loop <- CondExpLe(Cobs, 1e-8, 0, F_loop)
+        penalty <- penalty + sum(posfun(ln_Fmax, x_loop[[i]]))
       }
     } else {
-      F_loop <- Fmax * plogis(x_loop[i, ])
+      F_loop <- Fmax * plogis(x_loop[[i]])
     }
 
-    F_fs <- sapply(1:ns, function(s) q_fs[, s] * F_loop)
-    F_afs <- sapply2(1:ns, function(s) {
-      sapply(1:nf, function(f) F_fs[f, s], sel[, f, s])
+    F_frs <- sapply2(1:ns, function(s) q_fs[, s] * F_loop)
+    F_afrs <- sapply2(1:ns, function(s) {
+      sapply2(1:nr, function(r) {
+        sapply(1:nf, function(f) F_frs[f, r, s] * sel[, f, s])
+      })
     })
+    F_ars <- apply(F_afrs, c(1, 3, 4), sum)
+    Z_ars <- sapply2(1:nr, function(r) F_ars[, r, ] + delta * M) %>% # a s r
+      aperm(c(1, 3, 2))
+    .gamma_ars <- 1 - exp(-Z_ars)
 
-    Z_as <- apply(F_afs, c(1, 3), sum) + delta * M
-    .gamma_as <- 1 - exp(-Z_as)
-
-    CN_afs <- sapply2(1:ns, function(s) {
-      sapply(1:nf, function(f) F_afs[, f, s] * N[, fleet_area[f], s] * .gamma_as[, s] / Z_as[, s])
+    CN_afrs <- sapply2(1:ns, function(s) {
+      sapply2(1:nr, function(r) {
+        sapply(1:nf, function(f) F_afrs[, f, r, s] * N[, r, s] * .gamma_ars[, r, s] / Z_ars[, r, s])
+      })
     })
-    CB_f <- apply(CN_afs * wt, 2, sum)
+    CB_afsr <- sapply2(1:nr, function(r) CN_afrs[, , r, ] * wt)
+    CB_fr <- apply(CB_afsr, c(2, 4), sum)
 
-    fn[i, ] <- CB_f - Cobs
+    fn[[i]] <- CB_fr - Cobs
 
     if (trans == "log") {
-      deriv_F <- F_loop # f
+      deriv_F <- F_loop # f r
     } else {
-      deriv_F <- Fmax * exp(-x_loop[i, ])/(1 + exp(-x_loop[i, ]))/(1 + exp(-x_loop[i, ]))
+      deriv_F <- Fmax * exp(-x_loop[[i]])/(1 + exp(-x_loop[[i]]))/(1 + exp(-x_loop[[i]]))
     }
-    deriv_Z_afs <- sapply2(1:ns, function(s) {
-      sapply(1:nf, function(f) q_fs[f, s] * deriv_F[f] * sel[, f, s])
+    deriv_Z_fars <- sapply2(1:ns, function(s) {
+      sapply2(1:nr, function(r) q_fs[, s] * deriv_F[f, r] * t(sel[, , s]))
     })
-    deriv_gamma_afs <- sapply2(1:ns, function(s) {
-      sapply(1:nf, function(f) exp(-Z_as[, s]) * deriv_Z_afs[, f, s])
+    deriv_gamma_afrs <- sapply2(1:ns, function(s) {
+      sapply2(1:nr, function(r) exp(-Z_ars[, r, s]) * t(deriv_Z_fars[, , r, s]))
     })
 
-    constants <- sapply2(1:ns, function(s) { # a s f after aperm
-      sapply(1:nf, function(f) q_fs[f, s] * sel[, f, s] * N[, fleet_area[f], s] * wt[, f, s])
-    }) %>%
-      aperm(c(1, 3, 2))
+    constants_afrs <- sapply2(1:ns, function(s) {
+      sapply2(1:nr, function(r) {
+        sapply(1:nf, function(f) q_fs[f, s] * sel[, f, s] * N[, r, s] * wt[, f, s])
+      })
+    })
 
-    deriv1 <- sapply2(1:ns, function(s) outer(deriv_F, .gamma_as[, s]) + F_loop * t(deriv_gamma_afs[, , s])) # f a s
-    deriv2 <- sapply2(1:nf, function(f) deriv1[f, , ] * Z_as) # a s f
-    deriv3 <- sapply2(1:ns, function(s) deriv2[, s, ] -  outer(.gamma_as[, s], F_loop) * deriv_Z_afs[, , s]) # a f s
-    deriv4 <- sapply2(1:nf, function(f) deriv3[, f, ]/Z_as/Z_as) # a s f
+    deriv1_fars <- sapply(1:ns, function(s) {
+      sapply2(1:nr, function(r) {
+        outer(deriv_F[, r], .gamma_ars[, r, s]) + F_loop[, r] * t(deriv_gamma_afrs[, , r, s])
+      })
+    })
+    deriv2_arsf <- sapply2(1:nf, function(f) deriv1_fars[f, , , ] * Z_ars)
+    deriv3_afrs <- sapply2(1:ns, function(s) {
+      sapply2(1:nr, function(r) {
+        deriv2_arsf[, r, s, ] -  outer(.gamma_ars[, r, s], F_loop[, r]) * t(deriv_Z_fars[, , r, s])
+      })
+    })
+    deriv4_arsf <- sapply2(1:nf, function(f) deriv3_afrs[, f, , ]/Z_ars/Z_ars)
 
-    gr[i, ] <- apply(constants * deriv4, 3, sum)
+    gr[[i]] <- apply(constants_afrs * aperm(deriv4_arsf, c(1, 4, 2, 3)), c(2, 33), sum)
 
-    if (i <= nitF) x_loop[i+1, ] <- x_loop[i, ] - fn[i, ]/gr[i, ]
+    if (i <= nitF) x_loop[[i+1]] <- x_loop[[i]] - fn[[i]]/gr[[i]]
   }
 
-  F_ars <- sapply2(1:nr, function(r) { # a s r before aperm
-    i <- fleet_area == r
-    apply(F_afs[, i, , drop = FALSE], c(1, 3), sum)
-  }) %>%
-    aperm(c(1, 3, 2))
+  CB_frs <- apply(CB_afsr, c(2, 4, 3), sum)
 
-  CB_fs <- apply(CN_afs * wt, 2:3, sum)
-
-  list(F_afs = F_afs, F_ars = F_ars, F_index = F_loop,
-       CB_fs = CB_fs, CN_afs = CN_afs, VB_afs = VB_afs,
-       penalty = penalty, fr = fn[i+1, ], gr = gr[i+1, ])
+  list(F_afrs = F_afrs, F_ars = F_ars, F_index = F_loop, Z_ars = Z_ars,
+       CB_frs = CB_frs, CN_afrs = CN_afrs, #VB_afrs = VB_afrs,
+       penalty = penalty, fr = fn[[i+1]], gr = gr[[i+1]])
 }
 
 

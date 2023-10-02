@@ -63,14 +63,13 @@ MARS <- function(data, parameters, map = list(), random = NULL, silent = TRUE, c
   LAK_ymals <- array(NA_real_, c(ny, nm, na, nl, ns))
 
   # Fishery arrays ----
-  FM_ymafs <-
-    fsel_ymafs <- array(NA_real_, c(ny, nm, na, nf, ns))
+  fsel_ymafs <- array(NA_real_, c(ny, nm, na, nf, ns))
 
-  CN_ymafs <- array(NA_real_, c(ny, nm, na, nf, ns))
-  CN_ymlfs <- array(NA_real_, c(ny, nm, nl, nf, ns))
-  CB_ymfs <- array(NA_real_, c(ny, nm, nf, ns))
-
-  VB_ymfs <- array(NA_real_, c(ny, nm, nf, ns))
+  FM_ymafrs <-
+    CN_ymafrs <- array(NA_real_, c(ny, nm, na, nf, nr, ns))
+  CN_ymlfrs <- array(NA_real_, c(ny, nm, nl, nf, nr, ns))
+  CB_ymfrs <-
+    VB_ymfrs <- array(NA_real_, c(ny, nm, nf, nr, ns))
 
   # Transform parameters ----
   R0_s <- exp(p$R0x)/scale_s
@@ -106,30 +105,28 @@ MARS <- function(data, parameters, map = list(), random = NULL, silent = TRUE, c
 
       ## This season's mortality ----
       Fsearch <- calc_F(
-        Cobs = Cobs_ymf[y, m, ], N = N_ymars[y, m, , , ], sel = fsel_ymafs[y, m, , , ],
-        wt = fwt_yafs[y, , , ], M = M_yas[y, , s],
-        fleet_area = fleet_area, q_fs = q_fs, delta = delta,
+        Cobs = Cobs_ymfr[y, m, , ], N = N_ymars[y, m, , , ], sel = fsel_ymafs[y, m, , , ],
+        wt = fwt_yafs[y, , , ], M = M_yas[y, , ], q_fs = q_fs, delta = delta,
         na = na, nr = nr, nf = nf, ns = ns, Fmax = Fmax, nitF = nitF, trans = "log"
       )
       penalty <- penalty + Fsearch[["penalty"]] # add penalty for exceeding Fmax
 
       FM_ymars[y, m, , , ] <- Fsearch[["F_ars"]]
-      Z_ymars[y, m, , , ] <- sapply2(1:nr, function(r) { # a s r before aperm
-        FM_ymars[y, m, , r, ] + delta * M_yas[y, , ]
-      }) %>%
-        aperm(c(1, 3, 2))
+      Z_ymars[y, m, , , ] <- Fsearch[["Z_ars"]]
 
       ## This season's fishery catch, vulnerable biomass, and total biomass ----
-      CN_ymafs[y, m, , , ] <- Fsearch[["CN_afs"]]
+      CN_ymafrs[y, m, , , ] <- Fsearch[["CN_afrs"]]
 
-      if (any(CALobs_ymlf > 0, na.rm = TRUE)) { # If there's any length data
-        CN_ymlfs[y, m, , , ] <- sapply2(1:ns, function(s) {
-          sapply(1:nf, function(f) CN_ymafs[y, m, , f, s] %*% LAK_ymals[y, m, , , s])
+      if (any(CALobs_ymlfr > 0, na.rm = TRUE)) { # If there's any length data
+        CN_ymlfrs[y, m, , , , ] <- sapply2(1:ns, function(s) {
+          sapply2(1:nr, function(r) {
+            sapply(1:nf, function(f) CN_ymafrs[y, m, , f, r, s] %*% LAK_ymals[y, m, , , s])
+          })
         })
       }
 
-      CB_ymfs[y, m, , ] <- Fsearch[["CB_fs"]]
-      VB_ymfs[y, m, , ] <- apply(Fsearch[["VB_afs"]], 2:3, sum)
+      CB_ymfrs[y, m, , , ] <- Fsearch[["CB_frs"]]
+      VB_ymfrs[y, m, , ] <- apply(Fsearch[["VB_afrs"]], 2:4, sum)
       B_ymrs[y, m, , ] <- sapply(1:nr, function(r) rowSums(N_ymars[y, m, , r, ] * swt_ymas[y, m, , ])) %>% t()
 
       ## This year's spawning and recruitment ----
@@ -176,7 +173,7 @@ MARS <- function(data, parameters, map = list(), random = NULL, silent = TRUE, c
   loglike_IAA_ymi <- sapply2(1:ni, function(i) {
     sapply(1:nm, function(m) {
       sapply(1:ny, function(y) {
-        calc_like_comp(obs = IAAobs_ymai[y, m, , i], pred = IN_ymai[y, m, , i], type = like_comp, N = )
+        like_comp(obs = IAAobs_ymai[y, m, , i], pred = IN_ymai[y, m, , i], type = like_comp, N = , p = )
       })
     })
   })
@@ -184,26 +181,30 @@ MARS <- function(data, parameters, map = list(), random = NULL, silent = TRUE, c
   loglike_IAL_ymi <- sapply2(1:ni, function(i) {
     sapply(1:nm, function(m) {
       sapply(1:ny, function(y) {
-        calc_like_comp(obs = IALobs_ymai[y, m, , i], pred = IN_ymli[y, m, , i], type = like_comp, N = )
+        like_comp(obs = IALobs_ymli[y, m, , i], pred = IN_ymli[y, m, , i], type = like_comp, N = , p = )
       })
     })
   })
 
-  CN_ymaf <- apply(CN_ymafs, 1:4, sum)
-  CN_ymlf <- apply(CN_ymlfs, 1:4, sum)
+  CN_ymafr <- apply(CN_ymafrs, 1:5, sum)
+  CN_ymlfr <- apply(CN_ymlfrs, 1:5, sum)
 
-  loglike_CAA_ymf <- sapply2(1:nf, function(f) {
-    sapply(1:nm, function(m) {
-      sapply(1:ny, function(y) {
-        calc_like_comp(obs = CAAobs_ymaf[y, m, , f], pred = CN_ymaf[y, m, , f], type = like_comp, N = )
+  loglike_CAA_ymfr <- sapply2(1:nr, function(r) {
+    sapply2(1:nf, function(f) {
+      sapply(1:nm, function(m) {
+        sapply(1:ny, function(y) {
+          like_comp(obs = CAAobs_ymafr[y, m, , f, r], pred = CN_ymafr[y, m, , f, r], type = like_comp, N = , p = )
+        })
       })
     })
   })
 
-  loglike_CAL_ymf <- sapply2(1:nf, function(f) {
-    sapply(1:nm, function(m) {
-      sapply(1:ny, function(y) {
-        calc_like_comp(obs = CALobs_ymlf[y, m, , f], pred = CN_ymlf[y, m, , f], type = like_comp, N = )
+  loglike_CAL_ymfr <- sapply2(1:nr, function(r) {
+    sapply2(1:nf, function(f) {
+      sapply(1:nm, function(m) {
+        sapply(1:ny, function(y) {
+          like_comp(obs = CALobs_ymlfr[y, m, , f, r], pred = CN_ymlfr[y, m, , f, r], type = like_comp, N = , p = )
+        })
       })
     })
   })
@@ -213,7 +214,7 @@ MARS <- function(data, parameters, map = list(), random = NULL, silent = TRUE, c
   #loglike_tag <- 0
 
   loglike <- sum(loglike_I_ymi) + sum(loglike_IAA_ymi) + sum(loglike_IAL_ymi) +
-    sum(loglike_CAA_ymf) + sum(loglike_CAL_ymf) #+ sum(loglike_SOO) + sum(loglike_CKMR) + sum(loglike_tag)
+    sum(loglike_CAA_ymfr) + sum(loglike_CAL_ymfr) #+ sum(loglike_SOO) + sum(loglike_CKMR) + sum(loglike_tag)
 
   # Priors ----
   sdr_s <- exp(p$log_sdr_s)
@@ -231,6 +232,12 @@ MARS <- function(data, parameters, map = list(), random = NULL, silent = TRUE, c
   fn <- -1 * (logprior + loglike) + penalty
 
   # Report out variables ----
+
+  REPORT(CN_ymafrs)
+  REPORT(CN_ymlfrs)
+
+  REPORT(loglike)
+
   REPORT(logprior_rdev_ys)
   REPORT(logprior_dist)
   REPORT(fn)

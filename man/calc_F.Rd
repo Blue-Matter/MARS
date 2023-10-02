@@ -23,7 +23,7 @@ calc_F(
 )
 }
 \arguments{
-\item{Cobs}{Observed catch. Vector by \code{f}}
+\item{Cobs}{Observed catch. Matrix \verb{[f, r]}}
 
 \item{N}{Stock abundance at the beginning of the time step. Array \verb{[a, r, s]}}
 
@@ -32,8 +32,6 @@ calc_F(
 \item{wt}{Fishery weight at age. Array \verb{[a, f, s]}}
 
 \item{M}{Instantaneous natural mortality. Units of per year \verb{[a, s]}}
-
-\item{fleet_area}{Integers that specify the region \code{r} in which fleet \code{f} operates. Vector by \code{f}}
 
 \item{q_fs}{Relative catchability of stock \code{s} for fleet \code{f}. Matrix \verb{[f, s]}}
 
@@ -56,15 +54,16 @@ calc_F(
 \value{
 A list containing:
 \itemize{
-\item \code{F_afs} Fishing mortality array
-\item \code{F_ars} Fishing mortality array
-\item \code{F_index} Index of fishing mortality. Vector by \code{f}
-\item \code{CB_fs} Catch (biomass) matrix
-\item \code{CN_afs} Catch (abundance) array
-\item \code{VB_afs} Vulnerable biomass at the beginning of the time step.
+\item \code{F_afrs} Fishing mortality array
+\item \code{F_ars} Fishing mortality array (summed across fleets)
+\item \code{Z_ars} Total mortality array
+\item \code{F_index} Index of fishing mortality. Matrix \verb{[f, r]}
+\item \code{CB_frs} Catch (biomass) array
+\item \code{CN_afrs} Catch (abundance) array
+\item \code{VB_afrs} Vulnerable biomass at the beginning of the time step. Array
 \item \code{penalty} Penalty term returned by \link{posfun} when \code{F_index} exceeds \code{Fmax}
-\item \code{fn} Difference between predicted and observed catch at the last iteration. Vector by \code{f}
-\item \code{gr} Gradient of \code{fn} with respect to \code{F_index} in either log or logit space at the last iteration. Vector by \code{f}
+\item \code{fn} Difference between predicted and observed catch at the last iteration. Matrix \verb{[f, r]}
+\item \code{gr} Gradient of \code{fn} with respect to \code{F_index} in either log or logit space at the last iteration. Vector by \verb{[f, r]}
 }
 }
 \description{
@@ -72,20 +71,20 @@ Performs a root finding routine to find the index of F that minimizes the differ
 observed catch and the value predicted by the Baranov equation.
 }
 \details{
-The predicted catch for fleet \code{f} is
+The predicted catch for fleet \code{f} in region \code{r} is
 \deqn{
-C^{\textrm{pred}}_f = \sum_s \sum_a v_{a,f,s} q_{f,s} F_f \dfrac{1 - \exp(-Z_{a,s})}{Z_{a,s}} N_{a,f,s} w_{a,f,s}
+C^{\textrm{pred}}_{f,r} = \sum_s \sum_a v_{a,f,s} q_{f,s} F_{f,r} \dfrac{1 - \exp(-Z_{a,r,s})}{Z_{a,r,s}} N_{a,r,s} w_{a,f,s}
 }
 
-The Newton-Raphson routine minimizes \eqn{f(\vec{x}) = \vec{C}^{\textrm{pred}} - \vec{C}^{\textrm{obs}}} where the vector arrow indexes fleet.
+The Newton-Raphson routine minimizes \eqn{f(x_{f,r}) = C_{f,r}^{\textrm{pred}} - C_{f,r}^{\textrm{obs}}}.
 
-If \code{trans = "log"}, \eqn{\vec{F} = \exp(\vec{x})}.
+If \code{trans = "log"}, \eqn{F_{f,r} = \exp(x_{f,r})}.
 
-If \code{trans = "logit"}, \eqn{\vec{F} = F_{\textrm{max}}/(1 + \exp(-\vec{x}))}.
+If \code{trans = "logit"}, \eqn{F_{f,r} = F_{\textrm{max}}/(1 + \exp(x_{f,r}))}.
 
 The gradient with respect to \eqn{\vec{x}} is
 \deqn{
-f'(\vec{x}) = \sum_s \sum_a v_{a,f,s} q_{f,s} N_{a,f,s} w_{a,f,s} \left(\dfrac{\alpha\gamma}{\beta}\right)'
+f'(x_{f,r}) = \sum_s \sum_a v_{a,f,s} q_{f,s} N_{a,r,s} w_{a,f,s} \left(\dfrac{\alpha\gamma}{\beta}\right)'
 }
 
 \deqn{
@@ -95,18 +94,19 @@ f'(\vec{x}) = \sum_s \sum_a v_{a,f,s} q_{f,s} N_{a,f,s} w_{a,f,s} \left(\dfrac{\
 where
 
 \tabular{l}{
-\eqn{\alpha_f = F_f} \cr
-\eqn{\beta_{a,s} = Z_{a,s} = M_{a,s} + \sum_f v_{a,f,s} q_{f,s} F_f} \cr
-\eqn{\gamma_{a,s} = 1 - \exp(-Z_{a,s})} \cr
-\eqn{\beta'_{a,f,s} = v_{a,f} q_{f,s} \alpha'_f} \cr
-\eqn{\gamma'_{a,f,s} = \exp(-Z_{a,s})\beta'_{a,f,s}}
+\eqn{\alpha_{f,r} = F_{f,r}} \cr
+\eqn{\beta_{a,r,s} = Z_{a,r,s} = M_{a,s} + \sum_f v_{a,f,s} q_{f,s} F_{f,r}} \cr
+\eqn{\gamma_{a,r,s} = 1 - \exp(-Z_{a,r,s})} \cr
+\eqn{\beta'_{a,f,r,s} = v_{a,f} q_{f,s} \alpha'_{f,r}} \cr
+\eqn{\gamma'_{a,f,r,s} = \exp(-Z_{a,r,s})\beta'_{a,f,r,s}}
 }
 
-If \code{trans = "log"}, \eqn{\alpha'_f = \alpha_f}.
+If \code{trans = "log"}, \eqn{\alpha'_{f,r} = \alpha_{f,r}}.
 
-If \code{trans = "logit"}, \eqn{\alpha'_f = F_{\textrm{max}}\exp(-x_f)/(1 + \exp(-x_f))^2}.
+If \code{trans = "logit"}, \eqn{\alpha'_{f,r} = F_{\textrm{max}}\exp(-x_{f,r})/(1 + \exp(-x_{f,r}))^2}.
 
-This function solves for \eqn{\vec{x}} by iterating until \eqn{f(\vec{x})} approaches zero. In iteration \eqn{i+1}:
+This function solves for \eqn{\vec{x}} by iterating until \eqn{f(\vec{x})} approaches zero, where the vector arrow
+indexes over fleet and region. In iteration \eqn{i+1}:
 \deqn{\vec{x}_{i+1} = \vec{x}_i - \dfrac{f(\vec{x}_i)}{f'(\vec{x}_i)}}.
 }
 \author{
