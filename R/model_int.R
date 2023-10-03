@@ -414,6 +414,56 @@ softmax <- function(eta) {
   exp(v)
 }
 
-calc_mov <- function() {
+#' Calculate movement matrix for all age classes
+#'
+#' Movement matrices are calculated for all age classes from a base matrix and a gravity model formulation
+#' (Carruthers et al. 2016).
+#'
+#' @param x Base log-movement parameters. See details. Array `[na, nr, nr]`
+#' @param g Gravity model attractivity term. Vector by `a`
+#' @param v Gravity model viscosity term. Vector by `a`
+#' @param nr Integer, number of regions
+#' @param na Integer, number of ages
+#' @param aref Integer, reference age class
+#' @details
+#' In log space, the movement matrix \eqn{m} for age class \eqn{a} from region \eqn{r} to \eqn{r} is the sum of base matrix \eqn{x} and
+#' gravity matrix \eqn{G}:
+#' \deqn{m_{r,r'} = x_{r,r'} + G_{r,r'}}
+#'
+#' To essentially exclude movement from \eqn{r} to \eqn{r'}, set \eqn{x_{r,r'} = -1000}
+#'
+#' Gravity matrix \eqn{G} includes an attractivity term \eqn{g} and viscosity term \eqn{v}:
+#'
+#' \deqn{G_{r,r'} =
+#' \begin{cases}
+#' g'_a + v_a \quad & r = r'\\
+#' g'_a \quad & \textrm{otherwise}
+#' \end{cases}
+#' }
+#'
+#' Vector \eqn{g'} are offset terms relative to the value for the reference age class:
+#' \deqn{g'_a =
+#' \begin{cases}
+#' g_a \quad & a = a_{ref}\\
+#' g_a + g_{aref} \quad & \textrm{otherwise}
+#' \end{cases}
+#' }
+#'
+#' The movement matrix in normal space is obtained by the softmax transformation
+#' \deqn{M_{r,r'} = \dfrac{\exp(m_{r,r'})}{\sum_r\exp(m_{r,r'})}}
+#' @references
+#' Carruthers, T.R., et al. 2015. Modelling age-dependent movement: an application to red and
+#' gag groupers in the Gulf of Mexico. CJFAS 72: 1159-1176. \doi{10.1139/cjfas-2014-0471}
+#' @return Movement array `[a, r, r']`
+#' @export
+conv_mov <- function(x, g, v, nr = dim(x)[2], na = dim(x)[1], aref = ceiling(0.5 * na)) {
+  stopifnot(length(g) == na)
+  stopifnot(length(g) == length(v))
+  x <- array(x, c(na, nr, nr))
 
+  mov_rra <- sapply(1:na, function(a) {
+    ln_mov <- x[a, , ] + v[a] * diag(nr) + (a != aref) * g[aref] + g[a]
+    apply(ln_mov, 1, softmax)
+  })
+  return(aperm(mov_rra, c(3, 1, 2)))
 }

@@ -61,6 +61,7 @@ MARS <- function(data, parameters, map = list(), random = NULL, silent = TRUE, c
     Z_ymars <-
     dist_ymars <- array(NA_real_, c(ny, nm, na, nr, ns))
   LAK_ymals <- array(NA_real_, c(ny, nm, na, nl, ns))
+  mov_ymarrs <- array(NA_real_, c(ny, nm, na, nr, nr, ns))
 
   # Fishery arrays ----
   fsel_ymafs <- array(NA_real_, c(ny, nm, na, nf, ns))
@@ -96,8 +97,13 @@ MARS <- function(data, parameters, map = list(), random = NULL, silent = TRUE, c
   # Loop over years and seasons ----
   for(y in 1:ny) {
     for(m in 1:nm) {
-      # Stock distribution parameters
-      #dist_ymars[y, m, , , ] <- conv_dist()
+      # Stock distribution and movement parameters
+      dist_ymars[y, m, , , ] <- sapply2(1:ns, function(s) {
+        sapply(1:na, function(a) softmax(p$dist[y, m, a, , s])) %>% t()
+      })
+      mov_ymarrs[y, m, , , , ] <- sapply2(1:ns, function(s) {
+        conv_mov(p$mov_x[y, m, , , , s], p$mov_g[y, m, , s], p$mov_v[y, m, , s], nr, na)
+      })
 
       # Calculate length-age key and fishery age selectivity ----
       LAK_ymals[y, m, , , ] <- sapply2(1:ns, function(s) calc_LAK(len_ymas[y, m, , s], sdlen_ymas[y, m, , s], lbin))
@@ -149,14 +155,14 @@ MARS <- function(data, parameters, map = list(), random = NULL, silent = TRUE, c
         N_ymars[y+1, 1, , , ] <- calc_nextN(
           N = N_ymars[y, nm, , , ], surv = exp(-Z_ymars[y, nm, , , ]),
           na = na, nr = nr, ns = ns,
-          advance_age = m == m_rec, type = "dist", R = R_ys[y+1, ],
+          advance_age = m == m_rec, type = dist_type, R = R_ys[y+1, ],
           dist = dist_ymars[y+1, 1, , , ], mov = mov_ymarrs[y+1, 1, , , , ]
         )
       } else {
         N_ymars[y, m+1, , , ] <- calc_nextN(
           N = N_ymars[y, m, , , ], surv = exp(-Z_ymars[y, m, , , ]),
           na = na, nr = nr, ns = ns,
-          advance_age = m == m_rec, type = "dist", R = R_ys[y, ],
+          advance_age = m == m_rec, type = dist_type, R = R_ys[y, ],
           dist = dist_ymars[y, m+1, , , ], mov = mov_ymarrs[y, m+1, , , , ]
         )
       }
