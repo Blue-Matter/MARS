@@ -181,19 +181,19 @@ calc_F <- function(Cobs, N, sel, wt, M, fleet_area, q_fs, delta = 1,
   CB_frs <- apply(CB_afsr, c(2, 4, 3), sum)
 
   list(F_afrs = F_afrs, F_ars = F_ars, F_index = F_loop, Z_ars = Z_ars,
-       CB_frs = CB_frs, CN_afrs = CN_afrs, #VB_afrs = VB_afrs,
+       CB_frs = CB_frs, CN_afrs = CN_afrs, VB_afrs = VB_afrs,
        penalty = penalty, fr = fn[[i+1]], gr = gr[[i+1]])
 }
 
 
 
-conv_selpar <- function(x, type, nf = length(type), na, Lmax) {
+conv_selpar <- function(x, type, nf = length(type), maxage, Lmax) {
 
   sel_par <- sapply(1:nf, function(f) {
     sd_asc <- exp(x[2, f])
     sd_desc <- exp(x[3, f])
     if (grepl("age", type[f])) {
-      Aapical <- na * plogis(x[1, f])
+      Aapical <- maxage * plogis(x[1, f])
       v <- c(Aapical, sd_asc, sd_desc)
     } else {
       Lapical <- Lmax * plogis(x[1, f])
@@ -205,10 +205,10 @@ conv_selpar <- function(x, type, nf = length(type), na, Lmax) {
   return(sel_par)
 }
 
-calc_sel_len <- function(sel_par, lmid, type, nf = length(type)) {
+calc_sel_len <- function(sel_par, lmid, type) {
+  nf <- length(type)
 
-  sel_len <- sapply(1:nf, function(f) {
-
+  sel_lf <- sapply(1:nf, function(f) {
     if (grepl("length", type[f])) {
       ex_asc <- (lmid - sel_par[1, f])/sel_par[2, f]
       ex2_asc <- -1 * ex_asc^2
@@ -228,11 +228,37 @@ calc_sel_len <- function(sel_par, lmid, type, nf = length(type)) {
     return(v)
   })
 
-  return(sel_len)
+  return(sel_lf)
 }
 
-calc_sel_age <- function(sel_par, sel_len, nf, type) {
 
+calc_sel_age <- function(sel_len, LAK, type, sel_par, sel_block, maxage) {
+  nf <- length(sel_block)
+  a <- seq(0, maxage)
+
+  sel_af <- sapply(1:nf, function(ff) {
+    f <- sel_block[ff]
+    if (grepl("length", type[f])) {
+      v <- sel_len[, f] %*% t(LAK)
+    } else {
+
+      ex_asc <- (a - sel_par[1, f])/sel_par[2, f]
+      ex2_asc <- -1 * ex_asc^2
+      asc <- 2^ex2_asc
+
+      if (grepl("logistic", type[f])) {
+        desc <- 1
+      } else {
+        ex_desc <- (a - sel_par[1, f])/sel_par[3, f]
+        ex2_desc <- -1 * ex_desc^2
+        desc <- 2^ex2_desc
+      }
+      v <- CondExpLt(a, sel_par[1, f], asc, desc)
+    }
+    return(v)
+  })
+
+  return(sel_af)
 }
 
 calc_phi <- function(Z, fec, spawn_time_frac = 0) {
@@ -367,7 +393,7 @@ calc_nextN <- function(N, surv, na = dim(N)[1], nr = dim(N)[2], ns = dim(N)[3],
 
     if (type == "dist") { # Distribution vectors
       Ntotal <- apply(Nsurv_ars[, , s], 1, sum)
-      if (advance_age) Ntotal[1] <- R_s
+      if (advance_age) Ntotal[1] <- R
       Nout_ar <- Ntotal * dist[, , s]
     } else { # Movement matrix
       Nout_ra <- sapply(2:na, function(a) Nsurv_ars[a, , s] %*% mov[a, , , s])
@@ -378,4 +404,16 @@ calc_nextN <- function(N, surv, na = dim(N)[1], nr = dim(N)[2], ns = dim(N)[3],
   })
 
   return(Nnext_ars)
+}
+
+
+logspace.add <- function(lx, ly) pmax(lx, ly) + log1p(exp(-abs(lx - ly)))
+softmax <- function(eta) {
+  den <- Reduce(logspace.add, eta)
+  v <- eta - den
+  exp(v)
+}
+
+calc_mov <- function() {
+
 }

@@ -80,8 +80,8 @@ MARS <- function(data, parameters, map = list(), random = NULL, silent = TRUE, c
   Rdev_ys[] <- exp(p$log_rdev_ys)
 
   # Fishery selectivity
-  fsel_val <- conv_selpar(p$fsel, type = fsel_type, na = na, Lmax = 0.9 * max(len_ymas))
-  fsel_len <- calc_sel_len()
+  fsel_val <- conv_selpar(p$fsel, type = fsel_type, maxage = na - 1, Lmax = 0.95 * max(len_ymas))
+  fsel_len <- calc_sel_len(fsel_val, lmid, type = fsel_type)
 
   # Miscellaneous penalty term, e.g., F > Fmax
   penalty <- 0
@@ -101,7 +101,9 @@ MARS <- function(data, parameters, map = list(), random = NULL, silent = TRUE, c
 
       # Calculate length-age key and fishery age selectivity ----
       LAK_ymals[y, m, , , ] <- sapply2(1:ns, function(s) calc_LAK(len_ymas[y, m, , s], sdlen_ymas[y, m, , s], lbin))
-      fsel_ymafs[y, m, , , ] <- calc_sel_age()
+      fsel_ymafs[y, m, , , ] <- sapply2(1:ns, function(s) {
+        calc_sel_age(sel_len, LAK_ymals[y, m, , , s], fsel_type, sel_par, sel_block[y, ], na - 1)
+      })
 
       ## This season's mortality ----
       Fsearch <- calc_F(
@@ -173,7 +175,7 @@ MARS <- function(data, parameters, map = list(), random = NULL, silent = TRUE, c
   loglike_IAA_ymi <- sapply2(1:ni, function(i) {
     sapply(1:nm, function(m) {
       sapply(1:ny, function(y) {
-        like_comp(obs = IAAobs_ymai[y, m, , i], pred = IN_ymai[y, m, , i], type = like_comp, N = , p = )
+        like_comp(obs = IAAobs_ymai[y, m, , i], pred = IN_ymai[y, m, , i], type = comp_like, N = , p = )
       })
     })
   })
@@ -181,7 +183,7 @@ MARS <- function(data, parameters, map = list(), random = NULL, silent = TRUE, c
   loglike_IAL_ymi <- sapply2(1:ni, function(i) {
     sapply(1:nm, function(m) {
       sapply(1:ny, function(y) {
-        like_comp(obs = IALobs_ymli[y, m, , i], pred = IN_ymli[y, m, , i], type = like_comp, N = , p = )
+        like_comp(obs = IALobs_ymli[y, m, , i], pred = IN_ymli[y, m, , i], type = comp_like, N = , p = )
       })
     })
   })
@@ -193,7 +195,7 @@ MARS <- function(data, parameters, map = list(), random = NULL, silent = TRUE, c
     sapply2(1:nf, function(f) {
       sapply(1:nm, function(m) {
         sapply(1:ny, function(y) {
-          like_comp(obs = CAAobs_ymafr[y, m, , f, r], pred = CN_ymafr[y, m, , f, r], type = like_comp, N = , p = )
+          like_comp(obs = CAAobs_ymafr[y, m, , f, r], pred = CN_ymafr[y, m, , f, r], type = comp_like, N = , p = )
         })
       })
     })
@@ -203,18 +205,36 @@ MARS <- function(data, parameters, map = list(), random = NULL, silent = TRUE, c
     sapply2(1:nf, function(f) {
       sapply(1:nm, function(m) {
         sapply(1:ny, function(y) {
-          like_comp(obs = CALobs_ymlfr[y, m, , f, r], pred = CN_ymlfr[y, m, , f, r], type = like_comp, N = , p = )
+          like_comp(obs = CALobs_ymlfr[y, m, , f, r], pred = CN_ymlfr[y, m, , f, r], type = comp_like, N = , p = )
         })
       })
     })
   })
 
-  #loglike_SOO <- 0
+  if (ns > 1) {
+
+    loglike_SC_ymafr <- sapply2(1:nr, function(r) {
+      sapply2(1:nf, function(f) {
+        sapply2(1:length(SC_a), function(aa) { # Aggegrate over age classes SC_a
+          sapply(1:nm, function(m) {
+            sapply(1:ny, function(y) {
+              like_comp(obs = SC_ymafrs[y, m, aa, f, r, ], pred = colSums(CN_ymafrs[y, m, SC_a[[aa]], f, r, ]),
+                        type = SC_like, stdev = )
+            })
+          })
+        })
+      })
+    })
+
+  } else {
+    loglike_SC_ymafr <- 0
+  }
+
   #loglike_CKMR <- 0
   #loglike_tag <- 0
 
   loglike <- sum(loglike_I_ymi) + sum(loglike_IAA_ymi) + sum(loglike_IAL_ymi) +
-    sum(loglike_CAA_ymfr) + sum(loglike_CAL_ymfr) #+ sum(loglike_SOO) + sum(loglike_CKMR) + sum(loglike_tag)
+    sum(loglike_CAA_ymfr) + sum(loglike_CAL_ymfr) + sum(loglike_SC_ymafr) #+ sum(loglike_CKMR) + sum(loglike_tag)
 
   # Priors ----
   sdr_s <- exp(p$log_sdr_s)

@@ -2,14 +2,15 @@
 % Please edit documentation in R/like.R
 \name{like_comp}
 \alias{like_comp}
-\title{Likelihood for length or age composition vectors}
+\title{Likelihood for composition vectors}
 \usage{
 like_comp(
   obs,
   pred,
+  type = c("multinomial", "dirmult1", "dirmult2", "lognormal", "logitnormal"),
   N = sum(obs),
-  type = c("multinomial", "dirmult1", "dirmult2"),
-  ...
+  p,
+  stdev
 )
 }
 \arguments{
@@ -17,20 +18,20 @@ like_comp(
 
 \item{pred}{A vector of predicted values. Same length as \code{obs}}
 
-\item{N}{Numeric, the sample size corresponding to \code{obs}}
-
 \item{type}{Character for the desired distribution}
 
-\item{...}{Other arguments depending on \code{type}. See below.}
+\item{N}{Numeric, the sample size corresponding to \code{obs} for multinomial or Dirichlet multinomial distributions.}
+
+\item{p}{Numeric, the linear (\code{type = "dirmult1"}) or saturating (\code{type = "dirmult2"}) Dirichlet-multinomial parameter, respectively. See Thorson et al. (2017)}
+
+\item{stdev}{Numeric or vectorized for \code{obs}, the likelihood standard deviation for lognormal or logit-normal distributions.}
 }
 \value{
 Numeric representing the log-likelihood.
 }
 \description{
-Returns the log-likelihood for composition data, with various statistical distributions supported.
-}
-\details{
-For \code{type = "dirmult1"} or \code{"dirmult2"}, provide \code{p} which represents the linear or saturating parameter, respectively.
+Returns the log-likelihood for composition data, e.g., length, age, or stock composition,
+with various statistical distributions supported.
 }
 \examples{
 M <- 0.1

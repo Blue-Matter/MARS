@@ -1,17 +1,16 @@
 
-#' Likelihood for length or age composition vectors
+#' Likelihood for composition vectors
 #'
-#' Returns the log-likelihood for composition data, with various statistical distributions supported.
+#' Returns the log-likelihood for composition data, e.g., length, age, or stock composition,
+#' with various statistical distributions supported.
 #'
 #' @param obs A vector of observed values
 #' @param pred A vector of predicted values. Same length as `obs`
-#' @param N Numeric, the sample size corresponding to `obs`
 #' @param type Character for the desired distribution
-#' @param ... Other arguments depending on `type`. See below.
+#' @param N Numeric, the sample size corresponding to `obs` for multinomial or Dirichlet multinomial distributions.
+#' @param p Numeric, the linear (`type = "dirmult1"`) or saturating (`type = "dirmult2"`) Dirichlet-multinomial parameter, respectively. See Thorson et al. (2017)
+#' @param stdev Numeric or vectorized for `obs`, the likelihood standard deviation for lognormal or logit-normal distributions.
 #' @return Numeric representing the log-likelihood.
-#'
-#' @details
-#' For `type = "dirmult1"` or `"dirmult2"`, provide `p` which represents the linear or saturating parameter, respectively.
 #'
 #' @references
 #' Thorson et al. 2017. Model-based estimates of effective sample size in stock assessment models using the
@@ -26,7 +25,13 @@
 #' like_comp(obs, pred, N = 10, type = "dirmult1", p = 1)
 #' like_comp(obs, pred, N = 10, type = "dirmult1", p = 20)
 #' @export
-like_comp <- function(obs, pred, N = sum(obs), type = c("multinomial", "dirmult1", "dirmult2"), ...) {
+like_comp <- function(obs, pred,
+                      type = c("multinomial", "dirmult1", "dirmult2", "lognormal", "logitnormal"),
+                      N = sum(obs), p, stdev) {
+
+  #if (is.matrix(obs)) obs <- colSums(obs)
+  #if (is.matrix(pred)) pred <- colSums(pred)
+
   stopifnot(length(obs) == length(pred))
   type <- match.arg(type)
   dots <- list(...)
@@ -37,7 +42,8 @@ like_comp <- function(obs, pred, N = sum(obs), type = c("multinomial", "dirmult1
 
   } else if (type == "multinomial") {
 
-    v <- dmultinom(x = N * obs/sum(obs), prob = pred, log = TRUE)
+    pobs <- obs/sum(obs)
+    v <- dmultinom(x = N * pobs, prob = pred, log = TRUE)
 
   } else if (type == "dirmult1") {
 
@@ -49,6 +55,19 @@ like_comp <- function(obs, pred, N = sum(obs), type = c("multinomial", "dirmult1
     alpha <- dots$p * pred/sum(pred)
     v <- ddirmnom(obs, size = N, alpha = alpha, log = TRUE)
 
+  } else if (type == "lognormal") {
+
+    pobs <- obs/sum(obs)
+    ppred <- pred/sum(pred)
+
+    v <- dnorm(log(ppred/pobs), 0, stdev, log = TRUE) %>% sum()
+
+  } else if (type == "logitnormal") {
+
+    lobs <- qlogis(obs/sum(obs))
+    lpred <- qlogis(pred/sum(pred))
+
+    v <- dnorm(lobs, lpred, stdev, log = TRUE) %>% sum()
   }
   return(v)
 }
@@ -62,4 +81,3 @@ ddirmnom <- function(x, size, alpha, log = FALSE) {
 
   if (log) log_res else exp(log_res)
 }
-
