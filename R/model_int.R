@@ -467,3 +467,94 @@ conv_mov <- function(x, g, v, nr = dim(x)[2], na = dim(x)[1], aref = ceiling(0.5
   })
   return(aperm(mov_rra, c(3, 1, 2)))
 }
+
+
+#' Predict the probability of CKMR kinship pairs
+#'
+#' Calculate the probability of observing a parent-offspring pair (`calc_POP`) and
+#' half-sibling pair (`calc_HSP`) for closed-kin mark recapture (CKMR) for an age-structured
+#' model.
+#'
+#' @param t Vector, capture year of parent `i`
+#' @param a Vector, age at capture of parent `i`
+#' @param y Vector, birth year of offspring `j`
+#' @param N Stock abundance. Matrix by `[y, a]`
+#' @param fec Fecundity schedule. Matrix by `[y, a]`
+#' @return A vector of probabilities.
+#' @seealso [like_CKMR()]
+#' @section Parent-offspring pairs:
+#' The parent-offspring probability is calculated from Bravington et al. 2016, eq 3.4:
+#'
+#' \deqn{p_{\textrm{POP}} = 2 \times \dfrac{f(y_j,y_j - (t_i - a_i))}{\sum_a f(y_j,a) N(y_j,a)}}
+#'
+#' where \eqn{y_j - (t_i - a_i)} is the parental age in year \eqn{y_j}. Scalar 2 accounts for the fact
+#' that the parent could be either a mother or a father.
+#' `calc_POP` is vectorized with respect to `t`, `a`, and `y`.
+#' @references
+#' Bravington, M.V. et al. 2016. Close-Kin Mark-Recapture. Stat. Sci. 31: 259-274.
+#' \doi{10.1214/16-STS552}
+#' @author Q. Huynh with contribution from Y. Tsukahara (Fisheries Research Institute, Japan)
+#' @export
+calc_POP <- function(t, a, y, N, fec) {
+  a_yj <- y - t + a # Age of parent in birth year of offspring, Bravington 2016, eq 3.4
+  if (!length(a_yj) == length(y)) stop("Vectors t, a, y need to be the same length")
+
+  rel_RO <- sapply(1:length(a_yj), function(j) {
+    RO <- sum(N[y[j], ] * fec[y[j], ])
+    fec[y[j], a_yj[j]]/RO
+  })
+  p <- 2 * rel_RO
+  return(p)
+}
+
+#' @name calc_POP
+#' @section Half-sibling pairs:
+#' The half-sibling probability is calculated from Bravington et al. 2016, eq 3.10, and expanded
+#' by Hillary et al. 2018, Supplement S2.8.1 for
+#' age-specific survival and fecundity of the parent:
+#'
+#' \deqn{p_{\textrm{HSP}} = \sum_a\left(
+#' \dfrac{N(y_i, a)f(y_i, a)}{\sum_{a'} N(y_i, a')f(y_i,a')}
+#' \exp(-\sum_{t = 0}^{y_j - y_i - 1} Z(y_i + t,a' + t))
+#' \dfrac{f(y_j,a+y_j-y_i)}{\sum_{a'} N(y_j,a')f(y_i,a')}
+#' \right)
+#' }
+#'
+#' - The first ratio is the probability that a fish at age \eqn{a} in year \eqn{y_i} is the parent of \eqn{i}.
+#' - The exponential term is that fish's survival from year \eqn{y_i} to \eqn{y_j}.
+#' - The second ratio is the probability that the parent of \eqn{i}, age \eqn{a+y_j-y_i} in year \eqn{y_j}, is the parent of \eqn{j}.
+#'
+#' The parent is not observed in the HSP, so we sum the probabilities over all potential ages in year \eqn{y_i}.
+#' `calc_HSP` is vectorized with respect to `yi` and `yj`.
+#' @references
+#' Hillary, R.M. et al. 2018. Genetic relatedness reveals total population size of white sharks in eastern Australia and
+#' New Zealand. Sci. Rep. 8: 2661. \doi{10.1038/s41598-018-20593-w}
+#' @param yi Vector, birth year of sibling `i`. Must be older than sibling `j`.
+#' @param yj Vector, birth year of sibling `j`.
+#' @param Z Instantaneous total mortality rate. Matrix by `[y, a]`
+#' @export
+calc_HSP <- function(yi, yj, N, fec, Z) {
+  stopifnot(length(yi) == length(yj))
+  sapply(1:length(yi), function(x) {
+    .calc_HSP(yi[x], yj[x], N = N, fec = fec, Z = Z)
+  })
+}
+
+.calc_HSP <- function(yi, yj, N, fec, Z, na = ncol(N)) {
+  delta_ij <- yj - yi
+
+  RO_yi <- sum(N[yi, ] * fec[yi, ])
+  RO_yj <- sum(N[yj, ] * fec[yj, ])
+
+  p_ai <- sapply(1:na, function(ai) {
+    relRO_di <- fec[yi, ai]/RO_yi
+    relRO_dj <- fec[yj, min(ai + delta_ij, na)]/RO_yj
+
+    Z_ij <- sapply(seq(0, delta_ij - 1), function(t) Z[yi + t, min(ai + t, na)])
+    surv_dij <- exp(-sum(Z_ij))
+
+    N[yi, ai] * relRO_di * relRO_dj * surv_dij
+  })
+  p <- sum(p_ai)
+  return(p)
+}

@@ -139,10 +139,12 @@ MARS <- function(data, parameters, map = list(), random = NULL, silent = TRUE, c
 
       ## This year's spawning and recruitment ----
       if (m == m_spawn) {
-        Nsp_yars[y, , , ] <- N_ymars[y, m, , , ] * exp(-spawn_time_frac * Z_ymars[y, m, , , ])
-        SB_ys[y, ] <- sapply(1:ns, function(s) {
-          sapply(1:nr, function(r) Nsp_yars[y, , r, s] * fec_yas[y, , s]) %>% sum()
+        Nsp_yars[y, , , ] <- sapply(1:ns, function(s) {
+          Nsp <- N_ymars[y, m, , r_natal[, s], s, drop = FALSE] *
+            exp(-spawn_time_frac * Z_ymars[y, m, , r_natal[, s], s, drop = FALSE])
+          apply(Nsp, 3:4, sum)
         })
+        SB_ys[y, ] <- sapply(1:ns, function(s) sum(Nsp_yars[y, , , s] * fec_yas[y, , , s]))
         y_rec <- ifelse(m_rec > m_spawn, y, y+1) # When nm = 1, this only works if recruitment is age 1
         R_ys[y_rec, ] <- Rdev_ys[y_rec, ] * sapply(1:ns, function(s) {
           calc_recruitment(SB = SB[y, s], SRR = SRR_s[s], a = sralpha_s[s], b = srbeta_s[s])
@@ -181,7 +183,7 @@ MARS <- function(data, parameters, map = list(), random = NULL, silent = TRUE, c
   loglike_IAA_ymi <- sapply2(1:ni, function(i) {
     sapply(1:nm, function(m) {
       sapply(1:ny, function(y) {
-        like_comp(obs = IAAobs_ymai[y, m, , i], pred = IN_ymai[y, m, , i], type = comp_like, N = , p = )
+        like_comp(obs = IAAobs_ymai[y, m, , i], pred = IN_ymai[y, m, , i], type = comp_like, N = , theta = )
       })
     })
   })
@@ -189,7 +191,7 @@ MARS <- function(data, parameters, map = list(), random = NULL, silent = TRUE, c
   loglike_IAL_ymi <- sapply2(1:ni, function(i) {
     sapply(1:nm, function(m) {
       sapply(1:ny, function(y) {
-        like_comp(obs = IALobs_ymli[y, m, , i], pred = IN_ymli[y, m, , i], type = comp_like, N = , p = )
+        like_comp(obs = IALobs_ymli[y, m, , i], pred = IN_ymli[y, m, , i], type = comp_like, N = , theta = )
       })
     })
   })
@@ -201,7 +203,7 @@ MARS <- function(data, parameters, map = list(), random = NULL, silent = TRUE, c
     sapply2(1:nf, function(f) {
       sapply(1:nm, function(m) {
         sapply(1:ny, function(y) {
-          like_comp(obs = CAAobs_ymafr[y, m, , f, r], pred = CN_ymafr[y, m, , f, r], type = comp_like, N = , p = )
+          like_comp(obs = CAAobs_ymafr[y, m, , f, r], pred = CN_ymafr[y, m, , f, r], type = comp_like, N = , theta = )
         })
       })
     })
@@ -211,13 +213,13 @@ MARS <- function(data, parameters, map = list(), random = NULL, silent = TRUE, c
     sapply2(1:nf, function(f) {
       sapply(1:nm, function(m) {
         sapply(1:ny, function(y) {
-          like_comp(obs = CALobs_ymlfr[y, m, , f, r], pred = CN_ymlfr[y, m, , f, r], type = comp_like, N = , p = )
+          like_comp(obs = CALobs_ymlfr[y, m, , f, r], pred = CN_ymlfr[y, m, , f, r], type = comp_like, N = , theta = )
         })
       })
     })
   })
 
-  if (ns > 1) {
+  if (ns > 1 && length(d@SC)) {
 
     loglike_SC_ymafr <- sapply2(1:nr, function(r) {
       sapply2(1:nf, function(f) {
@@ -236,11 +238,34 @@ MARS <- function(data, parameters, map = list(), random = NULL, silent = TRUE, c
     loglike_SC_ymafr <- 0
   }
 
-  #loglike_CKMR <- 0
+  if (length(POP)) {
+    p_POP <- lapply(1:ns, function(s) {
+      calc_POP(t = POP[[s]]$ti, a = POP[[s]]$ai, y = POP[[s]]$y,
+               N = apply(Nsp_yars[, , , s], 1:2, sum),
+               fec = fec_yas[, , s])
+    })
+    loglike_CKMR_POP <- lapply(1:ns, function(s) like_CKMR(n = POP[[s]]$n, m = POP[[s]]$m, p = p_POP[[s]], type = d@CKMR@like))
+  } else {
+    loglike_CKMR_POP <- 0
+  }
+
+  if (length(HSP)) {
+    Z_yas <- sapply()
+    p_HSP <- lapply(1:ns, function(s) {
+      calc_HSP(yi = HSP[[s]]$yi, yj = HSP[[s]]$yj,
+               N = apply(Nsp_yars[, , , s], 1:2, sum),
+               fec = fec_yas[, , s], Z = Z_yas[, , s])
+    })
+    loglike_CKMR_HSP <- lapply(1:ns, function(s) like_CKMR(n = HSP[[s]]$n, m = HSP[[s]]$m, p = p_HSP[[s]], type = d@CKMR@like))
+  } else {
+    loglike_CKMR_HSP <- 0
+  }
+
   #loglike_tag <- 0
 
   loglike <- sum(loglike_I_ymi) + sum(loglike_IAA_ymi) + sum(loglike_IAL_ymi) +
-    sum(loglike_CAA_ymfr) + sum(loglike_CAL_ymfr) + sum(loglike_SC_ymafr) #+ sum(loglike_CKMR) + sum(loglike_tag)
+    sum(loglike_CAA_ymfr) + sum(loglike_CAL_ymfr) + sum(loglike_SC_ymafr) +
+    Reduce(sum, loglike_CKMR_POP) + Reduce(sum, loglike_CKMR_HSP) #+ sum(loglike_tag)
 
   # Priors ----
   sdr_s <- exp(p$log_sdr_s)

@@ -8,7 +8,7 @@
 #' @param pred A vector of predicted values. Same length as `obs`
 #' @param type Character for the desired distribution
 #' @param N Numeric, the sample size corresponding to `obs` for multinomial or Dirichlet multinomial distributions.
-#' @param p Numeric, the linear (`type = "dirmult1"`) or saturating (`type = "dirmult2"`) Dirichlet-multinomial parameter, respectively. See Thorson et al. (2017)
+#' @param theta Numeric, the linear (`type = "dirmult1"`) or saturating (`type = "dirmult2"`) Dirichlet-multinomial parameter, respectively. See Thorson et al. (2017)
 #' @param stdev Numeric or vectorized for `obs`, the likelihood standard deviation for lognormal or logit-normal distributions.
 #' @return Numeric representing the log-likelihood.
 #'
@@ -22,19 +22,14 @@
 #' obs <- pred * rlnorm(10, sd = 0.05)
 #' like_comp(obs, pred, N = 10, type = "multinomial", N = 10)
 #' like_comp(obs, pred, N = 100, type = "multinomial", N = 100)
-#' like_comp(obs, pred, N = 10, type = "dirmult1", p = 1)
-#' like_comp(obs, pred, N = 10, type = "dirmult1", p = 20)
+#' like_comp(obs, pred, N = 10, type = "dirmult1", theta = 1)
+#' like_comp(obs, pred, N = 10, type = "dirmult1", theta = 20)
 #' @export
-like_comp <- function(obs, pred,
-                      type = c("multinomial", "dirmult1", "dirmult2", "lognormal", "logitnormal"),
-                      N = sum(obs), p, stdev) {
-
-  #if (is.matrix(obs)) obs <- colSums(obs)
-  #if (is.matrix(pred)) pred <- colSums(pred)
+like_comp <- function(obs, pred, type = c("multinomial", "dirmult1", "dirmult2", "lognormal", "logitnormal"),
+                      N = sum(obs), theta, stdev) {
 
   stopifnot(length(obs) == length(pred))
   type <- match.arg(type)
-  dots <- list(...)
 
   if (all(is.na(obs)) || !sum(obs)) {
 
@@ -47,12 +42,12 @@ like_comp <- function(obs, pred,
 
   } else if (type == "dirmult1") {
 
-    alpha <- dots$p * N * pred/sum(pred)
+    alpha <- theta * N * pred/sum(pred)
     v <- ddirmnom(obs, size = N, alpha = alpha, log = TRUE)
 
   } else if (type == "dirmult2") {
 
-    alpha <- dots$p * pred/sum(pred)
+    alpha <- theta * pred/sum(pred)
     v <- ddirmnom(obs, size = N, alpha = alpha, log = TRUE)
 
   } else if (type == "lognormal") {
@@ -80,4 +75,30 @@ ddirmnom <- function(x, size, alpha, log = FALSE) {
   log_res <- val + sum(val2)
 
   if (log) log_res else exp(log_res)
+}
+
+#' Likelihood for CKMR
+#'
+#' Returns the log-likelihood for a set of pairwise comparisons. For a parent-offspring pair, a comparison
+#' is defined by the capture year of parent, capture age of parent, and birth year of offspring.
+#' For a half-sibling pair, a comparison is defined by the cohort year of each sibling.
+#' Binomial and Poisson distributions are supported (Conn et al. 2020).
+#'
+#' @param n The number of pairwise comparisons
+#' @param m The number of kinship matches
+#' @param p The probability of kinship match
+#' @return Numeric representing the log-likelihood.
+#' @seealso [calc_POP()] [calc_HSP()]
+#' @references
+#' Conn, P.B. et al. 2020. Robustness of close-kin mark–recapture estimators to dispersal
+#' limitation and spatially varying sampling probabilities. Ecol. Evol. 10: 5558-5569. \doi{10.1002/ece3.6296}
+#' @export
+like_CKMR <- function(n, m, p, type = c("binomial", "poisson")) {
+  type <- match(type)
+  if (type == "binomial") {
+    v <- dbinom(m, n, p, log = TRUE)
+  } else if (type == "poisson") {
+    v <- dpois(m, n * p, log = TRUE)
+  }
+  return(v)
 }

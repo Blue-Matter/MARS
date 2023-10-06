@@ -9,7 +9,7 @@ like_comp(
   pred,
   type = c("multinomial", "dirmult1", "dirmult2", "lognormal", "logitnormal"),
   N = sum(obs),
-  p,
+  theta,
   stdev
 )
 }
@@ -22,7 +22,7 @@ like_comp(
 
 \item{N}{Numeric, the sample size corresponding to \code{obs} for multinomial or Dirichlet multinomial distributions.}
 
-\item{p}{Numeric, the linear (\code{type = "dirmult1"}) or saturating (\code{type = "dirmult2"}) Dirichlet-multinomial parameter, respectively. See Thorson et al. (2017)}
+\item{theta}{Numeric, the linear (\code{type = "dirmult1"}) or saturating (\code{type = "dirmult2"}) Dirichlet-multinomial parameter, respectively. See Thorson et al. (2017)}
 
 \item{stdev}{Numeric or vectorized for \code{obs}, the likelihood standard deviation for lognormal or logit-normal distributions.}
 }
@@ -40,8 +40,8 @@ pred <- exp(-M * age)
 obs <- pred * rlnorm(10, sd = 0.05)
 like_comp(obs, pred, N = 10, type = "multinomial", N = 10)
 like_comp(obs, pred, N = 100, type = "multinomial", N = 100)
-like_comp(obs, pred, N = 10, type = "dirmult1", p = 1)
-like_comp(obs, pred, N = 10, type = "dirmult1", p = 20)
+like_comp(obs, pred, N = 10, type = "dirmult1", theta = 1)
+like_comp(obs, pred, N = 10, type = "dirmult1", theta = 20)
 }
 \references{
 Thorson et al. 2017. Model-based estimates of effective sample size in stock assessment models using the
