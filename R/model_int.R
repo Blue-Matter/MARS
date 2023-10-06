@@ -134,7 +134,7 @@ calc_F <- function(Cobs, N, sel, wt, M, fleet_area, q_fs, delta = 1,
 
     CN_afrs <- sapply2(1:ns, function(s) {
       sapply2(1:nr, function(r) {
-        sapply(1:nf, function(f) F_afrs[, f, r, s] * N[, r, s] * .gamma_ars[, r, s] / Z_ars[, r, s])
+        sapply(1:nf, function(f) calc_Baranov(F_afrs[, f, r, s], Z_ars[, r, s], N[, r, s]))
       })
     })
     CB_afsr <- sapply2(1:nr, function(r) CN_afrs[, , r, ] * wt)
@@ -185,7 +185,15 @@ calc_F <- function(Cobs, N, sel, wt, M, fleet_area, q_fs, delta = 1,
        penalty = penalty, fr = fn[[i+1]], gr = gr[[i+1]])
 }
 
+calc_Baranov <- function(FM, Z, N) FM/Z * (1 - exp(-Z)) * N
 
+
+#' @importFrom stats uniroot
+.calc_summary_F <- function(FM, M, N, CN) Baranov(FM, FM + M, N) - CN
+calc_summary_F <- function(M, N, CN, Fmax) {
+  out <- uniroot(.calc_summary_F, interval = c(0, Fmax), M = M, N = N, CN = CN)
+  out$root
+}
 
 conv_selpar <- function(x, type, nf = length(type), maxage, Lmax) {
 
@@ -195,9 +203,11 @@ conv_selpar <- function(x, type, nf = length(type), maxage, Lmax) {
     if (grepl("age", type[f])) {
       Aapical <- maxage * plogis(x[1, f])
       v <- c(Aapical, sd_asc, sd_desc)
-    } else {
+    } else if (grepl("length", type[f])) {
       Lapical <- Lmax * plogis(x[1, f])
       v <- c(Lapical, sd_asc, sd_desc)
+    } else {
+      v <- rep(NA_real_, 3)
     }
     return(v)
   })
@@ -232,7 +242,7 @@ calc_sel_len <- function(sel_par, lmid, type) {
 }
 
 
-calc_sel_age <- function(sel_len, LAK, type, sel_par, sel_block, maxage) {
+calc_fsel_age <- function(sel_len, LAK, type, sel_par, sel_block, maxage) {
   nf <- length(sel_block)
   a <- seq(0, maxage)
 
@@ -240,7 +250,7 @@ calc_sel_age <- function(sel_len, LAK, type, sel_par, sel_block, maxage) {
     f <- sel_block[ff]
     if (grepl("length", type[f])) {
       v <- sel_len[, f] %*% t(LAK)
-    } else {
+    } else if (grepl("age", type[f])){
 
       ex_asc <- (a - sel_par[1, f])/sel_par[2, f]
       ex2_asc <- -1 * ex_asc^2
@@ -254,11 +264,56 @@ calc_sel_age <- function(sel_len, LAK, type, sel_par, sel_block, maxage) {
         desc <- 2^ex2_desc
       }
       v <- CondExpLt(a, sel_par[1, f], asc, desc)
+    } else if (type[f] == "free") {
+      v <- plogis(sel_par[, f])
     }
     return(v)
   })
 
   return(sel_af)
+}
+
+calc_isel_age <- function(sel_len, LAK, type, sel_par, fsel_age, maxage, mat) {
+
+  old_warn <- options()$warn
+  options(warn = -1)
+  on.exit(options(warn = old_warn))
+
+  ni <- length(type)
+  a <- seq(0, maxage)
+
+  sel_ai <- sapply(1:ni, function(i) {
+    ti <- type[i]
+    tii <- as.integer(type[i])
+
+    if (is.na(tii)) {
+
+      if (grepl("length", ti)) {
+        v <- sel_len[, i] %*% t(LAK)
+      } else if (grepl("age", ti)) {
+
+        ex_asc <- (a - sel_par[1, i])/sel_par[2, i]
+        ex2_asc <- -1 * ex_asc^2
+        asc <- 2^ex2_asc
+
+        if (grepl("logistic", ti)) {
+          desc <- 1
+        } else {
+          ex_desc <- (a - sel_par[1, i])/sel_par[3, i]
+          ex2_desc <- -1 * ex_desc^2
+          desc <- 2^ex2_desc
+        }
+        v <- CondExpLt(a, sel_par[1, i], asc, desc)
+      } else if (ti == "free") {
+        v <- plogis(sel_par[, i])
+      }
+
+    } else {
+      v <- fsel_age[, tii]
+    }
+    return(v)
+  })
+  return(sel_ai)
 }
 
 calc_phi <- function(Z, fec, spawn_time_frac = 0) {
@@ -406,6 +461,56 @@ calc_nextN <- function(N, surv, na = dim(N)[1], nr = dim(N)[2], ns = dim(N)[3],
   return(Nnext_ars)
 }
 
+
+#' Calculate index at age
+#'
+#' For indices of abundance, the function calculates the numbers vulnerable to the survey.
+#'
+#' @param N Stock abundance at the beginning of the time step. Array `[a, r, s]`
+#' @param Z Instantaneous total mortality. Array `[a, r, s]`
+#' @param sel Index selectivity. Array `[a, i, s]`
+#' @param na Integer, number of age classes
+#' @param ni Integer, number of indices
+#' @param ns Integer, number of stocks
+#' @param samp Boolean indicates which regions and stocks are sampled by the index. Array `[i, r, s]`
+#' @param delta Fraction of time step when the index samples the population. Vector by `i`
+#' @return Index at age. Array `[a, i, s]`
+#' @details
+#' The index is calculated as
+#' \deqn{
+#' I_{a,i,s} = v_{a,i,s} \sum_r N_{a,r,s} \exp(-\delta_i Z_{a,r,s}) \times \mathbb{1}(r \in R_i) \mathbb{1}(s \in S_i)
+#' }
+#'
+#' where \eqn{R_i} and \eqn{S_i} denote the regions and stocks, respectively, sampled by index \eqn{i}. For example,
+#' \eqn{R_2 = 1} denotes that the second index of abundance only samples region 1. These are informed by array `samp` where
+#' `samp[i, r, s] = 1` indicates that stock `s` in region `r` is sampled by index `i`.
+#' @export
+calc_index <- function(N, Z, sel, na = dim(N)[1], ni = dim(sel)[2], ns = dim(N)[3],
+                       samp = array(1, c(ni, na, ns)), delta = rep(0, ni)) {
+
+  N_ais <- sapply(1:ns, function(s) {
+    sapply(1:ni, function(i) {
+      r_i <- samp[i, , s]
+      if (sum(r_i)) {
+        N_ars <- N[, r_i, s, drop = FALSE] * exp(-delta[i] * Z[, r_i, s, drop = FALSE])
+        N_a <- apply(N_ars, 1, sum)
+      } else {
+        N_a <- numeric(na)
+      }
+      return(N_a)
+    })
+  })
+  IN_ais <- N_ais * sel
+  return(IN_ais)
+}
+
+calc_q <- function(Iobs, B) {
+  i <- !is.na(Iobs) & Iobs > 0
+  n <- sum(i)
+  num <- log(Iobs[i]/B[i]) %>% sum()
+  q <- exp(num/n)
+  return(q)
+}
 
 logspace.add <- function(lx, ly) pmax(lx, ly) + log1p(exp(-abs(lx - ly)))
 softmax <- function(eta) {
