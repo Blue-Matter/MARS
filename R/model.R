@@ -30,13 +30,17 @@ MARS <- function(data, parameters, map = list(), random = NULL, silent = TRUE, c
 
   if (run_model) {
     m <- optimize_RTMB_model(obj, do_sd = do_sd, control = control)
-    m$report <- obj$report(obj$env$last.par.best)
+    m$report <- obj$report(obj$env$last.par.best) %>% update_report()
   } else {
     m <- list()
   }
   m$obj <- obj
 
   return(m)
+}
+
+update_report <- function(r) {
+  return(r)
 }
 
 .MARS <- function(p = list(), d = list()) {
@@ -47,21 +51,18 @@ MARS <- function(data, parameters, map = list(), random = NULL, silent = TRUE, c
   # Transform data ----
   delta_m <- 1/nm
 
-  phi_s <- sapply(1:ns, function(s) {
-    calc_phi()
-  })
-
   # Population arrays ----
   N_ymars <- array(NA_real_, c(ny + 1, nm, na, nr, ns))
   Nsp_yars <- array(NA_real_, c(ny, na, nr, ns))
+  SB_yrs <- array(NA_real_, c(ny, nr, ns))
   SB_ys <-
     R_ys <-
     Rdev_ys <- array(NA_real_, c(ny, ns))
   FM_ymars <-
     Z_ymars <-
     dist_ymars <- array(NA_real_, c(ny, nm, na, nr, ns))
-  if (nrow(HSP)) F_yas <- array(NA_real_, c(ny, na, ns))
-  LAK_ymals <- array(NA_real_, c(ny, nm, na, nl, ns))
+  if (length(HSP_s)) F_yas <- array(NA_real_, c(ny, na, ns))
+  #LAK_ymals <- array(NA_real_, c(ny, nm, na, nl, ns))
   mov_ymarrs <- array(NA_real_, c(ny, nm, na, nr, nr, ns))
 
   # Fishery arrays ----
@@ -101,6 +102,7 @@ MARS <- function(data, parameters, map = list(), random = NULL, silent = TRUE, c
   penalty <- 0
 
   # Stock recruit parameters ----
+  phi_s <- sapply(1:ns, function(s) calc_phi(M_yas[y_phi, , s], fec_yas[y_phi, , s], delta = (m_spawn - 1 + delta_s[s]) * delta_m))
   h_s <- sapply(1:ns, function(s) SRhconv(kappa_s[s], SRR = SRR_s[s]))
   B0_s <- R0_s * phi_s
   sralpha_s <- kappa_s/phi_s
@@ -120,9 +122,9 @@ MARS <- function(data, parameters, map = list(), random = NULL, silent = TRUE, c
       })
 
       ## Calculate length-age key and fishery and index age selectivity ----
-      LAK_ymals[y, m, , , ] <- sapply2(1:ns, function(s) calc_LAK(len_ymas[y, m, , s], sdlen_ymas[y, m, , s], lbin))
+      #LAK_ymals[y, m, , , ] <- sapply2(1:ns, function(s) calc_LAK(len_ymas[y, m, , s], sdlen_ymas[y, m, , s], lbin))
       fsel_ymafs[y, m, , , ] <- sapply2(1:ns, function(s) {
-        calc_fsel_age(fsel_len, LAK_ymals[y, m, , , s], fsel_type, fsel_val, sel_block[y, ], na - 1)
+        calc_fsel_age(fsel_len, LAK_ymals[y, m, , , s], fsel_type, fsel_val, sel_block_yf[y, ], na - 1)
       })
       if (ni > 0) {
         isel_ymais[y, m, , , ] <- sapply2(1:ns, function(s) {
@@ -133,7 +135,7 @@ MARS <- function(data, parameters, map = list(), random = NULL, silent = TRUE, c
       ## This season's mortality ----
       Fsearch <- calc_F(
         Cobs = Cobs_ymfr[y, m, , ], N = N_ymars[y, m, , , ], sel = fsel_ymafs[y, m, , , ],
-        wt = fwt_yafs[y, , , ], M = M_yas[y, , ], q_fs = q_fs, delta = delta_m,
+        wt = fwt_ymafs[y, m, , , ], M = M_yas[y, , ], q_fs = q_fs, delta = delta_m,
         na = na, nr = nr, nf = nf, ns = ns, Fmax = Fmax, nitF = nitF, trans = "log"
       )
       penalty <- penalty + Fsearch[["penalty"]] # add penalty for exceeding Fmax
@@ -158,15 +160,15 @@ MARS <- function(data, parameters, map = list(), random = NULL, silent = TRUE, c
 
       ## This year's spawning and recruitment ----
       if (m == m_spawn) {
-        Nsp_yars[y, , , ] <- sapply(1:ns, function(s) {
-          Nsp <- N_ymars[y, m, , r_natal[, s], s, drop = FALSE] *
-            exp(-spawn_time_frac * Z_ymars[y, m, , r_natal[, s], s, drop = FALSE])
-          apply(Nsp, 3:4, sum)
+        Nsp_yars[y, , , ] <- sapply2(1:ns, function(s) {
+          Nsp <- N_ymars[y, m, , , s, drop = FALSE] * exp(-delta_s[s] * Z_ymars[y, m, , , s, drop = FALSE])
+          Nsp_ar <- apply(Nsp, 3:4, sum) * matrix(natal_rs[, s], na, nr, byrow = TRUE)
+          return(Nsp_ar)
         })
-        SB_ys[y, ] <- sapply(1:ns, function(s) sum(Nsp_yars[y, , , s] * fec_yas[y, , , s]))
+        SB_yrs[y, , ] <- sapply(1:ns, function(s) colSums(Nsp_yars[y, , , s] * fec_yas[y, , s]))
         y_rec <- ifelse(m_rec > m_spawn, y, y+1) # When nm = 1, this only works if recruitment is age 1
         R_ys[y_rec, ] <- Rdev_ys[y_rec, ] * sapply(1:ns, function(s) {
-          calc_recruitment(SB = SB[y, s], SRR = SRR_s[s], a = sralpha_s[s], b = srbeta_s[s])
+          calc_recruitment(SB = sum(SB_yrs[y, , s]), SRR = SRR_s[s], a = sralpha_s[s], b = srbeta_s[s])
         })
       }
 
@@ -212,7 +214,7 @@ MARS <- function(data, parameters, map = list(), random = NULL, silent = TRUE, c
     }
 
     ## Summary F and Z by year ----
-    if (length(HSP)) {
+    if (length(HSP_s)) {
       F_yas[y, , ] <- sapply(1:ns, function(s) {
         sapply(1:na, function(a) {
           calc_summary_F(M = M[y, a, s], N = apply(N_ymars[y, 1, a, , s, drop = FALSE], 3, sum),
@@ -238,7 +240,7 @@ MARS <- function(data, parameters, map = list(), random = NULL, silent = TRUE, c
     loglike_IAA_ymi <- sapply2(1:ni, function(i) {
       sapply(1:nm, function(m) {
         sapply(1:ny, function(y) {
-          like_comp(obs = IAAobs_ymai[y, m, , i], pred = IN_ymai[y, m, , i], type = comp_like, N = , theta = )
+          like_comp(obs = IAAobs_ymai[y, m, , i], pred = IN_ymai[y, m, , i], type = icomp_like, N = , theta = )
         })
       })
     })
@@ -252,7 +254,7 @@ MARS <- function(data, parameters, map = list(), random = NULL, silent = TRUE, c
     loglike_IAL_ymi <- sapply2(1:ni, function(i) {
       sapply(1:nm, function(m) {
         sapply(1:ny, function(y) {
-          like_comp(obs = IALobs_ymli[y, m, , i], pred = IN_ymli[y, m, , i], type = comp_like, N = , theta = )
+          like_comp(obs = IALobs_ymli[y, m, , i], pred = IN_ymli[y, m, , i], type = icomp_like, N = , theta = )
         })
       })
     })
@@ -268,7 +270,7 @@ MARS <- function(data, parameters, map = list(), random = NULL, silent = TRUE, c
       sapply2(1:nf, function(f) {
         sapply(1:nm, function(m) {
           sapply(1:ny, function(y) {
-            like_comp(obs = CAAobs_ymafr[y, m, , f, r], pred = CN_ymafr[y, m, , f, r], type = comp_like, N = , theta = )
+            like_comp(obs = CAAobs_ymafr[y, m, , f, r], pred = CN_ymafr[y, m, , f, r], type = fcomp_like, N = , theta = )
           })
         })
       })
@@ -285,7 +287,7 @@ MARS <- function(data, parameters, map = list(), random = NULL, silent = TRUE, c
       sapply2(1:nf, function(f) {
         sapply(1:nm, function(m) {
           sapply(1:ny, function(y) {
-            like_comp(obs = CALobs_ymlfr[y, m, , f, r], pred = CN_ymlfr[y, m, , f, r], type = comp_like, N = , theta = )
+            like_comp(obs = CALobs_ymlfr[y, m, , f, r], pred = CN_ymlfr[y, m, , f, r], type = fcomp_like, N = , theta = )
           })
         })
       })
@@ -315,34 +317,34 @@ MARS <- function(data, parameters, map = list(), random = NULL, silent = TRUE, c
   }
 
   ## CKMR ----
-  if (length(POP)) {
-    p_POP <- lapply(1:ns, function(s) {
-      calc_POP(t = POP[[s]]$t, a = POP[[s]]$a, y = POP[[s]]$y,
+  if (length(POP_s)) {
+    pPOP_s <- lapply(1:ns, function(s) {
+      calc_POP(t = POP_s[[s]]$t, a = POP_s[[s]]$a, y = POP_s[[s]]$y,
                N = apply(Nsp_yars[, , , s], 1:2, sum),
                fec = fec_yas[, , s])
     })
-    loglike_CKMR_POP <- lapply(1:ns, function(s) like_CKMR(n = POP[[s]]$n, m = POP[[s]]$m, p = p_POP[[s]], type = d@CKMR@like))
+    loglike_POP_s <- lapply(1:ns, function(s) like_CKMR(n = POP_s[[s]]$n, m = POP_s[[s]]$m, p = pPOP_s[[s]], type = d@CKMR@like))
   } else {
-    loglike_CKMR_POP <- 0
+    loglike_POP_s <- 0
   }
 
-  if (length(HSP)) {
+  if (length(HSP_s)) {
     Z_yas <- F_yas + M_yas
-    p_HSP <- lapply(1:ns, function(s) {
-      calc_HSP(yi = HSP[[s]]$yi, yj = HSP[[s]]$yj,
+    pHSP_s <- lapply(1:ns, function(s) {
+      calc_HSP(yi = HSP_s[[s]]$yi, yj = HSP_s[[s]]$yj,
                N = apply(Nsp_yars[, , , s], 1:2, sum),
                fec = fec_yas[, , s], Z = Z_yas[, , s])
     })
-    loglike_CKMR_HSP <- lapply(1:ns, function(s) like_CKMR(n = HSP[[s]]$n, m = HSP[[s]]$m, p = p_HSP[[s]], type = d@CKMR@like))
+    loglike_HSP_s <- lapply(1:ns, function(s) like_CKMR(n = HSP_s[[s]]$n, m = HSP_s[[s]]$m, p = pHSP_s[[s]], type = d@CKMR@like))
   } else {
-    loglike_CKMR_HSP <- 0
+    loglike_HSP_s <- 0
   }
 
   #loglike_tag <- 0
 
   loglike <- sum(loglike_I_ymi) + sum(loglike_IAA_ymi) + sum(loglike_IAL_ymi) +
     sum(loglike_CAA_ymfr) + sum(loglike_CAL_ymfr) + sum(loglike_SC_ymafr) +
-    Reduce(sum, loglike_CKMR_POP) + Reduce(sum, loglike_CKMR_HSP) #+ sum(loglike_tag)
+    Reduce(sum, loglike_POP_s) + Reduce(sum, loglike_HSP_s) #+ sum(loglike_tag)
 
   # Priors ----
   sdr_s <- exp(p$log_sdr_s)

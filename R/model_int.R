@@ -316,9 +316,9 @@ calc_isel_age <- function(sel_len, LAK, type, sel_par, fsel_age, maxage, mat) {
   return(sel_ai)
 }
 
-calc_phi <- function(Z, fec, spawn_time_frac = 0) {
+calc_phi <- function(Z, fec, delta = 0) {
   NPR <- calc_NPR(exp(-Z))
-  sum(NPR * fec * exp(-Z * spawn_time_frac))
+  sum(NPR * fec * exp(-Z * delta))
 }
 
 calc_NPR <- function(surv, na = length(surv), plusgroup = TRUE) {
@@ -601,6 +601,7 @@ conv_mov <- function(x, g, v, nr = dim(x)[2], na = dim(x)[1], aref = ceiling(0.5
 #' @author Q. Huynh with contribution from Y. Tsukahara (Fisheries Research Institute, Japan)
 #' @export
 calc_POP <- function(t, a, y, N, fec) {
+  if (is.null(t)) return(0)
   a_yj <- y - t + a # Age of parent in birth year of offspring, Bravington 2016, eq 3.4
   if (!length(a_yj) == length(y)) stop("Vectors t, a, y need to be the same length")
 
@@ -639,6 +640,7 @@ calc_POP <- function(t, a, y, N, fec) {
 #' @param Z Instantaneous total mortality rate. Matrix by `[y, a]`
 #' @export
 calc_HSP <- function(yi, yj, N, fec, Z) {
+  if (is.null(yi)) return(0)
   stopifnot(length(yi) == length(yj))
   sapply(1:length(yi), function(x) {
     .calc_HSP(yi[x], yj[x], N = N, fec = fec, Z = Z)

@@ -95,7 +95,9 @@ ddirmnom <- function(x, size, alpha, log = FALSE) {
 #' @export
 like_CKMR <- function(n, m, p, type = c("binomial", "poisson")) {
   type <- match(type)
-  if (type == "binomial") {
+  if (is.null(n) || all(!n)) {
+    v <- 0
+  } else if (type == "binomial") {
     v <- dbinom(m, n, p, log = TRUE)
   } else if (type == "poisson") {
     v <- dpois(m, n * p, log = TRUE)
