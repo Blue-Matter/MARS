@@ -364,11 +364,8 @@ calc_recruitment <- function(x, SRR = c("BH", "Ricker"), eq = FALSE, ...) {
 
 SRalphaconv <- function(h, phi, SRR = c("BH", "Ricker")) {
   SRR <- match.arg(SRR)
-  switch(
-    SRR,
-    "BH" = 4*h/(1-h)/phi,
-    "Ricker" = (5*h)^1.25/phi
-  )
+  k <- SRkconv(h, SRR)
+  k/phi
 }
 
 SRbetaconv <- function(h, R0, phi, SRR = c("BH", "Ricker")) {
@@ -386,6 +383,15 @@ SRhconv <- function(k, SRR = c("BH", "Ricker")) {
     SRR,
     "BH" = k/(4+k),
     "Ricker" = 0.2*k^0.8
+  )
+}
+
+SRkconv <- function(h, SRR = c("BH", "Ricker")) {
+  SRR <- match.arg(SRR)
+  switch(
+    SRR,
+    "BH" = 4*h/(1-h),
+    "Ricker" = (5*h)^1.25
   )
 }
 
@@ -531,7 +537,9 @@ softmax <- function(eta) {
 #' @param na Integer, number of ages
 #' @param aref Integer, reference age class
 #' @details
-#' In log space, the movement matrix \eqn{m} for age class \eqn{a} from region \eqn{r} to \eqn{r} is the sum of base matrix \eqn{x} and
+#' Rows index region of origin and columns denote region of destination.
+#'
+#' In log space, the movement matrix \eqn{m} for age class \eqn{a} from region \eqn{r} to \eqn{r'} is the sum of base matrix \eqn{x} and
 #' gravity matrix \eqn{G}:
 #' \deqn{m_{r,r'} = x_{r,r'} + G_{r,r'}}
 #'
@@ -559,7 +567,7 @@ softmax <- function(eta) {
 #' @references
 #' Carruthers, T.R., et al. 2015. Modelling age-dependent movement: an application to red and
 #' gag groupers in the Gulf of Mexico. CJFAS 72: 1159-1176. \doi{10.1139/cjfas-2014-0471}
-#' @return Movement array `[a, r, r']`
+#' @return Movement array `[a, r, r]`
 #' @export
 conv_mov <- function(x, g, v, nr = dim(x)[2], na = dim(x)[1], aref = ceiling(0.5 * na)) {
   stopifnot(length(g) == na)
@@ -583,8 +591,8 @@ conv_mov <- function(x, g, v, nr = dim(x)[2], na = dim(x)[1], aref = ceiling(0.5
 #' @param t Vector, capture year of parent `i`
 #' @param a Vector, age at capture of parent `i`
 #' @param y Vector, birth year of offspring `j`
-#' @param N Stock abundance. Matrix by `[y, a]`
-#' @param fec Fecundity schedule. Matrix by `[y, a]`
+#' @param N Abundance of mature spawners. Matrix by `[y, a]`
+#' @param fec Fecundity schedule of mature spawners. Matrix by `[y, a]`
 #' @return A vector of probabilities.
 #' @seealso [like_CKMR()]
 #' @section Parent-offspring pairs:

@@ -4,14 +4,20 @@
 #' Returns the log-likelihood for composition data, e.g., length, age, or stock composition,
 #' with various statistical distributions supported.
 #'
-#' @param obs A vector of observed values
-#' @param pred A vector of predicted values. Same length as `obs`
+#' @param obs A vector of observed values. Internally converted to proportions.
+#' @param pred A vector of predicted values. Same length as `obs`. Internally converted to proportions.
 #' @param type Character for the desired distribution
 #' @param N Numeric, the sample size corresponding to `obs` for multinomial or Dirichlet multinomial distributions.
 #' @param theta Numeric, the linear (`type = "dirmult1"`) or saturating (`type = "dirmult2"`) Dirichlet-multinomial parameter, respectively. See Thorson et al. (2017)
 #' @param stdev Numeric or vectorized for `obs`, the likelihood standard deviation for lognormal or logit-normal distributions.
 #' @return Numeric representing the log-likelihood.
 #'
+#' @details
+#' Observed and predicted vectors are internally converted to proportions.
+#'
+#' For `type = "lognormal"`, zero observations are removed from the likelihood calculation.
+#'
+#' Logitnormal assumes that the `obs` and `pred` are length-2 vectors. Only the first value enters the likelihood.
 #' @references
 #' Thorson et al. 2017. Model-based estimates of effective sample size in stock assessment models using the
 #' Dirichlet-multinomial distribution. Fish. Res. 192:84-93. \doi{10.1016/j.fishres.2016.06.005}
@@ -55,14 +61,25 @@ like_comp <- function(obs, pred, type = c("multinomial", "dirmult1", "dirmult2",
     pobs <- obs/sum(obs)
     ppred <- pred/sum(pred)
 
+    if (any(obs > 0)) {
+      stopifnot(length(stdev) == 1 || length(stdev) == length(obs))
+      pobs <- pobs[obs > 0]
+      ppred <- ppred[obs > 0]
+
+      if (length(stdev) == 1) {
+        stdev <- rep(stdev, pobs)
+      } else {
+        stdev <- stdev[obs > 0]
+      }
+    }
     v <- dnorm(log(ppred/pobs), 0, stdev, log = TRUE) %>% sum()
 
   } else if (type == "logitnormal") {
+    stopifnot(length(obs) == 2)
+    lobs <- qlogis(obs[1]/sum(obs))
+    lpred <- qlogis(pred[1]/sum(pred))
 
-    lobs <- qlogis(obs/sum(obs))
-    lpred <- qlogis(pred/sum(pred))
-
-    v <- dnorm(lobs, lpred, stdev, log = TRUE) %>% sum()
+    v <- dnorm(lobs, lpred, stdev[1], log = TRUE)
   }
   return(v)
 }

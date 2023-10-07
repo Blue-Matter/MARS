@@ -16,9 +16,9 @@ calc_HSP(yi, yj, N, fec, Z)
 
 \item{y}{Vector, birth year of offspring \code{j}}
 
-\item{N}{Stock abundance. Matrix by \verb{[y, a]}}
+\item{N}{Abundance of mature spawners. Matrix by \verb{[y, a]}}
 
-\item{fec}{Fecundity schedule. Matrix by \verb{[y, a]}}
+\item{fec}{Fecundity schedule of mature spawners. Matrix by \verb{[y, a]}}
 
 \item{yi}{Vector, birth year of sibling \code{i}. Must be older than sibling \code{j}.}
 

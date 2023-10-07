@@ -4,7 +4,7 @@
 #'
 #' Wrapper function that calls RTMB to create the model and perform the numerical optimization
 #'
-#' @param data List of data inputs, validated by \link{check_data}
+#' @param MARSdata Data object. Class \linkS4class{MARSdata}, validated by \link{check_data}
 #' @param parameters List of parameters, validated by \link{check_parameters}
 #' @param map List of parameters indicated whether they are fixed and/or how they are shared. See \link[TMB]{MakeADFun}.
 #' @param random Character vector indicating the parameters that are random effects.
@@ -12,14 +12,14 @@
 #' @param do_sd Logical, indicates whether the standard deviations of parameters will be calculated with \link[TMB]{sdreport}.
 #' @param ... Other arguments to \link[RTMB]{MakeADFun}.
 #' @export
-MARS <- function(data, parameters, map = list(), random = NULL, silent = TRUE, control = list(),
+MARS <- function(MARSdata, parameters, map = list(), random = NULL, silent = TRUE, control = list(),
                  run_model = TRUE, do_sd = TRUE, ...) {
 
-  data[["map"]] <- map
-  data[["random"]] <- random
+  MARSdata@Misc[["map"]] <- map
+  #MARSdata@Misc[["random"]] <- random
 
   RTMB::TapeConfig(comparison = "tape")
-  func <- function(p) .MARS(p, d = data)
+  func <- function(p) .MARS(p, d = MARSdata)
 
   obj <- MakeADFun(
     func = func, parameters = parameters,
@@ -28,35 +28,36 @@ MARS <- function(data, parameters, map = list(), random = NULL, silent = TRUE, c
     ...
   )
 
-  if (run_model) {
-    m <- optimize_RTMB_model(obj, do_sd = do_sd, control = control)
-    m$report <- obj$report(obj$env$last.par.best) %>% update_report()
-  } else {
-    m <- list()
-  }
-  m$obj <- obj
+  if (run_model) m <- optimize_RTMB_model(obj, do_sd = do_sd, control = control)
 
-  return(m)
+  M <- new("MARSassess",
+           obj = obj,
+           report = obj$report(obj$env$last.par.best) %>% update_report())
+
+  if (run_model) {
+    M@opt <- m$opt
+    if (do_SD) M@SD <- m$SD
+  }
+  return(M)
 }
 
 update_report <- function(r) {
   return(r)
 }
 
-.MARS <- function(p = list(), d = list()) {
+.MARS <- function(p = list(), d) {
 
   # Assign data variables to environment, see OBS() for simulation ----
-  getAll(d)
+  getAllS4(d@Dmodel, d@Dstock, d@Dfishery, d@Dsurvey, d@DCKMR, d@Dtag)
 
   # Transform data ----
   delta_m <- 1/nm
 
   # Population arrays ----
   N_ymars <- array(NA_real_, c(ny + 1, nm, na, nr, ns))
-  Nsp_yars <- array(NA_real_, c(ny, na, nr, ns))
+  Nsp_yars <- array(NA_real_, c(ny, na, ns))
   SB_yrs <- array(NA_real_, c(ny, nr, ns))
-  SB_ys <-
-    R_ys <-
+  R_ys <-
     Rdev_ys <- array(NA_real_, c(ny, ns))
   FM_ymars <-
     Z_ymars <-
@@ -89,20 +90,23 @@ update_report <- function(r) {
   Rdev_ys[] <- exp(p$log_rdev_ys)
 
   ## Fishery selectivity ----
-  fsel_val <- conv_selpar(p$fsel, type = fsel_type, maxage = na - 1, Lmax = 0.95 * max(len_ymas))
-  fsel_len <- calc_sel_len(fsel_val, lmid, type = fsel_type)
+  fsel_val <- conv_selpar(p$fsel, type = sel_f, maxage = na - 1, Lmax = 0.95 * max(lmid))
+  fsel_len <- calc_sel_len(fsel_val, lmid, type = sel_f)
 
   ## Index selectivity ----
   if (ni > 0) {
-    isel_val <- conv_selpar(p$isel, type = isel_type, maxage = na - 1, Lmax = 0.95 * max(len_ymas))
-    isel_len <- calc_sel_len(isel_val, lmid, type = isel_type)
+    isel_val <- conv_selpar(p$isel, type = sel_i, maxage = na - 1, Lmax = 0.95 * max(lmid))
+    isel_len <- calc_sel_len(isel_val, lmid, type = sel_i)
   }
 
   # Miscellaneous penalty term, e.g., F > Fmax
   penalty <- 0
 
   # Stock recruit parameters ----
-  phi_s <- sapply(1:ns, function(s) calc_phi(M_yas[y_phi, , s], fec_yas[y_phi, , s], delta = (m_spawn - 1 + delta_s[s]) * delta_m))
+  phi_s <- sapply(1:ns, function(s) {
+    calc_phi(M_yas[y_phi, , s], mat_yas[y_phi, , s] * fec_yas[y_phi, , s],
+             delta = (m_spawn - 1 + delta_s[s]) * delta_m)
+  })
   h_s <- sapply(1:ns, function(s) SRhconv(kappa_s[s], SRR = SRR_s[s]))
   B0_s <- R0_s * phi_s
   sralpha_s <- kappa_s/phi_s
@@ -124,11 +128,11 @@ update_report <- function(r) {
       ## Calculate length-age key and fishery and index age selectivity ----
       #LAK_ymals[y, m, , , ] <- sapply2(1:ns, function(s) calc_LAK(len_ymas[y, m, , s], sdlen_ymas[y, m, , s], lbin))
       fsel_ymafs[y, m, , , ] <- sapply2(1:ns, function(s) {
-        calc_fsel_age(fsel_len, LAK_ymals[y, m, , , s], fsel_type, fsel_val, sel_block_yf[y, ], na - 1)
+        calc_fsel_age(fsel_len, LAK_ymals[y, m, , , s], sel_f, fsel_val, sel_block_yf[y, ], na - 1)
       })
       if (ni > 0) {
         isel_ymais[y, m, , , ] <- sapply2(1:ns, function(s) {
-          calc_isel_age(isel_len, LAK_ymals[y, m, , , s], isel_type, isel_val, fsel_ymafs[y, m, , , s], na - 1)
+          calc_isel_age(isel_len, LAK_ymals[y, m, , , s], sel_i, isel_val, fsel_ymafs[y, m, , , s], na - 1)
         })
       }
 
@@ -161,11 +165,13 @@ update_report <- function(r) {
       ## This year's spawning and recruitment ----
       if (m == m_spawn) {
         Nsp_yars[y, , , ] <- sapply2(1:ns, function(s) {
-          Nsp <- N_ymars[y, m, , , s, drop = FALSE] * exp(-delta_s[s] * Z_ymars[y, m, , , s, drop = FALSE])
-          Nsp_ar <- apply(Nsp, 3:4, sum) * matrix(natal_rs[, s], na, nr, byrow = TRUE)
-          return(Nsp_ar)
+          sapply(1:nr, function(r) {
+            natal_rs[r, s] * N_ymars[y, m, , r, s] * exp(-delta_s[s] * Z_ymars[y, m, , r, s]) * mat_yas[y, , s]
+          })
         })
-        SB_yrs[y, , ] <- sapply(1:ns, function(s) colSums(Nsp_yars[y, , , s] * fec_yas[y, , s]))
+        SB_yrs[y, , ] <- sapply(1:ns, function(s) {
+          sapply(1:nr, function(r) sum(Nsp_yars[y, , r, s] * fec_yas[y, , s]))
+        })
         y_rec <- ifelse(m_rec > m_spawn, y, y+1) # When nm = 1, this only works if recruitment is age 1
         R_ys[y_rec, ] <- Rdev_ys[y_rec, ] * sapply(1:ns, function(s) {
           calc_recruitment(SB = sum(SB_yrs[y, , s]), SRR = SRR_s[s], a = sralpha_s[s], b = srbeta_s[s])
@@ -175,13 +181,13 @@ update_report <- function(r) {
       ## This year's index ----
       if (ni > 0) {
         IN_ymais[y, m, , , ] <- calc_index(
-          N = N_ymars[y, m, , , ], Z = Z_ymars[y, m, , , ], sel = isel_ymais[y, m, , , ], samp = isamp_irs,
+          N = N_ymars[y, m, , , ], Z = Z_ymars[y, m, , , ], sel = isel_ymais[y, m, , , ], samp = samp_irs,
           delta = delta_i, na = na, ns = ns, ni = ni
         )
 
         VI_ymi[y, m, ] <- sapply(1:ni, function(i) {
           I_s <- sapply(1:ns, function(s) {
-            w <- if (iunit == "N") 1 else swt_ymas[y, m, , s]
+            w <- if (unit_i[i] == "N") 1 else swt_ymas[y, m, , s]
             sum(IN_ymais[y, m, , i, s] * w)
           })
           sum(I_s)
@@ -240,7 +246,10 @@ update_report <- function(r) {
     loglike_IAA_ymi <- sapply2(1:ni, function(i) {
       sapply(1:nm, function(m) {
         sapply(1:ny, function(y) {
-          like_comp(obs = IAAobs_ymai[y, m, , i], pred = IN_ymai[y, m, , i], type = icomp_like, N = , theta = )
+          pred <- IN_ymai[y, m, , i]
+          like_comp(obs = IAAobs_ymai[y, m, , i], pred = pred, type = icomp_like,
+                    N = IAAN_ymi[y, m, i], theta = IAAtheta_i[i],
+                    stdev = sqrt(sum(pred)/pred))
         })
       })
     })
@@ -254,7 +263,10 @@ update_report <- function(r) {
     loglike_IAL_ymi <- sapply2(1:ni, function(i) {
       sapply(1:nm, function(m) {
         sapply(1:ny, function(y) {
-          like_comp(obs = IALobs_ymli[y, m, , i], pred = IN_ymli[y, m, , i], type = icomp_like, N = , theta = )
+          pred <- IN_ymli[y, m, , i]
+          like_comp(obs = IALobs_ymli[y, m, , i], pred = pred, type = icomp_like,
+                    N = IALN_ymi[y, m, i], theta = IALtheta_i[i],
+                    stdev = sqrt(sum(pred)/pred))
         })
       })
     })
@@ -270,7 +282,10 @@ update_report <- function(r) {
       sapply2(1:nf, function(f) {
         sapply(1:nm, function(m) {
           sapply(1:ny, function(y) {
-            like_comp(obs = CAAobs_ymafr[y, m, , f, r], pred = CN_ymafr[y, m, , f, r], type = fcomp_like, N = , theta = )
+            pred <- CN_ymafr[y, m, , f, r]
+            like_comp(obs = CAAobs_ymafr[y, m, , f, r], pred = pred, type = fcomp_like,
+                      N = CAAN_ymfr[y, m, f, r], theta = CAAtheta_f[f],
+                      stdev = sqrt(sum(pred)/pred))
           })
         })
       })
@@ -287,7 +302,10 @@ update_report <- function(r) {
       sapply2(1:nf, function(f) {
         sapply(1:nm, function(m) {
           sapply(1:ny, function(y) {
-            like_comp(obs = CALobs_ymlfr[y, m, , f, r], pred = CN_ymlfr[y, m, , f, r], type = fcomp_like, N = , theta = )
+            pred <- CN_ymlfr[y, m, , f, r]
+            like_comp(obs = CALobs_ymlfr[y, m, , f, r], pred = pred, type = fcomp_like,
+                      N = CALN_ymfr[y, m, f, r], theta = CALtheta_f[f],
+                      stdev = sqrt(sum(pred)/pred))
           })
         })
       })
@@ -297,15 +315,17 @@ update_report <- function(r) {
   }
 
   ## Stock composition ----
-  if (ns > 1 && length(d@SC_ymafrs)) {
+  if (ns > 1 && length(SC_ymafrs)) {
 
     loglike_SC_ymafr <- sapply2(1:nr, function(r) {
-      sapply2(1:nf, function(f) {
-        sapply2(1:length(SC_a), function(aa) { # Aggegrate over age classes SC_a
+      sapply2(1:nrow(SC_ff), function(ff) { # Aggregate over fleets SC_ff
+        sapply2(1:nrow(SC_aa), function(aa) { # Aggregate over age classes SC_aa
           sapply(1:nm, function(m) {
             sapply(1:ny, function(y) {
-              like_comp(obs = SC_ymafrs[y, m, aa, f, r, ], pred = colSums(CN_ymafrs[y, m, SC_a[[aa]], f, r, ]),
-                        type = SC_like, stdev = )
+              pred <- apply(CN_ymafrs[y, m, SC_aa[aa, ], SC_ff[ff, ], r, , drop = FALSE], 6, sum)
+              like_comp(obs = SC_ymafrs[y, m, aa, ff, r, ], pred = pred, type = SC_like,
+                        N = SCN_ymafr[y, m, aa, ff, r], theta = SCtheta_f[ff],
+                        stdev = SCstdev_f[f])
             })
           })
         })
@@ -320,10 +340,9 @@ update_report <- function(r) {
   if (length(POP_s)) {
     pPOP_s <- lapply(1:ns, function(s) {
       calc_POP(t = POP_s[[s]]$t, a = POP_s[[s]]$a, y = POP_s[[s]]$y,
-               N = apply(Nsp_yars[, , , s], 1:2, sum),
-               fec = fec_yas[, , s])
+               N = apply(Nsp_yars[, , , s], 1:2, sum), fec = fec_yas[, , s])
     })
-    loglike_POP_s <- lapply(1:ns, function(s) like_CKMR(n = POP_s[[s]]$n, m = POP_s[[s]]$m, p = pPOP_s[[s]], type = d@CKMR@like))
+    loglike_POP_s <- lapply(1:ns, function(s) like_CKMR(n = POP_s[[s]]$n, m = POP_s[[s]]$m, p = pPOP_s[[s]], type = CKMR_like))
   } else {
     loglike_POP_s <- 0
   }
@@ -332,10 +351,9 @@ update_report <- function(r) {
     Z_yas <- F_yas + M_yas
     pHSP_s <- lapply(1:ns, function(s) {
       calc_HSP(yi = HSP_s[[s]]$yi, yj = HSP_s[[s]]$yj,
-               N = apply(Nsp_yars[, , , s], 1:2, sum),
-               fec = fec_yas[, , s], Z = Z_yas[, , s])
+               N = apply(Nsp_yars[, , , s], 1:2, sum), fec = fec_yas[, , s], Z = Z_yas[, , s])
     })
-    loglike_HSP_s <- lapply(1:ns, function(s) like_CKMR(n = HSP_s[[s]]$n, m = HSP_s[[s]]$m, p = pHSP_s[[s]], type = d@CKMR@like))
+    loglike_HSP_s <- lapply(1:ns, function(s) like_CKMR(n = HSP_s[[s]]$n, m = HSP_s[[s]]$m, p = pHSP_s[[s]], type = CKMR_like))
   } else {
     loglike_HSP_s <- 0
   }
@@ -363,8 +381,23 @@ update_report <- function(r) {
   fn <- -1 * (logprior + loglike) + penalty
 
   # Report out variables ----
+  ADREPORT(h_s)
+  if (ni > 0) {
+    REPORT(q_i)
+    ADREPORT(q_i)
+    REPORT(I_ymi)
+  }
+
   REPORT(CN_ymafrs)
-  REPORT(CN_ymlfrs)
+  if (any(CALobs_ymlfr > 0, na.rm = TRUE)) REPORT(CN_ymlfrs)
+
+  if (length(POP_s)) REPORT(pPOP_s)
+
+  if (length(HSP_s)) {
+    REPORT(F_yas)
+    REPORT(Z_yas)
+    REPORT(pHSP_s)
+  }
 
   REPORT(loglike)
 
@@ -373,4 +406,18 @@ update_report <- function(r) {
   REPORT(fn)
 
   return(fn)
+}
+
+getAllS4 <- function (..., warn = TRUE) {
+  fr <- parent.frame()
+  dots <- list(...)
+
+  for(i in 1:length(dots)) {
+    nm <- slotNames(dots[[i]])
+    for (j in nm) {
+      if (warn && !is.null(fr[[j]])) warning("Object '", j, "' already defined")
+      fr[[j]] <- slot(dots[[i]], j)
+    }
+  }
+  invisible(NULL)
 }

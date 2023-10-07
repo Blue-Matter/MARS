@@ -5,7 +5,7 @@
 \title{Fit MARS model}
 \usage{
 MARS(
-  data,
+  MARSdata,
   parameters,
   map = list(),
   random = NULL,
@@ -17,7 +17,7 @@ MARS(
 )
 }
 \arguments{
-\item{data}{List of data inputs, validated by \link{check_data}}
+\item{MARSdata}{Data object. Class \linkS4class{MARSdata}, validated by \link{check_data}}
 
 \item{parameters}{List of parameters, validated by \link{check_parameters}}
 

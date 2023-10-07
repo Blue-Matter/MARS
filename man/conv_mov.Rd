@@ -20,14 +20,16 @@ conv_mov(x, g, v, nr = dim(x)[2], na = dim(x)[1], aref = ceiling(0.5 * na))
 \item{aref}{Integer, reference age class}
 }
 \value{
-Movement array \verb{[a, r, r']}
+Movement array \verb{[a, r, r]}
 }
 \description{
 Movement matrices are calculated for all age classes from a base matrix and a gravity model formulation
 (Carruthers et al. 2016).
 }
 \details{
-In log space, the movement matrix \eqn{m} for age class \eqn{a} from region \eqn{r} to \eqn{r} is the sum of base matrix \eqn{x} and
+Rows index region of origin and columns denote region of destination.
+
+In log space, the movement matrix \eqn{m} for age class \eqn{a} from region \eqn{r} to \eqn{r'} is the sum of base matrix \eqn{x} and
 gravity matrix \eqn{G}:
 \deqn{m_{r,r'} = x_{r,r'} + G_{r,r'}}
 

@@ -14,9 +14,9 @@ like_comp(
 )
 }
 \arguments{
-\item{obs}{A vector of observed values}
+\item{obs}{A vector of observed values. Internally converted to proportions.}
 
-\item{pred}{A vector of predicted values. Same length as \code{obs}}
+\item{pred}{A vector of predicted values. Same length as \code{obs}. Internally converted to proportions.}
 
 \item{type}{Character for the desired distribution}
 
@@ -32,6 +32,13 @@ Numeric representing the log-likelihood.
 \description{
 Returns the log-likelihood for composition data, e.g., length, age, or stock composition,
 with various statistical distributions supported.
+}
+\details{
+Observed and predicted vectors are internally converted to proportions.
+
+For \code{type = "lognormal"}, zero observations are removed from the likelihood calculation.
+
+Logitnormal assumes that the \code{obs} and \code{pred} are length-2 vectors. Only the first value enters the likelihood.
 }
 \examples{
 M <- 0.1
