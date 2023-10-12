@@ -19,15 +19,54 @@
     <loc>/reference/CondExpLt.html</loc>
   </url>
   <url>
+    <loc>/reference/DCKMR-class.html</loc>
+  </url>
+  <url>
+    <loc>/reference/Dfishery-class.html</loc>
+  </url>
+  <url>
+    <loc>/reference/Dmodel-class.html</loc>
+  </url>
+  <url>
+    <loc>/reference/Dstock-class.html</loc>
+  </url>
+  <url>
+    <loc>/reference/Dsurvey-class.html</loc>
+  </url>
+  <url>
     <loc>/reference/MARS.html</loc>
   </url>
   <url>
-    <loc>/reference/Newton_F.html</loc>
+    <loc>/reference/MARSassess-class.html</loc>
+  </url>
+  <url>
+    <loc>/reference/MARSdata-class.html</loc>
+  </url>
+  <url>
+    <loc>/reference/calc_F.html</loc>
+  </url>
+  <url>
+    <loc>/reference/calc_POP.html</loc>
+  </url>
+  <url>
+    <loc>/reference/calc_index.html</loc>
   </url>
   <url>
     <loc>/reference/calc_nextN.html</loc>
   </url>
   <url>
+    <loc>/reference/check_data.html</loc>
+  </url>
+  <url>
+    <loc>/reference/conv_mov.html</loc>
+  </url>
+  <url>
     <loc>/reference/index.html</loc>
+  </url>
+  <url>
+    <loc>/reference/like_CKMR.html</loc>
+  </url>
+  <url>
+    <loc>/reference/like_comp.html</loc>
   </url>
 </urlset>
