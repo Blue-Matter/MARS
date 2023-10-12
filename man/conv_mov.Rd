@@ -4,18 +4,18 @@
 \alias{conv_mov}
 \title{Calculate movement matrix for all age classes}
 \usage{
-conv_mov(x, g, v, nr = dim(x)[2], na = dim(x)[1], aref = ceiling(0.5 * na))
+conv_mov(x, g, v, na = dim(x)[1], nr = dim(x)[2], aref = ceiling(0.5 * na))
 }
 \arguments{
 \item{x}{Base log-movement parameters. See details. Array \verb{[na, nr, nr]}}
 
-\item{g}{Gravity model attractivity term. Vector by \code{a}}
+\item{g}{Gravity model attractivity term. Tendency to move to region \code{r}. Matrix \verb{[a, r]}}
 
-\item{v}{Gravity model viscosity term. Vector by \code{a}}
-
-\item{nr}{Integer, number of regions}
+\item{v}{Gravity model viscosity term. Tendency to stay in same region. Vector by \code{a}}
 
 \item{na}{Integer, number of ages}
+
+\item{nr}{Integer, number of regions}
 
 \item{aref}{Integer, reference age class}
 }
@@ -29,31 +29,31 @@ Movement matrices are calculated for all age classes from a base matrix and a gr
 \details{
 Rows index region of origin and columns denote region of destination.
 
-In log space, the movement matrix \eqn{m} for age class \eqn{a} from region \eqn{r} to \eqn{r'} is the sum of base matrix \eqn{x} and
+In log space, the movement matrix \eqn{m_a} for age class \eqn{a} from region \eqn{r} to \eqn{r'} is the sum of base matrix \eqn{x} and
 gravity matrix \eqn{G}:
-\deqn{m_{r,r'} = x_{r,r'} + G_{r,r'}}
+\deqn{m_{a,r,r'} = x_{a,r,r'} + G_{a,r,r'}}
 
-To essentially exclude movement from \eqn{r} to \eqn{r'}, set \eqn{x_{r,r'} = -1000}
+To essentially exclude movement from \eqn{r} to \eqn{r'}, set \eqn{x_{a,r,r'} = -1000}
 
 Gravity matrix \eqn{G} includes an attractivity term \eqn{g} and viscosity term \eqn{v}:
 
-\deqn{G_{r,r'} =
+\deqn{G_{a,r,r'} =
 \begin{cases}
-g'_a + v_a \quad & r = r'\\
-g'_a \quad & \textrm{otherwise}
+g'_{a,r'} + v_a \quad & r = r'\\
+g'_{a,r'} \quad & \textrm{otherwise}
 \end{cases}
 }
 
 Vector \eqn{g'} are offset terms relative to the value for the reference age class:
-\deqn{g'_a =
+\deqn{g'_{a,r'} =
 \begin{cases}
-g_a \quad & a = a_{ref}\\
-g_a + g_{aref} \quad & \textrm{otherwise}
+g_{a,r} \quad & a = a_{ref}\\
+g_{a,r} + g_{a=aref,r} \quad & \textrm{otherwise}
 \end{cases}
 }
 
 The movement matrix in normal space is obtained by the softmax transformation
-\deqn{M_{r,r'} = \dfrac{\exp(m_{r,r'})}{\sum_r\exp(m_{r,r'})}}
+\deqn{M_{a,r,r'} = \dfrac{\exp(m_{a,r,r'})}{\sum_{r'}\exp(m_{a,r,r'})}}
 }
 \references{
 Carruthers, T.R., et al. 2015. Modelling age-dependent movement: an application to red and

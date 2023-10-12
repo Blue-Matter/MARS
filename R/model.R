@@ -54,7 +54,7 @@ update_report <- function(r) {
   delta_m <- 1/nm
 
   # Population arrays ----
-  N_ymars <- array(NA_real_, c(ny + 1, nm, na, nr, ns))
+  N_ymars <- array(0, c(ny + 1, nm, na, nr, ns))
   Nsp_yars <- array(NA_real_, c(ny, na, ns))
   SB_yrs <- array(NA_real_, c(ny, nr, ns))
   R_ys <-
@@ -84,55 +84,60 @@ update_report <- function(r) {
   }
 
   # Transform parameters ----
+  ## Stock recruit parameters ----
   R0_s <- exp(p$R0x)/scale_s
   kappa_s <- exp(p$k_s) + 1
+  h_s <- sapply(1:ns, function(s) SRhconv(kappa_s[s], SRR = SRR_s[s]))
 
-  Rdev_ys[] <- exp(p$log_rdev_ys)
-
-  ## Fishery selectivity ----
-  fsel_val <- conv_selpar(p$fsel, type = sel_f, maxage = na - 1, Lmax = 0.95 * max(lmid))
-  fsel_len <- calc_sel_len(fsel_val, lmid, type = sel_f)
-
-  ## Index selectivity ----
-  if (ni > 0) {
-    isel_val <- conv_selpar(p$isel, type = sel_i, maxage = na - 1, Lmax = 0.95 * max(lmid))
-    isel_len <- calc_sel_len(isel_val, lmid, type = sel_i)
-  }
-
-  # Miscellaneous penalty term, e.g., F > Fmax
-  penalty <- 0
-
-  # Stock recruit parameters ----
   phi_s <- sapply(1:ns, function(s) {
     calc_phi(M_yas[y_phi, , s], mat_yas[y_phi, , s] * fec_yas[y_phi, , s],
              delta = (m_spawn - 1 + delta_s[s]) * delta_m)
   })
-  h_s <- sapply(1:ns, function(s) SRhconv(kappa_s[s], SRR = SRR_s[s]))
   B0_s <- R0_s * phi_s
   sralpha_s <- kappa_s/phi_s
   srbeta_s <- sapply(1:ns, function(s) SRbetaconv(h_s[s], R0_s[s], phi_s[s], SRR = SRR_s[s]))
+
+  ## Recruitment deviates ----
+  Rdev_ys[] <- exp(p$log_rdev_ys)
+
+  ## Fishery selectivity ----
+  fsel_val <- conv_selpar(p$fsel, type = sel_f, maxage = na, Lmax = 0.95 * max(lmid))
+  fsel_len <- calc_sel_len(fsel_val, lmid, type = sel_f)
+
+  ## Index selectivity ----
+  if (ni > 0) {
+    isel_val <- conv_selpar(p$isel, type = sel_i, maxage = na, Lmax = 0.95 * max(lmid))
+    isel_len <- calc_sel_len(isel_val, lmid, type = sel_i)
+  }
+
+  ## Stock distribution and movement parameters ----
+  #dist_ymars[y, m, , , ] <- sapply2(1:ns, function(s) {
+  #  sapply(1:na, function(a) softmax(p$mov_g_ymars[y, m, a, , s])) %>% t()
+  #})
+  for(y in 1:ny) {
+    for(m in 1:nm) {
+      mov_ymarrs[y, m, , , , ] <- sapply2(1:ns, function(s) {
+        conv_mov(p$mov_x_ymarrs[y, m, , , , s], p$mov_g_ymars[y, m, , , s], p$mov_v_ymas[y, m, , s], na, nr)
+      })
+    }
+  }
+
+  # Miscellaneous penalty term, e.g., F > Fmax
+  penalty <- 0
 
   # First year, first season initialization ----
 
   # Loops over years and seasons ----
   for(y in 1:ny) {
     for(m in 1:nm) {
-      ## Stock distribution and movement parameters ----
-      dist_ymars[y, m, , , ] <- sapply2(1:ns, function(s) {
-        sapply(1:na, function(a) softmax(p$dist[y, m, a, , s])) %>% t()
-      })
-      mov_ymarrs[y, m, , , , ] <- sapply2(1:ns, function(s) {
-        conv_mov(p$mov_x[y, m, , , , s], p$mov_g[y, m, , s], p$mov_v[y, m, , s], nr, na)
-      })
-
       ## Calculate length-age key and fishery and index age selectivity ----
       #LAK_ymals[y, m, , , ] <- sapply2(1:ns, function(s) calc_LAK(len_ymas[y, m, , s], sdlen_ymas[y, m, , s], lbin))
       fsel_ymafs[y, m, , , ] <- sapply2(1:ns, function(s) {
-        calc_fsel_age(fsel_len, LAK_ymals[y, m, , , s], sel_f, fsel_val, sel_block_yf[y, ], na - 1)
+        calc_fsel_age(fsel_len, LAK_ymals[y, m, , , s], sel_f, fsel_val, sel_block_yf[y, ], na)
       })
       if (ni > 0) {
         isel_ymais[y, m, , , ] <- sapply2(1:ns, function(s) {
-          calc_isel_age(isel_len, LAK_ymals[y, m, , , s], sel_i, isel_val, fsel_ymafs[y, m, , , s], na - 1)
+          calc_isel_age(isel_len, LAK_ymals[y, m, , , s], sel_i, isel_val, fsel_ymafs[y, m, , , s], na)
         })
       }
 
@@ -176,6 +181,11 @@ update_report <- function(r) {
         R_ys[y_rec, ] <- Rdev_ys[y_rec, ] * sapply(1:ns, function(s) {
           calc_recruitment(SB = sum(SB_yrs[y, , s]), SRR = SRR_s[s], a = sralpha_s[s], b = srbeta_s[s])
         })
+
+        # Distribution of recruits is proportional to regional abundance of spawners
+        mov_ymarrs[y_rec, m_rec, 1, , , ] <- sapply2(1:ns, function(s) {
+          matrix(SB_yrs[y, , s]/sum(SB_yrs[y, , s]), nr, nr, byrow = TRUE)
+        })
       }
 
       ## This year's index ----
@@ -206,15 +216,17 @@ update_report <- function(r) {
         N_ymars[y+1, 1, , , ] <- calc_nextN(
           N = N_ymars[y, nm, , , ], surv = exp(-Z_ymars[y, nm, , , ]),
           na = na, nr = nr, ns = ns,
-          advance_age = m == m_rec, type = dist_type, R = R_ys[y+1, ],
-          dist = dist_ymars[y+1, 1, , , ], mov = mov_ymarrs[y+1, 1, , , , ]
+          advance_age = 1 == m_rec,
+          R = R_ys[y+1, ],
+          mov = mov_ymarrs[y+1, 1, , , , ]
         )
       } else {
         N_ymars[y, m+1, , , ] <- calc_nextN(
           N = N_ymars[y, m, , , ], surv = exp(-Z_ymars[y, m, , , ]),
           na = na, nr = nr, ns = ns,
-          advance_age = m == m_rec, type = dist_type, R = R_ys[y, ],
-          dist = dist_ymars[y, m+1, , , ], mov = mov_ymarrs[y, m+1, , , , ]
+          advance_age = m+1 == m_rec,
+          R = R_ys[y, ],
+          mov = mov_ymarrs[y, m+1, , , , ]
         )
       }
     }

@@ -12,9 +12,8 @@ calc_nextN(
   ns = dim(N)[3],
   advance_age = TRUE,
   R = numeric(ns),
-  type = c("dist", "mov"),
-  dist = array(1/nr, c(na, nr, ns)),
-  mov
+  mov = array(1/nr, c(na, nr, nr, ns)),
+  plusgroup = TRUE
 )
 }
 \arguments{
@@ -32,11 +31,9 @@ calc_nextN(
 
 \item{R}{Incoming recruitment. Only assigned if \code{advance_age = TRUE}. Vector of \code{s}}
 
-\item{type}{Character that indicates whether the stock distribution is assigned based on a distribution array or a movement array.}
+\item{mov}{Movement array in the next time step. Array \verb{[a, r, r, s]}. Rows denote region of origin and columns denote region of destination.}
 
-\item{dist}{Distribution of the stock in the next time step. Array \verb{[a, r, s]}}
-
-\item{mov}{Movement array in the next time step. Array \verb{[a, r, r, s]}}
+\item{plusgroup}{Logical, whether the last age class is an accumulator plus group.}
 }
 \value{
 Abundance at the next time step. Array \verb{[a, r, s]}

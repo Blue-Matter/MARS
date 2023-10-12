@@ -424,43 +424,53 @@ calc_LAK <- function(len_a, sd_la, lbin, nl = length(lbin) - 1) {
 #' @param ns Integer, number of stocks
 #' @param advance_age Logical, whether the animals advance to their next age class
 #' @param R Incoming recruitment. Only assigned if `advance_age = TRUE`. Vector of `s`
-#' @param type Character that indicates whether the stock distribution is assigned based on a distribution array or a movement array.
-#' @param dist Distribution of the stock in the next time step. Array `[a, r, s]`
-#' @param mov Movement array in the next time step. Array `[a, r, r, s]`
+# #' @param type Character that indicates whether the stock distribution is assigned based on a distribution array or a movement array.
+# #' @param dist Distribution of the stock in the next time step. Array `[a, r, s]`
+#' @param mov Movement array in the next time step. Array `[a, r, r, s]`. Rows denote region of origin and columns denote region of destination.
+#' @param plusgroup Logical, whether the last age class is an accumulator plus group.
 #' @return Abundance at the next time step. Array `[a, r, s]`
 #' @export
 calc_nextN <- function(N, surv, na = dim(N)[1], nr = dim(N)[2], ns = dim(N)[3],
                        advance_age = TRUE, R = numeric(ns),
-                       type = c("dist", "mov"), dist = array(1/nr, c(na, nr, ns)), mov) {
+                       #type = c("dist", "mov"),
+                       #dist = array(1/nr, c(na, nr, ns)),
+                       mov = array(1/nr, c(na, nr, nr, ns)),
+                       plusgroup = TRUE) {
 
   type <- match.arg(type)
 
   N <- array(N, c(na, nr, ns))
   surv <- array(surv, c(na, nr, ns))
-  dist <- array(dist, c(na, nr, ns))
+  #dist <- array(dist, c(na, nr, ns))
   mov <- array(mov, c(na, nr, nr, ns))
 
   # Apply survival and advance age class ----
   if (advance_age) {
     Nsurv_ars <- array(NA_real_, c(na, nr, ns))
     Nsurv_ars[2:na, , ] <- N[2:na - 1, , ] * surv[2:na - 1, , ]
-    Nsurv_ars[na, , ] <- Nsurv_ars[na, , ] + N[na, , ] * surv[na, , ]
+    if (plusgroup) Nsurv_ars[na, , ] <- Nsurv_ars[na, , ] + N[na, , ] * surv[na, , ]
   } else {
-    Nsurv_ars <- array(N * surv, c(na, nr, ns))
+    Nsurv_ars <- N * surv
   }
 
   # Distribute stock ----
   Nnext_ars <- sapply2(1:ns, function(s) {
-
-    if (type == "dist") { # Distribution vectors
-      Ntotal <- apply(Nsurv_ars[, , s], 1, sum)
-      if (advance_age) Ntotal[1] <- R
-      Nout_ar <- Ntotal * dist[, , s]
-    } else { # Movement matrix
-      Nout_ra <- sapply(2:na, function(a) Nsurv_ars[a, , s] %*% mov[a, , , s])
-      if (advance_age) R_r <- R[s] * dist[1, , s]
-      Nout_ar <- rbind(R_r, t(Nout_ra))
+    Nout_ra <- sapply(2:na, function(a) Nsurv_ars[a, , s] %*% mov[a, , , s])
+    if (advance_age) {
+      R_ar <- R[s]/rep(nr, nr)
+      R_r <- R_ar %*% mov[1, , , s]
     }
+    Nout_ar <- rbind(R_r, t(Nout_ra))
+
+    #if (type == "dist") { # Distribution vectors
+    #  Ntotal <- apply(Nsurv_ars[, , s], 1, sum)
+    #  if (advance_age) Ntotal[1] <- R
+    #  Nout_ar <- Ntotal * dist[, , s]
+    #} else { # Movement matrix
+    #  Nout_ra <- sapply(2:na, function(a) Nsurv_ars[a, , s] %*% mov[a, , , s])
+    #  if (advance_age) R_r <- R[s] * dist[1, , s]
+    #  Nout_ar <- rbind(R_r, t(Nout_ra))
+    #}
     return(Nout_ar)
   })
 
@@ -531,52 +541,53 @@ softmax <- function(eta) {
 #' (Carruthers et al. 2016).
 #'
 #' @param x Base log-movement parameters. See details. Array `[na, nr, nr]`
-#' @param g Gravity model attractivity term. Vector by `a`
-#' @param v Gravity model viscosity term. Vector by `a`
-#' @param nr Integer, number of regions
+#' @param g Gravity model attractivity term. Tendency to move to region `r`. Matrix `[a, r]`
+#' @param v Gravity model viscosity term. Tendency to stay in same region. Vector by `a`
 #' @param na Integer, number of ages
+#' @param nr Integer, number of regions
 #' @param aref Integer, reference age class
 #' @details
 #' Rows index region of origin and columns denote region of destination.
 #'
-#' In log space, the movement matrix \eqn{m} for age class \eqn{a} from region \eqn{r} to \eqn{r'} is the sum of base matrix \eqn{x} and
+#' In log space, the movement matrix \eqn{m_a} for age class \eqn{a} from region \eqn{r} to \eqn{r'} is the sum of base matrix \eqn{x} and
 #' gravity matrix \eqn{G}:
-#' \deqn{m_{r,r'} = x_{r,r'} + G_{r,r'}}
+#' \deqn{m_{a,r,r'} = x_{a,r,r'} + G_{a,r,r'}}
 #'
-#' To essentially exclude movement from \eqn{r} to \eqn{r'}, set \eqn{x_{r,r'} = -1000}
+#' To essentially exclude movement from \eqn{r} to \eqn{r'}, set \eqn{x_{a,r,r'} = -1000}
 #'
 #' Gravity matrix \eqn{G} includes an attractivity term \eqn{g} and viscosity term \eqn{v}:
 #'
-#' \deqn{G_{r,r'} =
+#' \deqn{G_{a,r,r'} =
 #' \begin{cases}
-#' g'_a + v_a \quad & r = r'\\
-#' g'_a \quad & \textrm{otherwise}
+#' g'_{a,r'} + v_a \quad & r = r'\\
+#' g'_{a,r'} \quad & \textrm{otherwise}
 #' \end{cases}
 #' }
 #'
 #' Vector \eqn{g'} are offset terms relative to the value for the reference age class:
-#' \deqn{g'_a =
+#' \deqn{g'_{a,r'} =
 #' \begin{cases}
-#' g_a \quad & a = a_{ref}\\
-#' g_a + g_{aref} \quad & \textrm{otherwise}
+#' g_{a,r} \quad & a = a_{ref}\\
+#' g_{a,r} + g_{a=aref,r} \quad & \textrm{otherwise}
 #' \end{cases}
 #' }
 #'
 #' The movement matrix in normal space is obtained by the softmax transformation
-#' \deqn{M_{r,r'} = \dfrac{\exp(m_{r,r'})}{\sum_r\exp(m_{r,r'})}}
+#' \deqn{M_{a,r,r'} = \dfrac{\exp(m_{a,r,r'})}{\sum_{r'}\exp(m_{a,r,r'})}}
 #' @references
 #' Carruthers, T.R., et al. 2015. Modelling age-dependent movement: an application to red and
 #' gag groupers in the Gulf of Mexico. CJFAS 72: 1159-1176. \doi{10.1139/cjfas-2014-0471}
 #' @return Movement array `[a, r, r]`
 #' @export
-conv_mov <- function(x, g, v, nr = dim(x)[2], na = dim(x)[1], aref = ceiling(0.5 * na)) {
+conv_mov <- function(x, g, v, na = dim(x)[1], nr = dim(x)[2], aref = ceiling(0.5 * na)) {
   stopifnot(length(g) == na)
   stopifnot(length(g) == length(v))
   x <- array(x, c(na, nr, nr))
 
   mov_rra <- sapply(1:na, function(a) {
-    ln_mov <- x[a, , ] + v[a] * diag(nr) + (a != aref) * g[aref] + g[a]
-    apply(ln_mov, 1, softmax)
+    gg <- g[a, ] + (a != aref) * g[aref, ]
+    ln_mov <- x[a, , ] + v[a] * diag(nr) + matrix(gg, nr, nr, byrow = TRUE)
+    apply(ln_mov, 1, softmax) %>% t()
   })
   return(aperm(mov_rra, c(3, 1, 2)))
 }
