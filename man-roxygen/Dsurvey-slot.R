@@ -2,6 +2,7 @@
 #' \describe{
 #' \item{`ni`}{Integer, number of indices of abundance. Zero is possible.}
 #' \item{`Iobs_ymi`}{Observed indices}
+#' \item{`Isd_ymi`}{Lognormal standard deviation of the observed indices}
 #' \item{`unit_i`}{Character vector, units of the index. Set to `"B"` to use stock weight at age (default) or `"N"` for abundance (numbers).}
 #' \item{`IAAobs_ymai`}{Survey age composition}
 #' \item{`IALobs_ymli`}{Survey length composition}

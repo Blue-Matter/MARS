@@ -45,8 +45,8 @@ M <- 0.1
 age <- seq(1:10)
 pred <- exp(-M * age)
 obs <- pred * rlnorm(10, sd = 0.05)
-like_comp(obs, pred, N = 10, type = "multinomial", N = 10)
-like_comp(obs, pred, N = 100, type = "multinomial", N = 100)
+like_comp(obs, pred, N = 10, type = "multinomial")
+like_comp(obs, pred, N = 100, type = "multinomial")
 like_comp(obs, pred, N = 10, type = "dirmult1", theta = 1)
 like_comp(obs, pred, N = 10, type = "dirmult1", theta = 20)
 }

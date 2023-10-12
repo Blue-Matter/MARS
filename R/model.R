@@ -10,10 +10,14 @@
 #' @param random Character vector indicating the parameters that are random effects.
 #' @param run_model Logical, indicates whether the model will be fitted through \link[stats]{nlminb}.
 #' @param do_sd Logical, indicates whether the standard deviations of parameters will be calculated with \link[TMB]{sdreport}.
+#' @param silent Logical, passed to `MakeADFun`
+#' @param control Passed to \link[stats]{nlminb}
 #' @param ... Other arguments to \link[RTMB]{MakeADFun}.
+#' @importFrom methods new
 #' @export
-MARS <- function(MARSdata, parameters, map = list(), random = NULL, silent = TRUE, control = list(),
-                 run_model = TRUE, do_sd = TRUE, ...) {
+MARS <- function(MARSdata, parameters, map = list(), random = NULL,
+                 run_model = TRUE, do_sd = TRUE, silent = TRUE,
+                 control = list(iter.max = 2e+05, eval.max = 4e+05), ...) {
 
   MARSdata@Misc[["map"]] <- map
   #MARSdata@Misc[["random"]] <- random
@@ -36,7 +40,7 @@ MARS <- function(MARSdata, parameters, map = list(), random = NULL, silent = TRU
 
   if (run_model) {
     M@opt <- m$opt
-    if (do_SD) M@SD <- m$SD
+    if (do_sd) M@SD <- m$SD
   }
   return(M)
 }
@@ -71,7 +75,7 @@ update_report <- function(r) {
 
   FM_ymafrs <-
     CN_ymafrs <- array(NA_real_, c(ny, nm, na, nf, nr, ns))
-  if (any(CALobs_ymlfs > 0, na.rm = TRUE)) CN_ymlfrs <- array(NA_real_, c(ny, nm, nl, nf, nr, ns))
+  if (any(CALobs_ymlfr > 0, na.rm = TRUE)) CN_ymlfrs <- array(NA_real_, c(ny, nm, nl, nf, nr, ns))
   CB_ymfrs <-
     VB_ymfrs <- array(NA_real_, c(ny, nm, nf, nr, ns))
 
@@ -235,7 +239,7 @@ update_report <- function(r) {
     if (length(HSP_s)) {
       F_yas[y, , ] <- sapply(1:ns, function(s) {
         sapply(1:na, function(a) {
-          calc_summary_F(M = M[y, a, s], N = apply(N_ymars[y, 1, a, , s, drop = FALSE], 3, sum),
+          calc_summary_F(M = M_yas[y, a, s], N = apply(N_ymars[y, 1, a, , s, drop = FALSE], 3, sum),
                          CN = apply(CN_ymafrs[y, , a, , , s, drop = FALSE], 3, sum), Fmax = nf * Fmax)
         })
       })
@@ -337,7 +341,7 @@ update_report <- function(r) {
               pred <- apply(CN_ymafrs[y, m, SC_aa[aa, ], SC_ff[ff, ], r, , drop = FALSE], 6, sum)
               like_comp(obs = SC_ymafrs[y, m, aa, ff, r, ], pred = pred, type = SC_like,
                         N = SCN_ymafr[y, m, aa, ff, r], theta = SCtheta_f[ff],
-                        stdev = SCstdev_f[f])
+                        stdev = SCstdev_f[ff])
             })
           })
         })
@@ -420,6 +424,7 @@ update_report <- function(r) {
   return(fn)
 }
 
+#' @importFrom methods slotNames
 getAllS4 <- function (..., warn = TRUE) {
   fr <- parent.frame()
   dots <- list(...)

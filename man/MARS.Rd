@@ -9,10 +9,10 @@ MARS(
   parameters,
   map = list(),
   random = NULL,
-  silent = TRUE,
-  control = list(),
   run_model = TRUE,
   do_sd = TRUE,
+  silent = TRUE,
+  control = list(iter.max = 2e+05, eval.max = 4e+05),
   ...
 )
 }
@@ -28,6 +28,10 @@ MARS(
 \item{run_model}{Logical, indicates whether the model will be fitted through \link[stats]{nlminb}.}
 
 \item{do_sd}{Logical, indicates whether the standard deviations of parameters will be calculated with \link[TMB]{sdreport}.}
+
+\item{silent}{Logical, passed to \code{MakeADFun}}
+
+\item{control}{Passed to \link[stats]{nlminb}}
 
 \item{...}{Other arguments to \link[RTMB]{MakeADFun}.}
 }

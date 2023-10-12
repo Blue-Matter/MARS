@@ -10,7 +10,6 @@ calc_F(
   sel,
   wt,
   M,
-  fleet_area,
   q_fs,
   delta = 1,
   na = dim(N)[1],

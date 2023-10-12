@@ -72,12 +72,11 @@
 #' \deqn{\vec{x}_{i+1} = \vec{x}_i - \dfrac{f(\vec{x}_i)}{f'(\vec{x}_i)}}.
 #' @author Q. Huynh
 #' @export
-calc_F <- function(Cobs, N, sel, wt, M, fleet_area, q_fs, delta = 1,
+calc_F <- function(Cobs, N, sel, wt, M, q_fs, delta = 1,
                    na = dim(N)[1], nr = dim(N)[2], ns = dim(N)[3], nf = length(Cobs),
                    Fmax = 2, nitF = 5L, trans = c("log", "logit")) {
 
   trans <- match.arg(trans)
-  if (missing(fleet_area) && ns == 1 && nr == 1 && nf == 1) fleet_area <- 1
   if (missing(q_fs) && ns == 1 && nr == 1 && nf == 1) q_fs <- 1
   if (is.null(dim(Cobs)) && nr == 1 && nf == 1) Cobs <- matrix(Cobs, nf, nr)
 
@@ -148,7 +147,7 @@ calc_F <- function(Cobs, N, sel, wt, M, fleet_area, q_fs, delta = 1,
       deriv_F <- Fmax * exp(-x_loop[[i]])/(1 + exp(-x_loop[[i]]))/(1 + exp(-x_loop[[i]]))
     }
     deriv_Z_fars <- sapply2(1:ns, function(s) {
-      sapply2(1:nr, function(r) q_fs[, s] * deriv_F[f, r] * t(sel[, , s]))
+      sapply2(1:nr, function(r) q_fs[, s] * deriv_F[, r] * t(sel[, , s]))
     })
     deriv_gamma_afrs <- sapply2(1:ns, function(s) {
       sapply2(1:nr, function(r) exp(-Z_ars[, r, s]) * t(deriv_Z_fars[, , r, s]))
@@ -189,7 +188,7 @@ calc_Baranov <- function(FM, Z, N) FM/Z * (1 - exp(-Z)) * N
 
 
 #' @importFrom stats uniroot
-.calc_summary_F <- function(FM, M, N, CN) Baranov(FM, FM + M, N) - CN
+.calc_summary_F <- function(FM, M, N, CN) calc_Baranov(FM, FM + M, N) - CN
 calc_summary_F <- function(M, N, CN, Fmax) {
   out <- uniroot(.calc_summary_F, interval = c(0, Fmax), M = M, N = N, CN = CN)
   out$root

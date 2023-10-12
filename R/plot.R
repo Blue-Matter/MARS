@@ -1,5 +1,5 @@
 
-#' @importFrom graphics grid matplot
+#' @importFrom graphics grid matplot abline par
 plot.default <- function(..., zero_line = FALSE, mar = c(5, 4, 1, 1)) {
   old_mar <- par()$mar
   on.exit(par(mar = old_mar))

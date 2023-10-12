@@ -12,6 +12,8 @@ like_CKMR(n, m, p, type = c("binomial", "poisson"))
 \item{m}{The number of kinship matches}
 
 \item{p}{The probability of kinship match}
+
+\item{type}{The statistical distribution for the likelihood calculation}
 }
 \value{
 Numeric representing the log-likelihood.

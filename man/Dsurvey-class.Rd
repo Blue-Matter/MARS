@@ -27,6 +27,7 @@ observed catch with the dimension following the underscore, following this templ
 \describe{
 \item{\code{ni}}{Integer, number of indices of abundance. Zero is possible.}
 \item{\code{Iobs_ymi}}{Observed indices}
+\item{\code{Isd_ymi}}{Lognormal standard deviation of the observed indices}
 \item{\code{unit_i}}{Character vector, units of the index. Set to \code{"B"} to use stock weight at age (default) or \code{"N"} for abundance (numbers).}
 \item{\code{IAAobs_ymai}}{Survey age composition}
 \item{\code{IALobs_ymli}}{Survey length composition}

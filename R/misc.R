@@ -5,7 +5,7 @@ sapply2 <- function(X, FUN, ..., USE.NAMES = TRUE) {
   sapply(X = X, FUN = FUN, ..., simplify = "array", USE.NAMES = USE.NAMES)
 }
 
-#' @importFrom stats nlminb
+#' @importFrom stats nlminb rnorm
 optimize_RTMB_model <- function(obj, use_hessian = FALSE, restart = 0, do_sd = TRUE,
                                 control = list(), lower = -Inf, upper = Inf) {
   old_warn <- options()$warn
@@ -41,7 +41,7 @@ check_det <- function(h, abs_val = 0.1, is_null = TRUE) {
   !is.na(det_h) && det_h < abs_val
 }
 
-#' @importFrom stats optimHess
+#' @importFrom stats optimHess cov2cor
 get_sdreport <- function(obj, getReportCovariance = FALSE, bias.correct = FALSE) {
   old_warn <- options()$warn
   options(warn = -1)

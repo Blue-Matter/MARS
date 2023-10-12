@@ -1,6 +1,7 @@
 
 
-#' @importFrom methods slot setClass setMethod setOldClass
+#' @importFrom methods slot setClass setMethod setOldClass slot<-
+#' @importFrom utils packageVersion
 init_fn <- function(.Object, dots = list()) {
   if (length(dots)) {
     for(i in names(dots)) slot(.Object, i) <- dots[[i]]
@@ -30,7 +31,7 @@ setClass(
 setClass(
   "Dstock",
   slots = c(len_ymas = "array", sdlen_ymas = "array",
-            LAK_ymals = "array", fec_yas = "array",
+            LAK_ymals = "array", mat_yas = "array", fec_yas = "array",
             swt_ymas = "array", Md_yas = "array", m_spawn = "numeric", m_rec = "numeric", SRR_s = "character",
             delta_s = "numeric", natal_rs = "matrix")
 )
@@ -54,7 +55,8 @@ setClass(
 #' @export
 setClass(
   "Dsurvey",
-  slots = c(ni = "numeric", Iobs_ymi = "array", unit_i = "character", IAAobs_ymai = "array", IALobs_ymli = "array",
+  slots = c(ni = "numeric", Iobs_ymi = "array", Isd_ymi = "array", unit_i = "character",
+            IAAobs_ymai = "array", IALobs_ymli = "array",
             icomp_like = "character", IAAN_ymi = "array", IALN_ymi = "array", IAAtheta_i = "numeric", IALtheta_i = "numeric",
             samp_irs = "array", sel_i = "character", delta_i = "numeric")
 )
@@ -126,3 +128,12 @@ setClass(
   slots = c(obj = "list", opt = "list", SD = "sdreport", report = "list", Misc = "list")
 )
 setMethod("initialize", "MARSassess", function(.Object, ...) init_fn(.Object, list(...)))
+
+
+#' @importFrom utils globalVariables
+if(getRversion() >= "2.15.1") {
+  utils::globalVariables(
+    c(slotNames("Dmodel"), slotNames("Dstock"), slotNames("Dfishery"),
+      slotNames("Dsurvey"), slotNames("DCKMR"), slotNames("Dtag"))
+  )
+}

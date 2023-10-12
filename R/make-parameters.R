@@ -1,4 +1,5 @@
 
+
 check_Dmodel <- function(Dmodel, silent = FALSE) {
   getAllS4(Dmodel)
 
@@ -48,6 +49,9 @@ check_Dmodel <- function(Dmodel, silent = FALSE) {
 
 check_Dstock <- function(Dstock, Dmodel, silent = FALSE) {
   getAllS4(Dstock, Dmodel)
+
+  ch <- as.character(substitute(Dstock))
+  if (length(ch) > 1) ch <- "Dstock"
 
   if (nl > 0) {
     if (length(LAK_ymals)) {
@@ -188,7 +192,7 @@ check_Dfishery <- function(Dfishery, Dstock, Dmodel, silent = FALSE) {
   nb <- max(Dfishery@sel_block_yf)
   if (length(sel_f) != nb) stop("Vector sel_f should be length ", nf)
 
-  if (!length(SC_yamfrs)) {
+  if (!length(SC_ymafrs)) {
     dim_SC <- dim(SC_ymafrs)
     if (length(dim_SC) != 6) stop("SC_ymafrs should be a six dimensional array")
 
@@ -196,13 +200,13 @@ check_Dfishery <- function(Dfishery, Dstock, Dmodel, silent = FALSE) {
       stop("dim(SC_ymafrs) should be ", c(ny, nm, dim_SC[3:4], nr, ns) %>% paste(collapse = ", "))
     }
 
-    if (dim(SC)[3] == na) {
+    if (dim_SC[3] == na) {
       if (!length(SC_aa)) Dfishery@SC_aa <- diag(1, na)
     } else if (any(dim(SC_aa) != c(dim_SC[3], na))) {
       stop("dim(SC_aa) should be: ", c(dim_SC[3], na) %>% paste(collapse = ", "))
     }
 
-    if (dim(SC)[4] == nf) {
+    if (dim_SC[4] == nf) {
       if (!length(SC_ff)) Dfishery@SC_ff <- diag(1, nf)
     } else if (any(dim(SC_ff) != c(dim_SC[4], nf))) {
       stop("dim(SC_ff) should be: ", c(dim_SC[4], nf) %>% paste(collapse = ", "))
@@ -221,26 +225,26 @@ check_Dfishery <- function(Dfishery, Dstock, Dmodel, silent = FALSE) {
       }
       Dfishery@SCN_ymafr <- apply(SC_ymafrs, 1:5, sum)
     } else {
-      dim_SCN <- dim(SCN_ymafr) == c(ny, nm, dim(SC)[3], dim(SC)[4], nr)
-      if (!all(dim_SCN)) stop("dim(SCN_ymafr) needs to be: ", c(ny, nm, dim(SC)[3], dim(SC)[4], nr) %>% paste(collapse = ", "))
+      dim_SCN <- dim(SCN_ymafr) == c(ny, nm, dim_SC[3], dim_SC[4], nr)
+      if (!all(dim_SCN)) stop("dim(SCN_ymafr) needs to be: ", c(ny, nm, dim_SC[3], dim_SC[4], nr) %>% paste(collapse = ", "))
     }
 
     if (!length(SCtheta_f)) {
       if (grepl("ddirmult", SC_like) && !silent) message("Setting ", ch, "@SCtheta_f to 1 for all fleets")
-      Dfishery@SCtheta_f <- rep(1, dim(SC)[4])
+      Dfishery@SCtheta_f <- rep(1, dim_SC[4])
     } else if (length(SCtheta_f) == 1) {
-      Dfishery@SCtheta_f <- rep(Dfishery@SCtheta_f, dim(SC)[4])
-    } else if (length(SCtheta_f) != dim(SC)[4]) {
-      stop("Vector SCtheta_f needs to be length ", dim(SC)[4])
+      Dfishery@SCtheta_f <- rep(Dfishery@SCtheta_f, dim_SC[4])
+    } else if (length(SCtheta_f) != dim_SC[4]) {
+      stop("Vector SCtheta_f needs to be length ", dim_SC[4])
     }
 
     if (!length(SCstdev_f)) {
       if (grepl("log", SC_like) && !silent) message("Setting ", ch, "@SCstdev_f to 0.1 for all fleets")
-      Dfishery@SCstdev_f <- rep(0.1, dim(SC)[4])
+      Dfishery@SCstdev_f <- rep(0.1, dim_SC[4])
     } else if (length(SCstdev_f) == 1) {
-      Dfishery@SCstdev_f <- rep(Dfishery@SCstdev_f, dim(SC)[4])
-    } else if (length(SCstdev_f) != dim(SC)[4]) {
-      stop("Vector SCstdev_f needs to be length ", dim(SC)[4])
+      Dfishery@SCstdev_f <- rep(Dfishery@SCstdev_f, dim_SC[4])
+    } else if (length(SCstdev_f) != dim_SC[4]) {
+      stop("Vector SCstdev_f needs to be length ", dim_SC[4])
     }
   }
   return(Dfishery)
@@ -282,7 +286,7 @@ check_Dsurvey <- function(Dsurvey, Dmodel, silent = FALSE) {
       dim_IAA <- dim(IAAobs_ymai) == c(ny, nm, na, ni)
       if (!all(dim_IAA)) stop("dim(IAAobs_ymai) needs to be: ", c(ny, nm, na, ni) %>% paste(collapse = ", "))
 
-      if (!length(IAAN_ymfr)) {
+      if (!length(IAAN_ymi)) {
         if (icomp_like %in% c("multinomial", "ddirmult1", "ddirmult2") && !silent) {
           message("Setting ", ch, "@IAAN_ymi from ", ch, "@IAAobs_ymai")
         }
