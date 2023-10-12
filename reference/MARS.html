@@ -55,10 +55,10 @@
 <span>  <span class="va">parameters</span>,</span>
 <span>  map <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/list.html" class="external-link">list</a></span><span class="op">(</span><span class="op">)</span>,</span>
 <span>  random <span class="op">=</span> <span class="cn">NULL</span>,</span>
-<span>  silent <span class="op">=</span> <span class="cn">TRUE</span>,</span>
-<span>  control <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/list.html" class="external-link">list</a></span><span class="op">(</span><span class="op">)</span>,</span>
 <span>  run_model <span class="op">=</span> <span class="cn">TRUE</span>,</span>
 <span>  do_sd <span class="op">=</span> <span class="cn">TRUE</span>,</span>
+<span>  silent <span class="op">=</span> <span class="cn">TRUE</span>,</span>
+<span>  control <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/list.html" class="external-link">list</a></span><span class="op">(</span>iter.max <span class="op">=</span> <span class="fl">2e+05</span>, eval.max <span class="op">=</span> <span class="fl">4e+05</span><span class="op">)</span>,</span>
 <span>  <span class="va">...</span></span>
 <span><span class="op">)</span></span></code></pre></div>
     </div>
@@ -87,6 +87,14 @@
 
 <dt>do_sd</dt>
 <dd><p>Logical, indicates whether the standard deviations of parameters will be calculated with <a href="https://rdrr.io/pkg/TMB/man/sdreport.html" class="external-link">sdreport</a>.</p></dd>
+
+
+<dt>silent</dt>
+<dd><p>Logical, passed to <code>MakeADFun</code></p></dd>
+
+
+<dt>control</dt>
+<dd><p>Passed to <a href="https://rdrr.io/r/stats/nlminb.html" class="external-link">nlminb</a></p></dd>
 
 
 <dt>...</dt>
