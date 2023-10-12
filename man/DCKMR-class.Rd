@@ -27,7 +27,7 @@ Store lists of data frames for parent offspring pairs and half-sibling pairs
 \code{m} \tab Number of HSPs
 }
 }
-\item{\code{CKMR_like}}{Character, likelihood for the POP and HSP sampling units. See \link{like_CKMR} for options.}
+\item{\code{CKMR_like}}{Character, likelihood for the POP and HSP sampling units. See \code{type} argument in \code{\link[=like_CKMR]{like_CKMR()}} for options.}
 }
 }
 

@@ -2,14 +2,24 @@
 #' \describe{
 #' \item{`len_ymas`}{Length-at-age. Only needed if `Dmodel@nl > 0`.}
 #' \item{`sdlen_ymas`}{Standard deviation in length-at-age}
-#' \item{`LAK_ymals`}{Length-at-age probability array. If empty, values will be calculated in \link{check_data} (see \link{calc_LAK}).}
-#' \item{`mat_yas`}{Proportion mature by age class}
+#' \item{`LAK_ymals`}{Length-at-age probability array. If empty, values will be calculated by [check_data()] with [calc_LAK()].}
+#' \item{`matd_yas`}{Proportion mature by age class. Ignored if maturity ogive is estimated, e.g., when fitting to close-kin genetic data.}
 #' \item{`fec_yas`}{Fecundity, i.e., spawning output, of mature animals}
 #' \item{`swt_ymas`}{Stock weight-at-age}
 #' \item{`Md_yas`}{Natural morality. Ignored if M is estimated.}
 #' \item{`m_spawn`}{Integer, season of spawning}
 #' \item{`m_rec`}{Integer, season of recruitment}
-#' \item{`SRR_s`}{Character vector of stock-recruit relationship by stock. See \link{calc_recruitment} for options.}
-#' \item{`delta_s`}{Fraction of season that elapses when spawning occurs}
-#' \item{`natal_rs`}{Boolean matrix that indicates whether stock `s` spawns when in region `r` at time of spawning.}
+#' \item{`SRR_s`}{Character vector of stock-recruit relationship by stock. See `SRR` argument in [calc_recruitment()] for options.}
+#' \item{`delta_s`}{Fraction of season that elapses when spawning occurs, e.g., midseason spawning occurs when `delta_s = 0.5`. Default is zero.}
+#' \item{`natal_rs`}{Boolean matrix (0 = FALSE, 1 = TRUE) that indicates whether stock `s` spawns when in region `r` at time of spawning, see example.
+#' Default sets TRUE for all regions and stocks.}
 #' }
+#' @examples
+#' # Set natal_rs matrix so that the spawning output of stock 1 is
+#' # calculated from mature animals present in regions 1, 2.
+#' # Similarly for stock 2, spawning output from areas 2 and 3.
+#' nr <- 4
+#' ns <- 2
+#' natal_rs <- matrix(0, nr, ns)
+#' natal_rs[1:2, 1] <- natal_rs[2:3, 2] <- 1
+#'

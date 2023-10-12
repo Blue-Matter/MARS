@@ -21,7 +21,8 @@ setClass(
   "Dmodel",
   slots = c(ny = "numeric", nm = "numeric", na = "numeric", nl = "numeric", nr = "numeric", ns = "numeric",
             lbin = "numeric", lmid = "numeric",
-            Fmax = "numeric", nitF = "numeric", dist_type = "character", y_phi = "numeric")
+            Fmax = "numeric", nitF = "numeric", dist_type = "character", y_phi = "numeric",
+            scale_s = "numeric")
 )
 
 #' Dstock S4 object
@@ -31,7 +32,7 @@ setClass(
 setClass(
   "Dstock",
   slots = c(len_ymas = "array", sdlen_ymas = "array",
-            LAK_ymals = "array", mat_yas = "array", fec_yas = "array",
+            LAK_ymals = "array", matd_yas = "array", fec_yas = "array",
             swt_ymas = "array", Md_yas = "array", m_spawn = "numeric", m_rec = "numeric", SRR_s = "character",
             delta_s = "numeric", natal_rs = "matrix")
 )
@@ -71,6 +72,9 @@ setClass(
   slots = c(POP_s = "list", HSP_s = "list", CKMR_like = "character")
 )
 
+#' Dtag S4 object
+#' @template MARSdata-template
+#' @template Dtag-slot
 #' @export
 setClass(
   "Dtag",
@@ -92,6 +96,7 @@ setClass(
 #' @template Dfishery-slot
 #' @template Dsurvey-slot
 #' @template DCKMR-slot
+#' @template Dtag-slot
 #' @export
 setClass(
   "MARSdata",
@@ -114,9 +119,9 @@ setOldClass("sdreport")
 #'
 #' S4 object that returns output from MARS model
 #'
-#' @slot obj RTMB object returned by \link[RTMB]{MakeADFun}
-#' @slot opt List returned by \link[stats]{nlminb}
-#' @slot SD List returned by \link[RTMB]{sdreport}
+#' @slot obj RTMB object returned by [RTMB::MakeADFun()]
+#' @slot opt List returned by [stats::nlminb()]
+#' @slot SD List returned by [TMB::sdreport()]
 #' @slot report List of model output at the parameter estimates, returned by `obj$report(obj$env$last.par.best)`
 #' @slot Misc List, miscellaneous items
 #'

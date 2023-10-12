@@ -17,23 +17,23 @@ MARS(
 )
 }
 \arguments{
-\item{MARSdata}{Data object. Class \linkS4class{MARSdata}, validated by \link{check_data}}
+\item{MARSdata}{Data object. Class \linkS4class{MARSdata}, validated by \code{\link[=check_data]{check_data()}}}
 
 \item{parameters}{List of parameters, validated by \link{check_parameters}}
 
-\item{map}{List of parameters indicated whether they are fixed and/or how they are shared. See \link[TMB]{MakeADFun}.}
+\item{map}{List of parameters indicated whether they are fixed and/or how they are shared. See \code{\link[TMB:MakeADFun]{TMB::MakeADFun()}}.}
 
 \item{random}{Character vector indicating the parameters that are random effects.}
 
-\item{run_model}{Logical, indicates whether the model will be fitted through \link[stats]{nlminb}.}
+\item{run_model}{Logical, indicates whether the model will be fitted through \code{\link[stats:nlminb]{stats::nlminb()}}.}
 
-\item{do_sd}{Logical, indicates whether the standard deviations of parameters will be calculated with \link[TMB]{sdreport}.}
+\item{do_sd}{Logical, indicates whether the standard deviations of parameters will be calculated with \code{\link[TMB:sdreport]{TMB::sdreport()}}.}
 
 \item{silent}{Logical, passed to \code{MakeADFun}}
 
-\item{control}{Passed to \link[stats]{nlminb}}
+\item{control}{Passed to \code{\link[stats:nlminb]{stats::nlminb()}}}
 
-\item{...}{Other arguments to \link[RTMB]{MakeADFun}.}
+\item{...}{Other arguments to \code{\link[TMB:MakeADFun]{TMB::MakeADFun()}}.}
 }
 \description{
 Wrapper function that calls RTMB to create the model and perform the numerical optimization

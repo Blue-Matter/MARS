@@ -4,24 +4,28 @@ Version: 0.0.0.9000
 Authors@R: 
     person("Quang", "Huynh", , "quang@bluematterscience.com", role = c("aut", "cre"),
            comment = c(ORCID = "0000-0001-7835-4376"))
-Date: 2023-10-11
+Date: 2023-10-16
 Maintainer: Quang Huynh <quang@bluematterscience.com>
 Description: Implementation of a next-generation, multi-stock assessment.
 License: GPL (>= 3)
 Depends: R (>= 3.5.0)
 Imports: 
-  dplyr, 
-  graphics,
-  methods,
-  stats,
-  RTMB, 
-  TMB,
-  utils
-Suggests: numDeriv, usethis
+    dplyr, 
+    graphics,
+    methods,
+    rlang,
+    stats,
+    RTMB, 
+    TMB,
+    utils
+Suggests: 
+    numDeriv,
+    rmarkdown,
+    usethis
 LazyData: yes
 LazyLoad: yes
 Encoding: UTF-8
 Roxygen: list(markdown = TRUE)
 RoxygenNote: 7.2.3
-URL: https://github.com/Blue-Matter/MARS
+URL: https://blue-matter.github.io/MARS/, https://github.com/Blue-Matter/MARS
 BugReports: https://github.com/Blue-Matter/MARS/issues

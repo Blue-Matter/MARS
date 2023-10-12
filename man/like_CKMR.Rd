@@ -25,7 +25,7 @@ For a half-sibling pair, a comparison is defined by the cohort year of each sibl
 Binomial and Poisson distributions are supported (Conn et al. 2020).
 }
 \references{
-Conn, P.B. et al. 2020. Robustness of close-kin mark–recapture estimators to dispersal
+Conn, P.B. et al. 2020. Robustness of close-kin mark-recapture estimators to dispersal
 limitation and spatially varying sampling probabilities. Ecol. Evol. 10: 5558-5569. \doi{10.1002/ece3.6296}
 }
 \seealso{

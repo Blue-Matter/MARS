@@ -28,7 +28,7 @@
 #' - `CB_frs` Catch (biomass) array
 #' - `CN_afrs` Catch (abundance) array
 #' - `VB_afrs` Vulnerable biomass at the beginning of the time step. Array
-#' - `penalty` Penalty term returned by \link{posfun} when `F_index` exceeds `Fmax`
+#' - `penalty` Penalty term returned by [posfun()] when `F_index` exceeds `Fmax`
 #' - `fn` Difference between predicted and observed catch at the last iteration. Matrix `[f, r]`
 #' - `gr` Gradient of `fn` with respect to `F_index` in either log or logit space at the last iteration. Vector by `[f, r]`
 #'
@@ -329,6 +329,21 @@ calc_NPR <- function(surv, na = length(surv), plusgroup = TRUE) {
 }
 
 
+#' Calculate recruitment from stock-recruit function
+#'
+#' @param x Numeric, either the spawning output or the equilibrium spawners per recruit, from which
+#' the recruitment will be calculated. See argument `eq`.
+#' @param SRR Character to indicate the functional form of the stock recruit function
+#' @param eq Logical, indicates whether `x` is the spawning output (`FALSE`) or equilibrium spawners per recruit (`TRUE`)
+#' @param ... Parameters of the SRR function. Provide one of two sets of variables:
+#' \itemize{
+#' \item `h`, `R0` and `phi0`
+#' \item `a` and `b` (alpha, beta values)
+#' }
+#' @examples
+#' calc_recruitment(10, SRR = "Ricker", a = 2, b = 0.5)
+#' calc_recruitment(10, SRR = "Ricker", h = 0.9, R0 = 1, phi0 = 1)
+#' @export
 calc_recruitment <- function(x, SRR = c("BH", "Ricker"), eq = FALSE, ...) {
   SRR <- match.arg(SRR)
   dots <- list(...)
@@ -394,6 +409,16 @@ SRkconv <- function(h, SRR = c("BH", "Ricker")) {
   )
 }
 
+#' Length-at-age key
+#'
+#' Calculates the probability distribution of length-at-age using the normal probability density function
+#'
+#' @param len_a Vector of length-at-age
+#' @param sd_la Vector of standard deviation in length-at-age
+#' @param lbin Vector of the lower boundary of the length bins
+#' @param nl Integer, number of length bins (default is `length(lbin) - 1`)
+#' @return Matrix by age (rows) and length (columns)
+#' @export
 calc_LAK <- function(len_a, sd_la, lbin, nl = length(lbin) - 1) {
   stopifnot(length(sd_la) == length(len_a))
 
@@ -527,19 +552,35 @@ calc_q <- function(Iobs, B) {
   return(q)
 }
 
-logspace.add <- function(lx, ly) pmax(lx, ly) + log1p(exp(-abs(lx - ly)))
-softmax <- function(eta) {
+#' Softmax function
+#'
+#' Takes a vector of real numbers and returns the corresponding vector of probabilities
+#'
+#' @param eta Vector
+#' @param log Logical, whether to return the value of the logarithm
+#'
+#' @return A vector equal to length of `eta`: \eqn{\exp(\eta)/\sum\exp(\eta)}
+#' @details Uses `MARS:::logspace.add` for numerical stability
+#' @export
+softmax <- function(eta, log = FALSE) {
   den <- Reduce(logspace.add, eta)
   v <- eta - den
-  exp(v)
+
+  if (log) {
+    v
+  } else {
+    exp(v)
+  }
 }
+
+logspace.add <- function(lx, ly) pmax(lx, ly) + log1p(exp(-abs(lx - ly)))
 
 #' Calculate movement matrix for all age classes
 #'
 #' Movement matrices are calculated for all age classes from a base matrix and a gravity model formulation
 #' (Carruthers et al. 2016).
 #'
-#' @param x Base log-movement parameters. See details. Array `[na, nr, nr]`
+#' @param x Base log-movement parameters. See details. Array `[a, r, r]`
 #' @param g Gravity model attractivity term. Tendency to move to region `r`. Matrix `[a, r]`
 #' @param v Gravity model viscosity term. Tendency to stay in same region. Vector by `a`
 #' @param na Integer, number of ages
@@ -552,7 +593,7 @@ softmax <- function(eta) {
 #' gravity matrix \eqn{G}:
 #' \deqn{m_{a,r,r'} = x_{a,r,r'} + G_{a,r,r'}}
 #'
-#' To essentially exclude movement from \eqn{r} to \eqn{r'}, set \eqn{x_{a,r,r'} = -1000}
+#' To essentially exclude movement from \eqn{r} to \eqn{r'}, set \eqn{x_{a,r,r'} = -1000}.
 #'
 #' Gravity matrix \eqn{G} includes an attractivity term \eqn{g} and viscosity term \eqn{v}:
 #'
@@ -571,8 +612,11 @@ softmax <- function(eta) {
 #' \end{cases}
 #' }
 #'
-#' The movement matrix in normal space is obtained by the softmax transformation
+#' The movement matrix in normal space is obtained by the softmax transformation:
 #' \deqn{M_{a,r,r'} = \dfrac{\exp(m_{a,r,r'})}{\sum_{r'}\exp(m_{a,r,r'})}}
+#'
+#' If \eqn{x} and \eqn{v} are zero, then the movement matrix simply distributes the total stock
+#' abundance into the various regions as specified in \eqn{g'}.
 #' @references
 #' Carruthers, T.R., et al. 2015. Modelling age-dependent movement: an application to red and
 #' gag groupers in the Gulf of Mexico. CJFAS 72: 1159-1176. \doi{10.1139/cjfas-2014-0471}
@@ -582,12 +626,15 @@ conv_mov <- function(x, g, v, na = dim(x)[1], nr = dim(x)[2], aref = ceiling(0.5
   stopifnot(length(g) == na)
   stopifnot(length(g) == length(v))
   x <- array(x, c(na, nr, nr))
+  g <- matrix(g, na, nr)
 
-  mov_rra <- sapply(1:na, function(a) {
+  mov_rra <- sapply2(1:na, function(a) {
     gg <- g[a, ] + (a != aref) * g[aref, ]
     ln_mov <- x[a, , ] + v[a] * diag(nr) + matrix(gg, nr, nr, byrow = TRUE)
     apply(ln_mov, 1, softmax) %>% t()
-  })
+  }) %>%
+    array(c(nr, nr, na))
+
   return(aperm(mov_rra, c(3, 1, 2)))
 }
 

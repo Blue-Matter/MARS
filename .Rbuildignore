@@ -2,3 +2,10 @@
 ^MSA\.Rproj$
 ^\.Rproj\.user$
 ^\.github$
+^vignettes$
+^man-roxygen$
+^scratch$
+^_pkgdown\.yml$
+^docs$
+^pkgdown$
+^README\.Rmd$

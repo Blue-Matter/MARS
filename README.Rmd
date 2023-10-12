@@ -1,0 +1,37 @@
+---
+output: github_document
+---
+
+<!-- README.md is generated from README.Rmd. Please edit that file -->
+
+```{r, include = FALSE}
+knitr::opts_chunk$set(
+  collapse = TRUE,
+  comment = "#>",
+  fig.path = "man/figures/README-",
+  out.width = "100%"
+)
+```
+
+
+# MARS <img src="man/figures/README-hex.png" align="right" height="139" />
+ 
+<!-- badges: start -->
+[![R-CMD-check](https://github.com/Blue-Matter/MSA/actions/workflows/R-CMD-check.yaml/badge.svg)](https://github.com/Blue-Matter/MSA/actions/workflows/R-CMD-check.yaml)
+<!-- badges: end -->
+
+MARS (**Multi-stock Assessment with Regional Spatiotemporal dynamics**) is a multi-stock, spatially-explicit age-structured model. 
+It is intended for use in fisheries where stock composition can not be readily identified in fishery data. 
+
+Funding for development of MARS is provided by the NOAA Fisheries Bluefin Tuna Research Program ([BTRP](https://www.fisheries.noaa.gov/grant/bluefin-tuna-research-program) Grant NA23NMF4720184) in collaboration with the Ocean Foundation.
+
+Atlantic bluefin tuna (*Thunnus thynnus*) is the first intended case study.
+
+## Installation
+
+You can install the R package from GitHub with:
+
+```{r, eval = FALSE}
+# install.packages("remotes")
+remotes::install_github("Blue-Matter/MARS")
+```

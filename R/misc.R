@@ -1,4 +1,23 @@
 
+#' Quadratic penalty function
+#'
+#' Taped penalty function if `x < eps`
+#'
+#' @param x Numeric, the parameter
+#' @param eps Numeric, the threshold below which a penalty will be applied
+#'
+#' @return
+#' The penalty value is
+#'
+#' \deqn{
+#' \textrm{penalty} =
+#' \begin{cases}
+#' 0.1 (x - \varepsilon)^2 & x \le \varepsilon\\
+#' 0 & x > \varepsilon
+#' \end{cases}
+#' }
+#'
+#' @export
 posfun <- function(x, eps) CondExpGe(x, eps, 0, 0.01 * (x - eps) * (x - eps))
 
 sapply2 <- function(X, FUN, ..., USE.NAMES = TRUE) {

@@ -60,7 +60,7 @@ A list containing:
 \item \code{CB_frs} Catch (biomass) array
 \item \code{CN_afrs} Catch (abundance) array
 \item \code{VB_afrs} Vulnerable biomass at the beginning of the time step. Array
-\item \code{penalty} Penalty term returned by \link{posfun} when \code{F_index} exceeds \code{Fmax}
+\item \code{penalty} Penalty term returned by \code{\link[=posfun]{posfun()}} when \code{F_index} exceeds \code{Fmax}
 \item \code{fn} Difference between predicted and observed catch at the last iteration. Matrix \verb{[f, r]}
 \item \code{gr} Gradient of \code{fn} with respect to \code{F_index} in either log or logit space at the last iteration. Vector by \verb{[f, r]}
 }

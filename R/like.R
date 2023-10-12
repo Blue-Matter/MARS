@@ -108,7 +108,7 @@ ddirmnom <- function(x, size, alpha, log = FALSE) {
 #' @return Numeric representing the log-likelihood.
 #' @seealso [calc_POP()] [calc_HSP()]
 #' @references
-#' Conn, P.B. et al. 2020. Robustness of close-kin mark–recapture estimators to dispersal
+#' Conn, P.B. et al. 2020. Robustness of close-kin mark-recapture estimators to dispersal
 #' limitation and spatially varying sampling probabilities. Ecol. Evol. 10: 5558-5569. \doi{10.1002/ece3.6296}
 #' @export
 like_CKMR <- function(n, m, p, type = c("binomial", "poisson")) {

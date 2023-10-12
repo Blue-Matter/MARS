@@ -55,6 +55,7 @@ observed catch with the dimension following the underscore, following this templ
 \item{\code{nitF}}{Integer, number of iterations to solve Baranov catch equation from observed catch. Defaults to 5.}
 \item{\code{dist_type}}{Character. Whether to estimate seasonal stock distribution with a movement matrix \code{"mov"} or re-distributing total abundance by a distribution vector \code{"dist"}}
 \item{\code{y_phi}}{Integer, the year from which to obtain values of natural mortality and fecundity for the unfished stock-recruit replacement line (\code{phi}). Relevant if natural mortality or fecundity are time-varying. Defaults to 1.}
+\item{\code{scale_s}}{Vector, length \code{ns}. Logarithmic scalar that informs relative stock size to aid parameter estimation. Larger values implies larger stocks. Default set to zero. See \code{\link[=make_parameters]{make_parameters()}}.}
 }
 }
 
@@ -63,16 +64,17 @@ observed catch with the dimension following the underscore, following this templ
 \describe{
 \item{\code{len_ymas}}{Length-at-age. Only needed if \code{Dmodel@nl > 0}.}
 \item{\code{sdlen_ymas}}{Standard deviation in length-at-age}
-\item{\code{LAK_ymals}}{Length-at-age probability array. If empty, values will be calculated in \link{check_data} (see \link{calc_LAK}).}
-\item{\code{mat_yas}}{Proportion mature by age class}
+\item{\code{LAK_ymals}}{Length-at-age probability array. If empty, values will be calculated by \code{\link[=check_data]{check_data()}} with \code{\link[=calc_LAK]{calc_LAK()}}.}
+\item{\code{matd_yas}}{Proportion mature by age class. Ignored if maturity ogive is estimated, e.g., when fitting to close-kin genetic data.}
 \item{\code{fec_yas}}{Fecundity, i.e., spawning output, of mature animals}
 \item{\code{swt_ymas}}{Stock weight-at-age}
 \item{\code{Md_yas}}{Natural morality. Ignored if M is estimated.}
 \item{\code{m_spawn}}{Integer, season of spawning}
 \item{\code{m_rec}}{Integer, season of recruitment}
-\item{\code{SRR_s}}{Character vector of stock-recruit relationship by stock. See \link{calc_recruitment} for options.}
-\item{\code{delta_s}}{Fraction of season that elapses when spawning occurs}
-\item{\code{natal_rs}}{Boolean matrix that indicates whether stock \code{s} spawns when in region \code{r} at time of spawning.}
+\item{\code{SRR_s}}{Character vector of stock-recruit relationship by stock. See \code{SRR} argument in \code{\link[=calc_recruitment]{calc_recruitment()}} for options.}
+\item{\code{delta_s}}{Fraction of season that elapses when spawning occurs, e.g., midseason spawning occurs when \code{delta_s = 0.5}. Default is zero.}
+\item{\code{natal_rs}}{Boolean matrix (0 = FALSE, 1 = TRUE) that indicates whether stock \code{s} spawns when in region \code{r} at time of spawning, see example.
+Default sets TRUE for all regions and stocks.}
 }
 }
 
@@ -84,7 +86,7 @@ observed catch with the dimension following the underscore, following this templ
 \item{\code{fwt_yamfs}}{Fishery weight at age. Set to 1 when fleet catch is in units of abundance. Set to stock weight at age by default.}
 \item{\code{CAAobs_ymafr}}{Fishery catch at age composition}
 \item{\code{CALobs_ymlfr}}{Fishery catch at length composition}
-\item{\code{fcomp_like}}{Character, likelihood for the fishery composition data. See \code{type} argument in \link{like_comp} for options}
+\item{\code{fcomp_like}}{Character, likelihood for the fishery composition data. See \code{type} argument of \code{\link[=like_comp]{like_comp()}} for options}
 \item{\code{CAAN_ymfr}}{Sample size of the catch at age vector by season if using the multinomial or Dirichlet-multinomial likelihoods}
 \item{\code{CALN_ymfr}}{Sample size of the catch at length vector by season if using the multinomial or Dirichlet-multinomial likelihoods}
 \item{\code{CAAtheta_f}}{Catch at age dispersion parameter if using the Dirichlet-multinomial likelihood. Default set to 1.}
@@ -92,9 +94,9 @@ observed catch with the dimension following the underscore, following this templ
 \item{\code{sel_block_yf}}{Index of dummy fleets to model time blocks of selectivity}
 \item{\code{sel_f}}{Character matrix of functional form for selectivity}
 \item{\code{SC_ymafrs}}{Stock composition data.}
-\item{\code{SC_aa}}{Boolean matrix that groups together age classes for the stock composition data}
-\item{\code{SC_ff}}{Boolean matrix that groups together fleets for the stock composition data}
-\item{\code{SC_like}}{Character, likelihood for the stock composition data. See \code{type} argument of \link{like_comp} for options}
+\item{\code{SC_aa}}{Boolean matrix that aggregates age classes for the stock composition data. See example.}
+\item{\code{SC_ff}}{Boolean matrix that aggregates fleets for the stock composition data. See example.}
+\item{\code{SC_like}}{Character, likelihood for the stock composition data. See \code{type} argument of \code{\link[=like_comp]{like_comp()}} for options}
 \item{\code{SCN_ymafr}}{Sample size of the stock composition vector if using the multinomial or Dirichlet-multinomial likelihoods}
 \item{\code{SCtheta_f}}{Stock composition dispersion parameter if using the Dirichlet-multinomial likelihood. Default set to 1.}
 \item{\code{SCstdev_f}}{Stock composition standard deviation if using the lognormal likelihood. Default set to 0.1.}
@@ -110,7 +112,7 @@ observed catch with the dimension following the underscore, following this templ
 \item{\code{unit_i}}{Character vector, units of the index. Set to \code{"B"} to use stock weight at age (default) or \code{"N"} for abundance (numbers).}
 \item{\code{IAAobs_ymai}}{Survey age composition}
 \item{\code{IALobs_ymli}}{Survey length composition}
-\item{\code{icomp_like}}{Character, likelihood for the composition data. See \link{like_comp} for options}
+\item{\code{icomp_like}}{Character, likelihood for the composition data. See \code{\link[=like_comp]{like_comp()}} for options}
 \item{\code{IAAN_ymi}}{Sample size of the index age composition by season if using the multinomial or Dirichlet-multinomial likelihoods}
 \item{\code{IALN_ymi}}{Sample size of the index length composition by season if using the multinomial or Dirichlet-multinomial likelihoods}
 \item{\code{IAAtheta_i}}{Index age composition dispersion parameter if using the Dirichlet-multinomial likelihood}
@@ -141,10 +143,40 @@ observed catch with the dimension following the underscore, following this templ
 \code{m} \tab Number of HSPs
 }
 }
-\item{\code{CKMR_like}}{Character, likelihood for the POP and HSP sampling units. See \link{like_CKMR} for options.}
+\item{\code{CKMR_like}}{Character, likelihood for the POP and HSP sampling units. See \code{type} argument in \code{\link[=like_CKMR]{like_CKMR()}} for options.}
 }
 }
 
+\section{Slots inherited from Dtag}{
+
+\describe{
+\item{\code{tag_ymrr}}{Array. Number of tags that move between regions. Used to inform movement matrices between time steps.}
+\item{\code{tag_ymr}}{Array. Number of tags among regions. Used to inform stock distribution within time step.}
+\item{\code{tag_like}}{Character. Likelihood for the tagging data, either the vector of proportions by region of origin for \code{tag_ymrr}, or
+by region of stock presence for \code{tag_ymr}. See \code{type} argument of \code{\link[=like_comp]{like_comp()}} for options}
+}
+}
+
+\examples{
+# Set natal_rs matrix so that the spawning output of stock 1 is
+# calculated from mature animals present in regions 1, 2.
+# Similarly for stock 2, spawning output from areas 2 and 3.
+nr <- 4
+ns <- 2
+natal_rs <- matrix(0, nr, ns)
+natal_rs[1:2, 1] <- natal_rs[2:3, 2] <- 1
+
+# Aggregate stock composition for ages 1-4 and 5-10 across all fleets
+na <- 10
+na_SC <- 2
+SC_aa <- matrix(0, na_SC, na) # Assumes dim(SC_ymafrs)[3] = na_SC
+SC_aa[1, 1:4] <- SC_aa[2, 5:10] <- 1
+
+nf <- 3
+nf_SC <- 1
+SC_ff <- matrix(1, nf_SC, nf) # Assumes dim(SC_ymafrs)[4] <- nf_SC
+
+}
 \seealso{
 \link{MARSdata-class} \code{\link[=check_data]{check_data()}} \link{Dmodel-class} \link{Dstock-class} \link{Dfishery-class} \link{Dsurvey-class} \link{DCKMR-class} \link{Dtag-class}
 }

@@ -17,5 +17,5 @@
 #' `m` \tab Number of HSPs
 #' }
 #' }
-#' \item{`CKMR_like`}{Character, likelihood for the POP and HSP sampling units. See \link{like_CKMR} for options.}
+#' \item{`CKMR_like`}{Character, likelihood for the POP and HSP sampling units. See `type` argument in [like_CKMR()] for options.}
 #' }

@@ -31,7 +31,7 @@ observed catch with the dimension following the underscore, following this templ
 \item{\code{unit_i}}{Character vector, units of the index. Set to \code{"B"} to use stock weight at age (default) or \code{"N"} for abundance (numbers).}
 \item{\code{IAAobs_ymai}}{Survey age composition}
 \item{\code{IALobs_ymli}}{Survey length composition}
-\item{\code{icomp_like}}{Character, likelihood for the composition data. See \link{like_comp} for options}
+\item{\code{icomp_like}}{Character, likelihood for the composition data. See \code{\link[=like_comp]{like_comp()}} for options}
 \item{\code{IAAN_ymi}}{Sample size of the index age composition by season if using the multinomial or Dirichlet-multinomial likelihoods}
 \item{\code{IALN_ymi}}{Sample size of the index length composition by season if using the multinomial or Dirichlet-multinomial likelihoods}
 \item{\code{IAAtheta_i}}{Index age composition dispersion parameter if using the Dirichlet-multinomial likelihood}

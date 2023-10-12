@@ -4,15 +4,15 @@
 #'
 #' Wrapper function that calls RTMB to create the model and perform the numerical optimization
 #'
-#' @param MARSdata Data object. Class \linkS4class{MARSdata}, validated by \link{check_data}
-#' @param parameters List of parameters, validated by \link{check_parameters}
-#' @param map List of parameters indicated whether they are fixed and/or how they are shared. See \link[TMB]{MakeADFun}.
+#' @param MARSdata Data object. Class \linkS4class{MARSdata}, validated by [check_data()]
+#' @param parameters List of parameters, validated by [check_parameters]
+#' @param map List of parameters indicated whether they are fixed and/or how they are shared. See [TMB::MakeADFun()].
 #' @param random Character vector indicating the parameters that are random effects.
-#' @param run_model Logical, indicates whether the model will be fitted through \link[stats]{nlminb}.
-#' @param do_sd Logical, indicates whether the standard deviations of parameters will be calculated with \link[TMB]{sdreport}.
+#' @param run_model Logical, indicates whether the model will be fitted through [stats::nlminb()].
+#' @param do_sd Logical, indicates whether the standard deviations of parameters will be calculated with [TMB::sdreport()].
 #' @param silent Logical, passed to `MakeADFun`
-#' @param control Passed to \link[stats]{nlminb}
-#' @param ... Other arguments to \link[RTMB]{MakeADFun}.
+#' @param control Passed to [stats::nlminb()]
+#' @param ... Other arguments to [TMB::MakeADFun()].
 #' @importFrom methods new
 #' @export
 MARS <- function(MARSdata, parameters, map = list(), random = NULL,
@@ -34,9 +34,11 @@ MARS <- function(MARSdata, parameters, map = list(), random = NULL,
 
   if (run_model) m <- optimize_RTMB_model(obj, do_sd = do_sd, control = control)
 
-  M <- new("MARSassess",
-           obj = obj,
-           report = obj$report(obj$env$last.par.best) %>% update_report())
+  M <- new(
+    "MARSassess",
+    obj = obj,
+    report = obj$report(obj$env$last.par.best) %>% update_report(MARSdata)
+  )
 
   if (run_model) {
     M@opt <- m$opt
@@ -45,7 +47,26 @@ MARS <- function(MARSdata, parameters, map = list(), random = NULL,
   return(M)
 }
 
-update_report <- function(r) {
+update_report <- function(r, MARSdata) {
+
+
+  if (is.null(r$F_yas)) {
+    ny <- MARSdata@Dmodel@ny
+    na <- MARSdata@Dmodel@na
+    ns <- MARSdata@Dmodel@ns
+    nf <- MARSdata@Dmodel@nf
+    Fmax <- MARSdata@Dmodel@Fmax
+
+    r$F_yas <- sapply2(1:ns, function(s) {
+      sapply(1:na, function(a) {
+        sapply(1:ny, function(y) {
+          calc_summary_F(M = r$M_yas[y, a, s], N = apply(r$N_ymars[y, 1, a, , s, drop = FALSE], 3, sum),
+                         CN = apply(r$CN_ymafrs[y, , a, , , s, drop = FALSE], 3, sum), Fmax = nf * Fmax)
+        })
+      })
+    })
+    r$Z_yas <- r$F_yas + r$M_yas
+  }
   return(r)
 }
 
@@ -53,6 +74,7 @@ update_report <- function(r) {
 
   # Assign data variables to environment, see OBS() for simulation ----
   getAllS4(d@Dmodel, d@Dstock, d@Dfishery, d@Dsurvey, d@DCKMR, d@Dtag)
+  map <- d@Misc$map
 
   # Transform data ----
   delta_m <- 1/nm
@@ -64,14 +86,13 @@ update_report <- function(r) {
   R_ys <-
     Rdev_ys <- array(NA_real_, c(ny, ns))
   FM_ymars <-
-    Z_ymars <-
-    dist_ymars <- array(NA_real_, c(ny, nm, na, nr, ns))
+    Z_ymars <- array(NA_real_, c(ny, nm, na, nr, ns))
   if (length(HSP_s)) F_yas <- array(NA_real_, c(ny, na, ns))
   #LAK_ymals <- array(NA_real_, c(ny, nm, na, nl, ns))
   mov_ymarrs <- array(NA_real_, c(ny, nm, na, nr, nr, ns))
 
   # Fishery arrays ----
-  fsel_ymafs <- array(NA_real_, c(ny, nm, na, nf, ns))
+  sel_ymafs <- array(NA_real_, c(ny, nm, na, nf, ns))
 
   FM_ymafrs <-
     CN_ymafrs <- array(NA_real_, c(ny, nm, na, nf, nr, ns))
@@ -82,16 +103,39 @@ update_report <- function(r) {
   # Index of abundance arrays ----
   if (ni > 0) {
     IN_ymais <-
-      isel_ymais <- array(NA_real_, c(ny, nm, na, ni, ns))
+      sel_ymais <- array(NA_real_, c(ny, nm, na, ni, ns))
     if (any(IALobs_ymli > 0, na.rm = TRUE)) IN_ymlis <- array(NA_real_, c(ny, nm, na, nl, ns))
     VI_ymi <- I_ymi <- array(NA_real_, c(ny, nm, ni))
   }
 
   # Transform parameters ----
+  ## Maturity at age ogive ----
+  mat_yas <- sapply2(1:ns, function(s) {
+    if (all(is.na(map$log_M_ps[, s]))) {
+      matd_yas[, , s]
+    } else {
+      a50 <- na * plogis(p$mat_ps[1, s])
+      a95 <- a50 + exp(p$mat_ps[2, s])
+
+      a <- seq(1, na)
+      m <- 1/(1 + exp(-log(19) * (a - a50)/(a95 - a50)))
+      matrix(m, ny, na, byrow = TRUE)
+    }
+  })
+
+  ## Natural mortality ----
+  M_yas <- sapply2(1:ns, function(s) {
+    if (is.na(map$log_M_s[s])) {
+      Md_yas[, , s]
+    } else {
+      matrix(exp(p$log_M_s[s]), ny, na)
+    }
+  })
+
   ## Stock recruit parameters ----
-  R0_s <- exp(p$R0x)/scale_s
-  kappa_s <- exp(p$k_s) + 1
-  h_s <- sapply(1:ns, function(s) SRhconv(kappa_s[s], SRR = SRR_s[s]))
+  R0_s <- exp(p$t_R0_s + scale_s)
+  h_s <- ifelse(SRR_s == "BH", 0.8 * plogis(p$t_h_s), exp(p$t_h_s)) + 0.2
+  kappa_s <- sapply(1:ns, function(s) SRkconv(h_s[s], SRR = SRR_s[s]))
 
   phi_s <- sapply(1:ns, function(s) {
     calc_phi(M_yas[y_phi, , s], mat_yas[y_phi, , s] * fec_yas[y_phi, , s],
@@ -105,13 +149,14 @@ update_report <- function(r) {
   Rdev_ys[] <- exp(p$log_rdev_ys)
 
   ## Fishery selectivity ----
-  fsel_val <- conv_selpar(p$fsel, type = sel_f, maxage = na, Lmax = 0.95 * max(lmid))
-  fsel_len <- calc_sel_len(fsel_val, lmid, type = sel_f)
+  selconv_pf <- conv_selpar(p$sel_pf, type = sel_f, maxage = na, Lmax = 0.95 * max(lmid))
+  sel_lf <- calc_sel_len(selconv_pf, lmid, type = sel_f)
+  q_fs <- exp(p$log_q_fs)
 
   ## Index selectivity ----
   if (ni > 0) {
-    isel_val <- conv_selpar(p$isel, type = sel_i, maxage = na, Lmax = 0.95 * max(lmid))
-    isel_len <- calc_sel_len(isel_val, lmid, type = sel_i)
+    selconv_pi <- conv_selpar(p$sel_pi, type = sel_i, maxage = na, Lmax = 0.95 * max(lmid))
+    sel_li <- calc_sel_len(selconv_pi, lmid, type = sel_i)
   }
 
   ## Stock distribution and movement parameters ----
@@ -136,18 +181,18 @@ update_report <- function(r) {
     for(m in 1:nm) {
       ## Calculate length-age key and fishery and index age selectivity ----
       #LAK_ymals[y, m, , , ] <- sapply2(1:ns, function(s) calc_LAK(len_ymas[y, m, , s], sdlen_ymas[y, m, , s], lbin))
-      fsel_ymafs[y, m, , , ] <- sapply2(1:ns, function(s) {
-        calc_fsel_age(fsel_len, LAK_ymals[y, m, , , s], sel_f, fsel_val, sel_block_yf[y, ], na)
+      sel_ymafs[y, m, , , ] <- sapply2(1:ns, function(s) {
+        calc_fsel_age(sel_lf, LAK_ymals[y, m, , , s], sel_f, selconv_pf, sel_block_yf[y, ], na)
       })
       if (ni > 0) {
-        isel_ymais[y, m, , , ] <- sapply2(1:ns, function(s) {
-          calc_isel_age(isel_len, LAK_ymals[y, m, , , s], sel_i, isel_val, fsel_ymafs[y, m, , , s], na)
+        sel_ymais[y, m, , , ] <- sapply2(1:ns, function(s) {
+          calc_isel_age(sel_li, LAK_ymals[y, m, , , s], sel_i, selconv_pi, sel_ymafs[y, m, , , s], na)
         })
       }
 
       ## This season's mortality ----
       Fsearch <- calc_F(
-        Cobs = Cobs_ymfr[y, m, , ], N = N_ymars[y, m, , , ], sel = fsel_ymafs[y, m, , , ],
+        Cobs = Cobs_ymfr[y, m, , ], N = N_ymars[y, m, , , ], sel = sel_ymafs[y, m, , , ],
         wt = fwt_ymafs[y, m, , , ], M = M_yas[y, , ], q_fs = q_fs, delta = delta_m,
         na = na, nr = nr, nf = nf, ns = ns, Fmax = Fmax, nitF = nitF, trans = "log"
       )
@@ -195,7 +240,7 @@ update_report <- function(r) {
       ## This year's index ----
       if (ni > 0) {
         IN_ymais[y, m, , , ] <- calc_index(
-          N = N_ymars[y, m, , , ], Z = Z_ymars[y, m, , , ], sel = isel_ymais[y, m, , , ], samp = samp_irs,
+          N = N_ymars[y, m, , , ], Z = Z_ymars[y, m, , , ], sel = sel_ymais[y, m, , , ], samp = samp_irs,
           delta = delta_i, na = na, ns = ns, ni = ni
         )
 
@@ -216,23 +261,15 @@ update_report <- function(r) {
 
       ## Next season's abundance and total biomass ----
       # Have to advance the age classes in the season before spawning
-      if (m == nm) {
-        N_ymars[y+1, 1, , , ] <- calc_nextN(
-          N = N_ymars[y, nm, , , ], surv = exp(-Z_ymars[y, nm, , , ]),
-          na = na, nr = nr, ns = ns,
-          advance_age = 1 == m_rec,
-          R = R_ys[y+1, ],
-          mov = mov_ymarrs[y+1, 1, , , , ]
-        )
-      } else {
-        N_ymars[y, m+1, , , ] <- calc_nextN(
-          N = N_ymars[y, m, , , ], surv = exp(-Z_ymars[y, m, , , ]),
-          na = na, nr = nr, ns = ns,
-          advance_age = m+1 == m_rec,
-          R = R_ys[y, ],
-          mov = mov_ymarrs[y, m+1, , , , ]
-        )
-      }
+      ynext <- ifelse(m == nm, y+1, y)
+      mnext <- ifelse(m == nm, 1, m+1)
+      N_ymars[ynext, mnext, , , ] <- calc_nextN(
+        N = N_ymars[y, m, , , ], surv = exp(-Z_ymars[y, m, , , ]),
+        na = na, nr = nr, ns = ns,
+        advance_age = mnext == m_rec,
+        R = R_ys[ynext, ],
+        mov = mov_ymarrs[ynext, mnext, , , , ]
+      )
     }
 
     ## Summary F and Z by year ----
@@ -382,10 +419,14 @@ update_report <- function(r) {
 
   # Priors ----
   sdr_s <- exp(p$log_sdr_s)
-  rbc_s <- -0.5 * sdr_s * sdr_s
+  bcr_s <- -0.5 * sdr_s * sdr_s
 
-  logprior_rdev_ys <- sapply(1:ns, function(s) { # Check for duplicated rec devs
-    ifelse(is.na(map$log_rdev_ys[, s]), 0, dnorm(p$log_rdev_ys[, s], rbc_s[s], sdr_s[s], log = TRUE))
+  logprior_rdev_ys <- sapply(1:ns, function(s) {
+    ifelse(
+      is.na(map$log_rdev_ys[, s]) | duplicated(map$log_rdev_ys[, s]),
+      0,
+      dnorm(p$log_rdev_ys[, s], bcr_s[s], sdr_s[s], log = TRUE)
+    )
   })
 
   logprior_dist <- 0

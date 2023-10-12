@@ -7,7 +7,7 @@
 conv_mov(x, g, v, na = dim(x)[1], nr = dim(x)[2], aref = ceiling(0.5 * na))
 }
 \arguments{
-\item{x}{Base log-movement parameters. See details. Array \verb{[na, nr, nr]}}
+\item{x}{Base log-movement parameters. See details. Array \verb{[a, r, r]}}
 
 \item{g}{Gravity model attractivity term. Tendency to move to region \code{r}. Matrix \verb{[a, r]}}
 
@@ -33,7 +33,7 @@ In log space, the movement matrix \eqn{m_a} for age class \eqn{a} from region \e
 gravity matrix \eqn{G}:
 \deqn{m_{a,r,r'} = x_{a,r,r'} + G_{a,r,r'}}
 
-To essentially exclude movement from \eqn{r} to \eqn{r'}, set \eqn{x_{a,r,r'} = -1000}
+To essentially exclude movement from \eqn{r} to \eqn{r'}, set \eqn{x_{a,r,r'} = -1000}.
 
 Gravity matrix \eqn{G} includes an attractivity term \eqn{g} and viscosity term \eqn{v}:
 
@@ -52,8 +52,11 @@ g_{a,r} + g_{a=aref,r} \quad & \textrm{otherwise}
 \end{cases}
 }
 
-The movement matrix in normal space is obtained by the softmax transformation
+The movement matrix in normal space is obtained by the softmax transformation:
 \deqn{M_{a,r,r'} = \dfrac{\exp(m_{a,r,r'})}{\sum_{r'}\exp(m_{a,r,r'})}}
+
+If \eqn{x} and \eqn{v} are zero, then the movement matrix simply distributes the total stock
+abundance into the various regions as specified in \eqn{g'}.
 }
 \references{
 Carruthers, T.R., et al. 2015. Modelling age-dependent movement: an application to red and

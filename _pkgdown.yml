@@ -1,0 +1,4 @@
+url: https://blue-matter.github.io/MARS/
+template:
+  bootstrap: 5
+  bootswatch: spacelab
