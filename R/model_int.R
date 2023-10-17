@@ -552,29 +552,6 @@ calc_q <- function(Iobs, B) {
   return(q)
 }
 
-#' Softmax function
-#'
-#' Takes a vector of real numbers and returns the corresponding vector of probabilities
-#'
-#' @param eta Vector
-#' @param log Logical, whether to return the value of the logarithm
-#'
-#' @return A vector equal to length of `eta`: \eqn{\exp(\eta)/\sum\exp(\eta)}
-#' @details Uses `MARS:::logspace.add` for numerical stability
-#' @export
-softmax <- function(eta, log = FALSE) {
-  den <- Reduce(logspace.add, eta)
-  v <- eta - den
-
-  if (log) {
-    v
-  } else {
-    exp(v)
-  }
-}
-
-logspace.add <- function(lx, ly) pmax(lx, ly) + log1p(exp(-abs(lx - ly)))
-
 #' Calculate movement matrix for all age classes
 #'
 #' Movement matrices are calculated for all age classes from a base matrix and a gravity model formulation

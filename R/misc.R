@@ -20,9 +20,65 @@
 #' @export
 posfun <- function(x, eps) CondExpGe(x, eps, 0, 0.01 * (x - eps) * (x - eps))
 
-sapply2 <- function(X, FUN, ..., USE.NAMES = TRUE) {
-  sapply(X = X, FUN = FUN, ..., simplify = "array", USE.NAMES = USE.NAMES)
+sapply2 <- base::sapply
+formals(sapply2)$simplify <- "array"
+
+#' Softmax function
+#'
+#' Takes a vector of real numbers and returns the corresponding vector of probabilities
+#'
+#' @param eta Vector
+#' @param log Logical, whether to return the value of the logarithm
+#'
+#' @return A vector equal to length of `eta`: \eqn{\exp(\eta)/\sum\exp(\eta)}
+#' @details Uses `MARS:::logspace.add` for numerical stability
+#' @export
+softmax <- function(eta, log = FALSE) {
+  den <- Reduce(logspace.add, eta)
+  v <- eta - den
+
+  if (log) {
+    v
+  } else {
+    exp(v)
+  }
 }
+
+logspace.add <- function(lx, ly) pmax(lx, ly) + log1p(exp(-abs(lx - ly)))
+
+#' Calculate covariance matrix
+#'
+#' Uses Cholesky factorization to generate a covariance matrix (or any symmetric positive definite matrix).
+#'
+#' @param sigma Numeric vector of marginal standard deviations (all greater than zeros)
+#' @param lower_diag Numeric vector to populate the lower triangle of the correlation matrix. All real numbers.
+#' Length `sum(1:(length(sigma) - 1))`
+#' @examples
+#' set.seed(23)
+#' n <- 5
+#' sigma <- runif(n, 0, 2)
+#' lower_diag <- runif(sum(1:(n-1)), -10, 10)
+#' Sigma <- conv_Sigma(sigma, lower_diag)
+#' Sigma/t(Sigma) # Is symmetric matrix? All ones
+#' cov2cor(Sigma)
+#' @export
+conv_Sigma <- function(sigma, lower_diag) {
+  n <- length(sigma)
+  stopifnot(length(lower_diag) == sum(1:(n-1)))
+
+  # Parameterizes correlation matrix of X in terms of Cholesky factors
+  # https://github.com/kaskr/RTMB/blob/master/tmb_examples/sdv_multi.R
+  L <- diag(n)
+  L[lower.tri(L)] <- lower_diag
+  row_norms <- apply(L, 1, function(row) sqrt(sum(row * row)))
+  L <- L / row_norms
+  R <- L %*% t(L)  # Correlation matrix of X (guaranteed positive definite)
+
+  V <- diag(sigma)
+  Sigma <- V %*% R %*% V
+  return(Sigma)
+}
+
 
 #' @importFrom stats nlminb rnorm
 optimize_RTMB_model <- function(obj, use_hessian = FALSE, restart = 0, do_sd = TRUE,

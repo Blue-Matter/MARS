@@ -511,7 +511,7 @@ check_data <- function(MARSdata, silent = FALSE) {
 #' \item{`mov_v_ymas`}{Array `[y, m, a, s]`. Viscosity term in gravity model for movement. See equations in [conv_mov()]}
 #' \item{`log_sdg_rs`}{Array `[r, s]`. Marginal log standard deviation in the stock distribution (`mov_g_ymars`) among regions for stock `s`.
 #' Only used when `est_mov = dist_random`. Default SD of 0.1.}
-#' \item{`t_corg_ps`}{Array `[factorial(nr - 1), s]`. Lower triangle of the correlation matrix for `mov_g_ymars`, to be obtained with the
+#' \item{`t_corg_ps`}{Array `[sum(1:(nr - 1)), s]`. Lower triangle of the correlation matrix for `mov_g_ymars`, to be obtained with the
 #' Cholesky factorization. Only used when `est_mov = dist_random`. Default values of zero.}
 #' }
 #'
@@ -550,7 +550,7 @@ make_parameters <- function(MARSdata, start = list(), ...) {
   p$mov_g_ymars <- array(0, c(ny, nm, na, nr, ns))
   p$mov_v_ymas <- array(0, c(ny, nm, na, ns))
   p$log_sdg_rs <- array(log(0.1), c(nr, ns))
-  p$t_corg_ps <- array(0, c(factorial(nr - 1), ns))
+  p$t_corg_ps <- array(0, c(sum(1:(nr - 1)), ns))
 
   # Fleet parameters ----
   p$log_q_fs <- matrix(0, nf, ns)

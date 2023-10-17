@@ -19,8 +19,8 @@ MARS <- function(MARSdata, parameters, map = list(), random = NULL,
                  run_model = TRUE, do_sd = TRUE, silent = TRUE,
                  control = list(iter.max = 2e+05, eval.max = 4e+05), ...) {
 
-  MARSdata@Misc[["map"]] <- map
-  #MARSdata@Misc[["random"]] <- random
+  MARSdata@Misc$map <- map
+  MARSdata@Misc$random <- random
 
   RTMB::TapeConfig(comparison = "tape")
   func <- function(p) .MARS(p, d = MARSdata)
@@ -49,7 +49,6 @@ MARS <- function(MARSdata, parameters, map = list(), random = NULL,
 
 update_report <- function(r, MARSdata) {
 
-
   if (is.null(r$F_yas)) {
     ny <- MARSdata@Dmodel@ny
     na <- MARSdata@Dmodel@na
@@ -75,6 +74,7 @@ update_report <- function(r, MARSdata) {
   # Assign data variables to environment, see OBS() for simulation ----
   getAllS4(d@Dmodel, d@Dstock, d@Dfishery, d@Dsurvey, d@DCKMR, d@Dtag)
   map <- d@Misc$map
+  random <- d@Misc$random
 
   # Transform data ----
   delta_m <- 1/nm
@@ -429,8 +429,19 @@ update_report <- function(r, MARSdata) {
     )
   })
 
-  logprior_dist <- 0
-  #logprior_dist <- sapply(1:ns, function(s))
+  if (nr > 1 && "mov_g_ymars" %in% random) {
+    sdg_s <- sapply2(1:ns, function(s) conv_Sigma(sigma = exp(p$log_sdg_rs[, s]), lower_diag = p$t_rhog_rs[, s]))
+
+    logprior_dist_ymas <- sapply2(1:ns, function(s) {
+      sapply2(1:na, function(a) {
+        sapply(1:nm, function(m) {
+          sapply(1:ny, function(y) dmvnorm(p$mov_g_ymars[y, m, a, , s], mu = 0, Sigma = sdg_s[, , s], log = TRUE))
+        })
+      })
+    })
+  } else {
+    logprior_dist_ymas <- 0
+  }
 
   logprior <- sum(logprior_rdev_ys) + sum(logprior_dist)
 
@@ -438,6 +449,7 @@ update_report <- function(r, MARSdata) {
   fn <- -1 * (logprior + loglike) + penalty
 
   # Report out variables ----
+  ## Parameters ----
   ADREPORT(h_s)
   if (ni > 0) {
     REPORT(q_i)
@@ -445,6 +457,7 @@ update_report <- function(r, MARSdata) {
     REPORT(I_ymi)
   }
 
+  ## Population parameters (and predicted values) ----
   REPORT(CN_ymafrs)
   if (any(CALobs_ymlfr > 0, na.rm = TRUE)) REPORT(CN_ymlfrs)
 
@@ -456,10 +469,11 @@ update_report <- function(r, MARSdata) {
     REPORT(pHSP_s)
   }
 
+  ## Objective function values ----
   REPORT(loglike)
 
   REPORT(logprior_rdev_ys)
-  REPORT(logprior_dist)
+  REPORT(logprior_dist_ymas)
   REPORT(fn)
 
   return(fn)

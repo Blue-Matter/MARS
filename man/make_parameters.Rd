@@ -91,7 +91,7 @@ this matrix specifies the distribution of total stock abundance into the various
 \item{\code{mov_v_ymas}}{Array \verb{[y, m, a, s]}. Viscosity term in gravity model for movement. See equations in \code{\link[=conv_mov]{conv_mov()}}}
 \item{\code{log_sdg_rs}}{Array \verb{[r, s]}. Marginal log standard deviation in the stock distribution (\code{mov_g_ymars}) among regions for stock \code{s}.
 Only used when \code{est_mov = dist_random}. Default SD of 0.1.}
-\item{\code{t_corg_ps}}{Array \verb{[factorial(nr - 1), s]}. Lower triangle of the correlation matrix for \code{mov_g_ymars}, to be obtained with the
+\item{\code{t_corg_ps}}{Array \verb{[sum(1:(nr - 1)), s]}. Lower triangle of the correlation matrix for \code{mov_g_ymars}, to be obtained with the
 Cholesky factorization. Only used when \code{est_mov = dist_random}. Default values of zero.}
 }
 }

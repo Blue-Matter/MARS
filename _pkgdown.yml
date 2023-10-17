@@ -2,3 +2,48 @@ url: https://blue-matter.github.io/MARS/
 template:
   bootstrap: 5
   bootswatch: spacelab
+
+reference:
+- title: Data
+  desc: S4 objects for data structures.
+  contents:
+  - MARSdata-class
+  - Dmodel-class
+  - Dstock-class
+  - Dfishery-class
+  - Dsurvey-class
+  - DCKMR-class
+  - Dtag-class
+
+- title: Model setup
+  desc: Prepare the data and parameters, then run the model.
+  contents:
+  - check_data
+  - make_parameters
+  - MARS
+  - MARSassess-class
+
+- title: Population dynamics
+  desc: Functions used in the population model.
+  contents:
+  - calc_LAK
+  - calc_F
+  - calc_recruitment
+  - calc_nextN
+  - calc_index
+  - calc_POP
+  - conv_mov
+
+- title: Likelihood and prior functions
+  desc: Calculate the log-likelihood or log-prior density functions from data and estimated parameters.
+  contents:
+  - like_comp
+  - like_CKMR
+
+- title: Miscellaneous
+  desc: Other useful functions.
+  contents:
+  - conv_Sigma
+  - CondExpLt
+  - softmax
+  - posfun
