@@ -33,6 +33,7 @@ reference:
   - calc_index
   - calc_POP
   - conv_mov
+  - conv_selpar
 
 - title: Likelihood and prior functions
   desc: Calculate the log-likelihood or log-prior density functions from data and estimated parameters.

@@ -149,13 +149,13 @@ update_report <- function(r, MARSdata) {
   Rdev_ys[] <- exp(p$log_rdev_ys)
 
   ## Fishery selectivity ----
-  selconv_pf <- conv_selpar(p$sel_pf, type = sel_f, maxage = na, Lmax = 0.95 * max(lmid))
+  selconv_pf <- conv_selpar(p$sel_pf, type = sel_f, maxage = na, maxL = 0.95 * max(lmid))
   sel_lf <- calc_sel_len(selconv_pf, lmid, type = sel_f)
   q_fs <- exp(p$log_q_fs)
 
   ## Index selectivity ----
   if (ni > 0) {
-    selconv_pi <- conv_selpar(p$sel_pi, type = sel_i, maxage = na, Lmax = 0.95 * max(lmid))
+    selconv_pi <- conv_selpar(p$sel_pi, type = sel_i, maxage = na, maxL = 0.95 * max(lmid))
     sel_li <- calc_sel_len(selconv_pi, lmid, type = sel_i)
   }
 
@@ -182,11 +182,13 @@ update_report <- function(r, MARSdata) {
       ## Calculate length-age key and fishery and index age selectivity ----
       #LAK_ymals[y, m, , , ] <- sapply2(1:ns, function(s) calc_LAK(len_ymas[y, m, , s], sdlen_ymas[y, m, , s], lbin))
       sel_ymafs[y, m, , , ] <- sapply2(1:ns, function(s) {
-        calc_fsel_age(sel_lf, LAK_ymals[y, m, , , s], sel_f, selconv_pf, sel_block_yf[y, ], na)
+        calc_fsel_age(sel_lf, LAK_ymals[y, m, , , s], sel_f, selconv_pf, sel_block_yf[y, ],
+                      mat = mat_yas[y, , s], a = seq(1, na))
       })
       if (ni > 0) {
         sel_ymais[y, m, , , ] <- sapply2(1:ns, function(s) {
-          calc_isel_age(sel_li, LAK_ymals[y, m, , , s], sel_i, selconv_pi, sel_ymafs[y, m, , , s], na)
+          calc_isel_age(sel_li, LAK_ymals[y, m, , , s], sel_i, selconv_pi, sel_ymafs[y, m, , , s],
+                        mat = mat_yas[y, , s], a = seq(1, na))
         })
       }
 
@@ -443,7 +445,7 @@ update_report <- function(r, MARSdata) {
     logprior_dist_ymas <- 0
   }
 
-  logprior <- sum(logprior_rdev_ys) + sum(logprior_dist)
+  logprior <- sum(logprior_rdev_ys) + sum(logprior_dist_ymas)
 
   # Objective function ----
   fn <- -1 * (logprior + loglike) + penalty
