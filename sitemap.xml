@@ -1,72 +1,96 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
   <url>
-    <loc>/404.html</loc>
+    <loc>https://blue-matter.github.io/MARS/404.html</loc>
   </url>
   <url>
-    <loc>/LICENSE-text.html</loc>
+    <loc>https://blue-matter.github.io/MARS/LICENSE.html</loc>
   </url>
   <url>
-    <loc>/LICENSE.html</loc>
+    <loc>https://blue-matter.github.io/MARS/articles/index.html</loc>
   </url>
   <url>
-    <loc>/authors.html</loc>
+    <loc>https://blue-matter.github.io/MARS/articles/introduction.html</loc>
   </url>
   <url>
-    <loc>/index.html</loc>
+    <loc>https://blue-matter.github.io/MARS/authors.html</loc>
   </url>
   <url>
-    <loc>/reference/CondExpLt.html</loc>
+    <loc>https://blue-matter.github.io/MARS/index.html</loc>
   </url>
   <url>
-    <loc>/reference/DCKMR-class.html</loc>
+    <loc>https://blue-matter.github.io/MARS/news/index.html</loc>
   </url>
   <url>
-    <loc>/reference/Dfishery-class.html</loc>
+    <loc>https://blue-matter.github.io/MARS/reference/CondExpLt.html</loc>
   </url>
   <url>
-    <loc>/reference/Dmodel-class.html</loc>
+    <loc>https://blue-matter.github.io/MARS/reference/DCKMR-class.html</loc>
   </url>
   <url>
-    <loc>/reference/Dstock-class.html</loc>
+    <loc>https://blue-matter.github.io/MARS/reference/Dfishery-class.html</loc>
   </url>
   <url>
-    <loc>/reference/Dsurvey-class.html</loc>
+    <loc>https://blue-matter.github.io/MARS/reference/Dmodel-class.html</loc>
   </url>
   <url>
-    <loc>/reference/MARS.html</loc>
+    <loc>https://blue-matter.github.io/MARS/reference/Dstock-class.html</loc>
   </url>
   <url>
-    <loc>/reference/MARSassess-class.html</loc>
+    <loc>https://blue-matter.github.io/MARS/reference/Dsurvey-class.html</loc>
   </url>
   <url>
-    <loc>/reference/MARSdata-class.html</loc>
+    <loc>https://blue-matter.github.io/MARS/reference/Dtag-class.html</loc>
   </url>
   <url>
-    <loc>/reference/calc_F.html</loc>
+    <loc>https://blue-matter.github.io/MARS/reference/MARS.html</loc>
   </url>
   <url>
-    <loc>/reference/calc_POP.html</loc>
+    <loc>https://blue-matter.github.io/MARS/reference/MARSassess-class.html</loc>
   </url>
   <url>
-    <loc>/reference/calc_index.html</loc>
+    <loc>https://blue-matter.github.io/MARS/reference/MARSdata-class.html</loc>
   </url>
   <url>
-    <loc>/reference/calc_nextN.html</loc>
+    <loc>https://blue-matter.github.io/MARS/reference/calc_F.html</loc>
   </url>
   <url>
-    <loc>/reference/check_data.html</loc>
+    <loc>https://blue-matter.github.io/MARS/reference/calc_LAK.html</loc>
   </url>
   <url>
-    <loc>/reference/conv_mov.html</loc>
+    <loc>https://blue-matter.github.io/MARS/reference/calc_POP.html</loc>
   </url>
   <url>
-    <loc>/reference/index.html</loc>
+    <loc>https://blue-matter.github.io/MARS/reference/calc_index.html</loc>
   </url>
   <url>
-    <loc>/reference/like_CKMR.html</loc>
+    <loc>https://blue-matter.github.io/MARS/reference/calc_nextN.html</loc>
   </url>
   <url>
-    <loc>/reference/like_comp.html</loc>
+    <loc>https://blue-matter.github.io/MARS/reference/calc_recruitment.html</loc>
+  </url>
+  <url>
+    <loc>https://blue-matter.github.io/MARS/reference/check_data.html</loc>
+  </url>
+  <url>
+    <loc>https://blue-matter.github.io/MARS/reference/conv_mov.html</loc>
+  </url>
+  <url>
+    <loc>https://blue-matter.github.io/MARS/reference/index.html</loc>
+  </url>
+  <url>
+    <loc>https://blue-matter.github.io/MARS/reference/like_CKMR.html</loc>
+  </url>
+  <url>
+    <loc>https://blue-matter.github.io/MARS/reference/like_comp.html</loc>
+  </url>
+  <url>
+    <loc>https://blue-matter.github.io/MARS/reference/make_parameters.html</loc>
+  </url>
+  <url>
+    <loc>https://blue-matter.github.io/MARS/reference/posfun.html</loc>
+  </url>
+  <url>
+    <loc>https://blue-matter.github.io/MARS/reference/softmax.html</loc>
   </url>
 </urlset>
