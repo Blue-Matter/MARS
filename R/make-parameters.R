@@ -470,7 +470,8 @@ check_data <- function(MARSdata, silent = FALSE) {
 #' Sets up the list of parameters, map of parameters (see `map` argument in [TMB::MakeADFun()]), and identifies some random effects parameters
 #' based on the input data and some user choices on model configuration.
 #'
-#' These functions provide a template for the parameter and map setup that can be adjusted for alternative configurations.
+#' These functions provide a template for the parameter and map setup that can be adjusted for alternative configurations. [check_parameters()]
+#' checks whether custom made parameter lists are of the correct dimension.
 #' @seealso \link{MARSdata-class}
 #'
 #' @section Parameters:
@@ -502,8 +503,8 @@ check_data <- function(MARSdata, silent = FALSE) {
 #' \item{`log_sdr_s`}{Vector by `s`. log-Standard deviation of the log recruitment deviations. Default SD = 0.4}
 #' \item{`log_q_fs`}{Matrix `[f, s]`. The natural logarithm of `q_fs`, the relative fishing efficiency of `f` for stock `s`.
 #' Equal values imply equal catchability of all stocks. See equations in [calc_F()]. Default sets all values to zero.}
-#' \item{`sel_pf`}{Matrix `[3, f]`}
-#' \item{`sel_pi`}{Matrix `[3, i]`}
+#' \item{`sel_pf`}{Matrix `[3, f]`. Fishery selectivity parameters in logit or log space. See equations [conv_selpar()], where `sel_pf` is the `x` matrix.}
+#' \item{`sel_pi`}{Matrix `[3, i]`. Index selectivity parameters in logit or log space. See equations [conv_selpar()], where `sel_pi` is the `x` matrix.}
 #' \item{`mov_x_ymarrs`}{Array `[y, m, a, r, r, s]`. Base movement matrix. Set to -1000 to effectively exclude movements from region pairs.
 #' See equations in [conv_mov()]}
 #' \item{`mov_g_ymars`}{Array `[y, m, a, r, s]`. Attractivity term in gravity model for movement. If `x` and `v` are zero,
@@ -516,7 +517,8 @@ check_data <- function(MARSdata, silent = FALSE) {
 #' }
 #'
 #' @param MARSdata S4 data object
-#' @param start An optional list of parameters
+#' @param start An optional list of parameters. Named list of parameters with the associated dimensions and transformations below.
+#' Overrides default values created by [make_parameters()].
 #' @param ... Various arguments for [make_map()] (could be important!)
 #' @return
 #' [make_map()] returns a named list containing parameter mappings (`"map"`) and a character vector of random effects (`"random"`).
@@ -527,37 +529,42 @@ make_parameters <- function(MARSdata, start = list(), ...) {
 
   getAllS4(MARSdata@Dmodel)
 
-  p <- list()
+  p <- start
 
   # Stock parameters ----
-  p$t_R0_s <- rep(3, ns)
-  p$t_h_s <- local({
-    h <- 0.8
-    ifelse(MARSdata@Dstock@SRR_s == "BH", qlogis((h - 0.2)/0.8), log(h - 0.2))
-  })
-  p$mat_ps <- sapply(1:ns, function(s) {
-    a50 <- 0.5 * na
-    a95 <- a50 + 1
-    logit_a50 <- qlogis(a50/na)
-    log_diff <- log(a95 - a50)
-    c(logit_a50, log_diff)
-  })
-  p$log_M_s <- rep(-log(0.05)/na, ns)
-  p$log_rdev_ys <- matrix(0, ny, ns)
-  p$log_sdr_s <- rep(0.4, ns)
+  if (is.null(p$t_R0_s)) p$t_R0_s <- rep(3, ns)
+  if (is.null(p$t_h_s)) {
+    p$t_h_s <- local({
+      h <- 0.8
+      ifelse(MARSdata@Dstock@SRR_s == "BH", qlogis((h - 0.2)/0.8), log(h - 0.2))
+    })
+  }
+  if (is.null(p$mat_ps)) {
+    p$mat_ps <- sapply(1:ns, function(s) {
+      a50 <- 0.5 * na
+      a95 <- a50 + 1
+      logit_a50 <- qlogis(a50/na)
+      log_diff <- log(a95 - a50)
+      c(logit_a50, log_diff)
+    })
+  }
 
-  p$mov_x_ymarrs <- array(0, c(ny, nm, na, nr, nr, ns))
-  p$mov_g_ymars <- array(0, c(ny, nm, na, nr, ns))
-  p$mov_v_ymas <- array(0, c(ny, nm, na, ns))
-  p$log_sdg_rs <- array(log(0.1), c(nr, ns))
-  p$t_corg_ps <- array(0, c(sum(1:(nr - 1)), ns))
+  if (is.null(p$log_M_s)) p$log_M_s <- rep(-log(0.05)/na, ns)
+  if (is.null(p$log_rdev_ys)) p$log_rdev_ys <- matrix(0, ny, ns)
+  if (is.null(p$log_sdr_s)) p$log_sdr_s <- rep(0.4, ns)
+
+  if (is.null(p$mov_x_ymarrs)) p$mov_x_ymarrs <- array(0, c(ny, nm, na, nr, nr, ns))
+  if (is.null(p$mov_g_ymars)) p$mov_g_ymars <- array(0, c(ny, nm, na, nr, ns))
+  if (is.null(p$mov_v_ymas)) p$mov_v_ymas <- array(0, c(ny, nm, na, ns))
+  if (is.null(p$log_sdg_rs)) p$log_sdg_rs <- array(log(0.1), c(nr, ns))
+  if (is.null(p$t_corg_ps)) p$t_corg_ps <- array(0, c(sum(1:(nr - 1)), ns))
 
   # Fleet parameters ----
-  p$log_q_fs <- matrix(0, nf, ns)
-  p$sel_pf <- make_par_sel(MARSdata, nf)
+  if (is.null(p$log_q_fs)) p$log_q_fs <- matrix(0, nf, ns)
+  if (is.null(p$sel_pf)) p$sel_pf <- make_sel_par(MARSdata, nf)
 
   # Index parameters ----
-  p$sel_pi <- make_par_sel(MARSdata, ni)
+  if (is.null(p$sel_pi)) p$sel_pi <- make_sel_par(MARSdata, ni)
 
   do_map <- make_map(p, MARSdata, ...)
 
@@ -658,7 +665,6 @@ make_map <- function(p, MARSdata,
       factor()
 
     map$mov_v_ymas <- factor(array(NA, dim(p$mov_v_ymas)))
-
     random <- c(random, "mov_g_ymars")
 
     if (!silent) message("Stock distribution is estimated as a random effect")
@@ -712,6 +718,7 @@ make_map <- function(p, MARSdata,
   return(list(map = map, random = random))
 }
 
-check_parameters <- function(p = list()) {
-
+#' @export
+check_parameters <- function(p = list(), MARSdata) {
+  return(p)
 }

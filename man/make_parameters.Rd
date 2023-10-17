@@ -22,7 +22,8 @@ make_map(
 \arguments{
 \item{MARSdata}{S4 data object}
 
-\item{start}{An optional list of parameters}
+\item{start}{An optional list of parameters. Named list of parameters with the associated dimensions and transformations below.
+Overrides default values created by \code{\link[=make_parameters]{make_parameters()}}.}
 
 \item{...}{Various arguments for \code{\link[=make_map]{make_map()}} (could be important!)}
 
@@ -51,7 +52,8 @@ make_map(
 Sets up the list of parameters, map of parameters (see \code{map} argument in \code{\link[TMB:MakeADFun]{TMB::MakeADFun()}}), and identifies some random effects parameters
 based on the input data and some user choices on model configuration.
 
-These functions provide a template for the parameter and map setup that can be adjusted for alternative configurations.
+These functions provide a template for the parameter and map setup that can be adjusted for alternative configurations. \code{\link[=check_parameters]{check_parameters()}}
+checks whether custom made parameter lists are of the correct dimension.
 }
 \section{Parameters}{
 
@@ -82,8 +84,8 @@ Default parameter value for all stocks: \code{M <- -log(0.05)/MARSdata@Dmodel@na
 \item{\code{log_sdr_s}}{Vector by \code{s}. log-Standard deviation of the log recruitment deviations. Default SD = 0.4}
 \item{\code{log_q_fs}}{Matrix \verb{[f, s]}. The natural logarithm of \code{q_fs}, the relative fishing efficiency of \code{f} for stock \code{s}.
 Equal values imply equal catchability of all stocks. See equations in \code{\link[=calc_F]{calc_F()}}. Default sets all values to zero.}
-\item{\code{sel_pf}}{Matrix \verb{[3, f]}}
-\item{\code{sel_pi}}{Matrix \verb{[3, i]}}
+\item{\code{sel_pf}}{Matrix \verb{[3, f]}. Fishery selectivity parameters in logit or log space. See equations \code{\link[=conv_selpar]{conv_selpar()}}, where \code{sel_pf} is the \code{x} matrix.}
+\item{\code{sel_pi}}{Matrix \verb{[3, i]}. Index selectivity parameters in logit or log space. See equations \code{\link[=conv_selpar]{conv_selpar()}}, where \code{sel_pi} is the \code{x} matrix.}
 \item{\code{mov_x_ymarrs}}{Array \verb{[y, m, a, r, r, s]}. Base movement matrix. Set to -1000 to effectively exclude movements from region pairs.
 See equations in \code{\link[=conv_mov]{conv_mov()}}}
 \item{\code{mov_g_ymars}}{Array \verb{[y, m, a, r, s]}. Attractivity term in gravity model for movement. If \code{x} and \code{v} are zero,

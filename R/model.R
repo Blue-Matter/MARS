@@ -15,7 +15,7 @@
 #' @param ... Other arguments to [TMB::MakeADFun()].
 #' @importFrom methods new
 #' @export
-MARS <- function(MARSdata, parameters, map = list(), random = NULL,
+fit_MARS <- function(MARSdata, parameters, map = list(), random = NULL,
                  run_model = TRUE, do_sd = TRUE, silent = TRUE,
                  control = list(iter.max = 2e+05, eval.max = 4e+05), ...) {
 
