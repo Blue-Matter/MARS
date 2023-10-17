@@ -133,7 +133,7 @@ check_Dfishery <- function(Dfishery, Dstock, Dmodel, silent = FALSE) {
   dim_Cobs <- dim(Cobs_ymfr) == c(ny, nm, nf, nr)
   if (!all(dim_Cobs)) stop("dim(Cobs_ymfr) needs to be: ", c(ny, nm, nf, nr) %>% paste(collapse = ", "))
 
-  if (!length(dim_fwt)) {
+  if (!length(fwt_ymafs)) {
     if (!silent) message("Setting fishery weight at age to stock weight at age")
     Dfishery@fwt_ymafs <- sapply2(1:ns, function(s) {
       sapply2(1:nf, function(f) Dstock@swt_ymas[, , , s])
@@ -477,25 +477,24 @@ check_data <- function(MARSdata, silent = FALSE) {
 #' @section Parameters:
 #'
 #' Generally parameter names will have up to three components, separated by underscores.
-#' For example, `log_M_s` represents natural mortality in log space is a vector by stock `s`.
+#' For example, `log_M_s` represents the natural logarithm of natural mortality, and is a vector by stock `s`.
 #'
 #' The first component describes the transformation from the estimated parameter space to the normal parameter space,
-#' for example, `log` or `logit`. Prefix `t` indicates some other transformation that is described below.
+#' frequently, `log` or `logit`. Prefix `t` indicates some other custom transformation that is described below.
 #'
 #' Second is the parameter name, e.g., `M` for natural mortality, `rdev` for recruitment deviates, etc.
 #'
 #' Third is the dimension of the parameter variable and the indexing for the vectors, matrices, and arrays, e.g., `y` for year, `s` for stock.
 #' See \link{MARSdata-class}. Here, an additional index `p` represents some other number of parameters that is described below.
 #'
-#'
 #' \describe{
 #' \item{`t_R0_s`}{Vector by `s`. Unfished recruitment, i.e., intersection of unfished replacement line and average stock recruit function,
 #' is represented as: `R0 <- exp(t_R0_s + MARSdata@Dmodel@scalar_s)`. By default, `t_R0_s = 3`}
 #' \item{`t_h_s`}{Vector by `s`. Steepness of the stock-recruit function. Logit space for Beverton-Holt and log space for Ricker functions.
 #' Default steepness value of 0.8}
-#' \item{`mat_ps`}{Matrix `[2, s]`. Maturity parameters (can be estimated or specified in data object). Parameter in the first row represents
-#' the age of 50 percent maturity in logit space: `a50_s <- plogis(mat_ps[1, ] * na)`.
-#' In the second row is the age of 95 percent maturity as a logarithmic offset: `a95_s <- exp(a50 + mat_ps[2, ])`.
+#' \item{`mat_ps`}{Matrix `[2, s]`. Maturity parameters (can be estimated or specified in data object). Logistic functional form. The
+#' parameter in the first row is the age of 50 percent maturity in logit space: `a50_s <- plogis(mat_ps[1, ] * na)`.
+#' In the second row is the age of 95 percent maturity as a logarithmic offset: `a95_s <- exp(a50_s + mat_ps[2, ])`.
 #' Default `a50_s <- 0.5 * na` and `a95_s <- a50_s + 1`}
 #' \item{`log_M_s`}{Vector by `s`. Natural logarithm of natural mortality (can be estimated or specified in data object).
 #' Default parameter value for all stocks: `M <- -log(0.05)/MARSdata@Dmodel@na`}
@@ -521,8 +520,6 @@ check_data <- function(MARSdata, silent = FALSE) {
 #' Overrides default values created by [make_parameters()].
 #' @param ... Various arguments for [make_map()] (could be important!)
 #' @return
-#' [make_map()] returns a named list containing parameter mappings (`"map"`) and a character vector of random effects (`"random"`).
-#'
 #' [make_parameters()] returns a list of parameters (`"p"`) concatenated with the output of [make_map()].
 #' @export
 make_parameters <- function(MARSdata, start = list(), ...) {
@@ -561,10 +558,26 @@ make_parameters <- function(MARSdata, start = list(), ...) {
 
   # Fleet parameters ----
   if (is.null(p$log_q_fs)) p$log_q_fs <- matrix(0, nf, ns)
-  if (is.null(p$sel_pf)) p$sel_pf <- make_sel_par(MARSdata, nf)
+  if (is.null(p$sel_pf)) {
+    p$sel_pf <- local({
+      sel <- matrix(NA, 3, max(MARSdata@Dfishery@sel_block_yf))
+      sel[1, ] <- 0 # Apical sel between 0 and max age/length
+      sel[2, ] <- log(0.01) # Knife edge ascending selectivity
+      sel[3, ] <- log(0.1) # More sloping descending limb of selectivity
+      sel
+    })
+  }
 
   # Index parameters ----
-  if (is.null(p$sel_pi)) p$sel_pi <- make_sel_par(MARSdata, ni)
+  if (is.null(p$sel_pi)) {
+    p$sel_pi <- local({
+      sel <- matrix(NA, 3, MARSdata@Dsurvey@ni)
+      sel[1, ] <- 0 # Apical sel between 0 and max age/length
+      sel[2, ] <- log(0.01) # Knife edge ascending selectivity
+      sel[3, ] <- log(0.1) # More sloping descending limb of selectivity
+      sel
+    })
+  }
 
   do_map <- make_map(p, MARSdata, ...)
 
@@ -592,6 +605,8 @@ make_parameters <- function(MARSdata, start = list(), ...) {
 #'
 #' @importFrom dplyr filter
 #' @importFrom rlang .data .env
+#' @return
+#' [make_map()] returns a named list containing parameter mappings (`"map"`) and a character vector of random effects (`"random"`).
 #' @export
 make_map <- function(p, MARSdata,
                      est_M = FALSE, est_h = FALSE, est_mat = FALSE, est_sdr = FALSE,
@@ -709,16 +724,49 @@ make_map <- function(p, MARSdata,
     })
   }
 
+  ## Fix dome parameter if selectivity is logistic or all parameters if mirrored to maturity
+  if (any(!grepl("dome", MARSdata@Dfishery@sel_f))) {
+    map$sel_pf <- local({
+      n <- max(MARSdata@Dfishery@sel_block_yf)
+      m <- sapply(1:n, function(f) {
+        sel_f <- MARSdata@Dfishery@sel_f[f]
+        vec <- rep(TRUE, 3)
+        if (sel_f %in% c("logistic_age", "logistic_length")) vec[3] <- NA
+        if (sel_f == "SB") vec[] <- NA
+        return(vec)
+      })
+      m[!is.na(m)] <- 1:sum(m)
+      factor(m)
+    })
+  }
+
   # Survey parameters ----
+  ## Fix dome parameter or all parameters or all parameters if mirrored to fleet or maturity
+  if (any(!grepl("dome", MARSdata@Dsurvey@sel_i))) {
+    old_warn <- options()$warn
+    options(warn = -1)
+    on.exit(options(warn = old_warn))
 
-
-
-
+    map$sel_pi <- local({
+      m <- sapply(1:MARSdata@Dsurvey@ni, function(i) {
+        sel_i <- MARSdata@Dsurvey@sel_i[i]
+        vec <- rep(TRUE, 3)
+        if (sel_f %in% c("logistic_age", "logistic_length")) vec[3] <- NA
+        if (sel_f == "SB" || !is.na(as.integer(sel_i))) vec[] <- NA
+        return(vec)
+      })
+      m[!is.na(m)] <- 1:sum(m)
+      factor(m)
+    })
+  }
 
   return(list(map = map, random = random))
 }
 
+#' @rdname make_parameters
+#' @return
+#' [check_parameters()] invisibly returns the parameter list if no problems are encountered.
 #' @export
 check_parameters <- function(p = list(), MARSdata) {
-  return(p)
+  return(invisible(p))
 }

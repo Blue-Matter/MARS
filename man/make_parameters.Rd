@@ -3,6 +3,7 @@
 \name{make_parameters}
 \alias{make_parameters}
 \alias{make_map}
+\alias{check_parameters}
 \title{Make list of parameters for RTMB}
 \usage{
 make_parameters(MARSdata, start = list(), ...)
@@ -18,6 +19,8 @@ make_map(
   est_qfs = FALSE,
   silent = FALSE
 )
+
+check_parameters(p = list(), MARSdata)
 }
 \arguments{
 \item{MARSdata}{S4 data object}
@@ -44,9 +47,11 @@ Overrides default values created by \code{\link[=make_parameters]{make_parameter
 \item{silent}{Logical, whether to report messages to the console}
 }
 \value{
+\code{\link[=make_parameters]{make_parameters()}} returns a list of parameters (\code{"p"}) concatenated with the output of \code{\link[=make_map]{make_map()}}.
+
 \code{\link[=make_map]{make_map()}} returns a named list containing parameter mappings (\code{"map"}) and a character vector of random effects (\code{"random"}).
 
-\code{\link[=make_parameters]{make_parameters()}} returns a list of parameters (\code{"p"}) concatenated with the output of \code{\link[=make_map]{make_map()}}.
+\code{\link[=check_parameters]{check_parameters()}} invisibly returns the parameter list if no problems are encountered.
 }
 \description{
 Sets up the list of parameters, map of parameters (see \code{map} argument in \code{\link[TMB:MakeADFun]{TMB::MakeADFun()}}), and identifies some random effects parameters
@@ -59,10 +64,10 @@ checks whether custom made parameter lists are of the correct dimension.
 
 
 Generally parameter names will have up to three components, separated by underscores.
-For example, \code{log_M_s} represents natural mortality in log space is a vector by stock \code{s}.
+For example, \code{log_M_s} represents the natural logarithm of natural mortality, and is a vector by stock \code{s}.
 
 The first component describes the transformation from the estimated parameter space to the normal parameter space,
-for example, \code{log} or \code{logit}. Prefix \code{t} indicates some other transformation that is described below.
+frequently, \code{log} or \code{logit}. Prefix \code{t} indicates some other custom transformation that is described below.
 
 Second is the parameter name, e.g., \code{M} for natural mortality, \code{rdev} for recruitment deviates, etc.
 
@@ -74,9 +79,9 @@ See \link{MARSdata-class}. Here, an additional index \code{p} represents some ot
 is represented as: \code{R0 <- exp(t_R0_s + MARSdata@Dmodel@scalar_s)}. By default, \code{t_R0_s = 3}}
 \item{\code{t_h_s}}{Vector by \code{s}. Steepness of the stock-recruit function. Logit space for Beverton-Holt and log space for Ricker functions.
 Default steepness value of 0.8}
-\item{\code{mat_ps}}{Matrix \verb{[2, s]}. Maturity parameters (can be estimated or specified in data object). Parameter in the first row represents
-the age of 50 percent maturity in logit space: \code{a50_s <- plogis(mat_ps[1, ] * na)}.
-In the second row is the age of 95 percent maturity as a logarithmic offset: \code{a95_s <- exp(a50 + mat_ps[2, ])}.
+\item{\code{mat_ps}}{Matrix \verb{[2, s]}. Maturity parameters (can be estimated or specified in data object). Logistic functional form. The
+parameter in the first row is the age of 50 percent maturity in logit space: \code{a50_s <- plogis(mat_ps[1, ] * na)}.
+In the second row is the age of 95 percent maturity as a logarithmic offset: \code{a95_s <- exp(a50_s + mat_ps[2, ])}.
 Default \code{a50_s <- 0.5 * na} and \code{a95_s <- a50_s + 1}}
 \item{\code{log_M_s}}{Vector by \code{s}. Natural logarithm of natural mortality (can be estimated or specified in data object).
 Default parameter value for all stocks: \code{M <- -log(0.05)/MARSdata@Dmodel@na}}
