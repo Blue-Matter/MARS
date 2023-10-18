@@ -43,7 +43,7 @@
     <loc>https://blue-matter.github.io/MARS/reference/Dtag-class.html</loc>
   </url>
   <url>
-    <loc>https://blue-matter.github.io/MARS/reference/MARS.html</loc>
+    <loc>https://blue-matter.github.io/MARS/reference/MARS-package.html</loc>
   </url>
   <url>
     <loc>https://blue-matter.github.io/MARS/reference/MARSassess-class.html</loc>
@@ -73,7 +73,16 @@
     <loc>https://blue-matter.github.io/MARS/reference/check_data.html</loc>
   </url>
   <url>
+    <loc>https://blue-matter.github.io/MARS/reference/conv_Sigma.html</loc>
+  </url>
+  <url>
     <loc>https://blue-matter.github.io/MARS/reference/conv_mov.html</loc>
+  </url>
+  <url>
+    <loc>https://blue-matter.github.io/MARS/reference/conv_selpar.html</loc>
+  </url>
+  <url>
+    <loc>https://blue-matter.github.io/MARS/reference/fit_MARS.html</loc>
   </url>
   <url>
     <loc>https://blue-matter.github.io/MARS/reference/index.html</loc>

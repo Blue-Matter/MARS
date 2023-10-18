@@ -50,9 +50,9 @@
     </div>
 
     <div class="section level2">
-      <h2 id="all-functions">All functions<a class="anchor" aria-label="anchor" href="#all-functions"></a></h2>
+      <h2 id="data">Data<a class="anchor" aria-label="anchor" href="#data"></a></h2>
       
-      
+      <p class="section-desc"></p><p>S4 objects for data structures.</p>
 
       
     </div><div id="" class="section level2">
@@ -62,19 +62,9 @@
 
       <dl><dt>
           
-          <code><a href="CondExpLt.html">CondExpLt()</a></code> <code><a href="CondExpLt.html">CondExpLe()</a></code> <code><a href="CondExpLt.html">CondExpGt()</a></code> <code><a href="CondExpLt.html">CondExpGe()</a></code> <code><a href="CondExpLt.html">CondExpEq()</a></code> 
+          <code><a href="MARSdata-class.html">MARSdata-class</a></code> 
         </dt>
-        <dd>If statements compatible with RTMB</dd>
-      </dl><dl><dt>
-          
-          <code><a href="DCKMR-class.html">DCKMR-class</a></code> 
-        </dt>
-        <dd>DCKMR S4 object</dd>
-      </dl><dl><dt>
-          
-          <code><a href="Dfishery-class.html">Dfishery-class</a></code> 
-        </dt>
-        <dd>Dfishery S4 object</dd>
+        <dd>MARSdata S4 object</dd>
       </dl><dl><dt>
           
           <code><a href="Dmodel-class.html">Dmodel-class</a></code> 
@@ -87,17 +77,48 @@
         <dd>Dstock S4 object</dd>
       </dl><dl><dt>
           
+          <code><a href="Dfishery-class.html">Dfishery-class</a></code> 
+        </dt>
+        <dd>Dfishery S4 object</dd>
+      </dl><dl><dt>
+          
           <code><a href="Dsurvey-class.html">Dsurvey-class</a></code> 
         </dt>
         <dd>Dsurvey S4 object</dd>
       </dl><dl><dt>
           
+          <code><a href="DCKMR-class.html">DCKMR-class</a></code> 
+        </dt>
+        <dd>DCKMR S4 object</dd>
+      </dl><dl><dt>
+          
           <code><a href="Dtag-class.html">Dtag-class</a></code> 
         </dt>
         <dd>Dtag S4 object</dd>
+      </dl></div><div class="section level2">
+      <h2 id="model-setup">Model setup<a class="anchor" aria-label="anchor" href="#model-setup"></a></h2>
+      
+      <p class="section-desc"></p><p>Prepare the data and parameters, then run the model.</p>
+
+      
+    </div><div id="" class="section level2">
+      
+      
+      
+
+      <dl><dt>
+          
+          <code><a href="check_data.html">check_data()</a></code> 
+        </dt>
+        <dd>Check dimensions and inputs in MARSdata object</dd>
       </dl><dl><dt>
           
-          <code><a href="MARS.html">MARS()</a></code> 
+          <code><a href="make_parameters.html">make_parameters()</a></code> <code><a href="make_parameters.html">make_map()</a></code> <code><a href="make_parameters.html">check_parameters()</a></code> 
+        </dt>
+        <dd>Make list of parameters for RTMB</dd>
+      </dl><dl><dt>
+          
+          <code><a href="fit_MARS.html">fit_MARS()</a></code> 
         </dt>
         <dd>Fit MARS model</dd>
       </dl><dl><dt>
@@ -105,11 +126,22 @@
           <code><a href="MARSassess-class.html">MARSassess-class</a></code> 
         </dt>
         <dd>MARSassess S4 object</dd>
-      </dl><dl><dt>
+      </dl></div><div class="section level2">
+      <h2 id="population-dynamics">Population dynamics<a class="anchor" aria-label="anchor" href="#population-dynamics"></a></h2>
+      
+      <p class="section-desc"></p><p>Functions used in the population model.</p>
+
+      
+    </div><div id="" class="section level2">
+      
+      
+      
+
+      <dl><dt>
           
-          <code><a href="MARSdata-class.html">MARSdata-class</a></code> 
+          <code><a href="calc_LAK.html">calc_LAK()</a></code> 
         </dt>
-        <dd>MARSdata S4 object</dd>
+        <dd>Length-at-age key</dd>
       </dl><dl><dt>
           
           <code><a href="calc_F.html">calc_F()</a></code> 
@@ -117,19 +149,9 @@
         <dd>Newton-Raphson search for fishing mortality</dd>
       </dl><dl><dt>
           
-          <code><a href="calc_LAK.html">calc_LAK()</a></code> 
+          <code><a href="calc_recruitment.html">calc_recruitment()</a></code> 
         </dt>
-        <dd>Length-at-age key</dd>
-      </dl><dl><dt>
-          
-          <code><a href="calc_POP.html">calc_POP()</a></code> <code><a href="calc_POP.html">calc_HSP()</a></code> 
-        </dt>
-        <dd>Predict the probability of CKMR kinship pairs</dd>
-      </dl><dl><dt>
-          
-          <code><a href="calc_index.html">calc_index()</a></code> 
-        </dt>
-        <dd>Calculate index at age</dd>
+        <dd>Calculate recruitment from stock-recruit function</dd>
       </dl><dl><dt>
           
           <code><a href="calc_nextN.html">calc_nextN()</a></code> 
@@ -137,14 +159,14 @@
         <dd>Project stock abundance to the next time step</dd>
       </dl><dl><dt>
           
-          <code><a href="calc_recruitment.html">calc_recruitment()</a></code> 
+          <code><a href="calc_index.html">calc_index()</a></code> 
         </dt>
-        <dd>Calculate recruitment from stock-recruit function</dd>
+        <dd>Calculate index at age</dd>
       </dl><dl><dt>
           
-          <code><a href="check_data.html">check_data()</a></code> 
+          <code><a href="calc_POP.html">calc_POP()</a></code> <code><a href="calc_POP.html">calc_HSP()</a></code> 
         </dt>
-        <dd>Check dimensions and inputs in MARSdata object</dd>
+        <dd>Predict the probability of CKMR kinship pairs</dd>
       </dl><dl><dt>
           
           <code><a href="conv_mov.html">conv_mov()</a></code> 
@@ -152,31 +174,64 @@
         <dd>Calculate movement matrix for all age classes</dd>
       </dl><dl><dt>
           
-          <code><a href="like_CKMR.html">like_CKMR()</a></code> 
+          <code><a href="conv_selpar.html">conv_selpar()</a></code> <code><a href="conv_selpar.html">calc_sel_len()</a></code> <code><a href="conv_selpar.html">calc_fsel_age()</a></code> <code><a href="conv_selpar.html">calc_isel_age()</a></code> 
         </dt>
-        <dd>Likelihood for CKMR</dd>
-      </dl><dl><dt>
+        <dd>Selectivity at age and length</dd>
+      </dl></div><div class="section level2">
+      <h2 id="likelihood-and-prior-functions">Likelihood and prior functions<a class="anchor" aria-label="anchor" href="#likelihood-and-prior-functions"></a></h2>
+      
+      <p class="section-desc"></p><p>Calculate the log-likelihood or log-prior density functions from data and estimated parameters.</p>
+
+      
+    </div><div id="" class="section level2">
+      
+      
+      
+
+      <dl><dt>
           
           <code><a href="like_comp.html">like_comp()</a></code> 
         </dt>
         <dd>Likelihood for composition vectors</dd>
       </dl><dl><dt>
           
-          <code><a href="make_parameters.html">make_parameters()</a></code> <code><a href="make_parameters.html">make_map()</a></code> 
+          <code><a href="like_CKMR.html">like_CKMR()</a></code> 
         </dt>
-        <dd>Make list of parameters for RTMB</dd>
+        <dd>Likelihood for CKMR</dd>
+      </dl></div><div class="section level2">
+      <h2 id="miscellaneous">Miscellaneous<a class="anchor" aria-label="anchor" href="#miscellaneous"></a></h2>
+      
+      <p class="section-desc"></p><p>Other useful functions.</p>
+
+      
+    </div><div id="" class="section level2">
+      
+      
+      
+
+      <dl><dt>
+          
+          <code><a href="conv_Sigma.html">conv_Sigma()</a></code> 
+        </dt>
+        <dd>Calculate covariance matrix</dd>
       </dl><dl><dt>
           
-          <code><a href="posfun.html">posfun()</a></code> 
+          <code><a href="CondExpLt.html">CondExpLt()</a></code> <code><a href="CondExpLt.html">CondExpLe()</a></code> <code><a href="CondExpLt.html">CondExpGt()</a></code> <code><a href="CondExpLt.html">CondExpGe()</a></code> <code><a href="CondExpLt.html">CondExpEq()</a></code> 
         </dt>
-        <dd>Quadratic penalty function</dd>
+        <dd>If statements compatible with RTMB</dd>
       </dl><dl><dt>
           
           <code><a href="softmax.html">softmax()</a></code> 
         </dt>
         <dd>Softmax function</dd>
+      </dl><dl><dt>
+          
+          <code><a href="posfun.html">posfun()</a></code> 
+        </dt>
+        <dd>Quadratic penalty function</dd>
       </dl></div>
-  </main></div>
+  </main><aside class="col-md-3"><nav id="toc"><h2>On this page</h2>
+    </nav></aside></div>
 
 
     <footer><div class="pkgdown-footer-left">
