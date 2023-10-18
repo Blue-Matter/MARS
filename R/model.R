@@ -141,7 +141,7 @@ update_report <- function(r, MARSdata) {
     calc_phi(M_yas[y_phi, , s], mat_yas[y_phi, , s] * fec_yas[y_phi, , s],
              delta = (m_spawn - 1 + delta_s[s]) * delta_m)
   })
-  B0_s <- R0_s * phi_s
+  SB0_s <- R0_s * phi_s
   sralpha_s <- kappa_s/phi_s
   srbeta_s <- sapply(1:ns, function(s) SRbetaconv(h_s[s], R0_s[s], phi_s[s], SRR = SRR_s[s]))
 
@@ -286,6 +286,46 @@ update_report <- function(r, MARSdata) {
   }
 
   # Likelihoods ----
+  ## Marginal fishery age composition ----
+  if (any(CAAobs_ymafr > 0, na.rm = TRUE)) {
+    CN_ymafr <- apply(CN_ymafrs, 1:5, sum)
+
+    loglike_CAA_ymfr <- sapply2(1:nr, function(r) {
+      sapply2(1:nf, function(f) {
+        sapply(1:nm, function(m) {
+          sapply(1:ny, function(y) {
+            pred <- CN_ymafr[y, m, , f, r]
+            like_comp(obs = CAAobs_ymafr[y, m, , f, r], pred = pred, type = fcomp_like,
+                      N = CAAN_ymfr[y, m, f, r], theta = CAAtheta_f[f],
+                      stdev = sqrt(sum(pred)/pred))
+          })
+        })
+      })
+    })
+  } else {
+    loglike_CAA_ymfr <- 0
+  }
+
+  ## Marginal fishery length composition ----
+  if (any(CALobs_ymlfr > 0, na.rm = TRUE)) { # If there's any length data
+    CN_ymlfr <- apply(CN_ymlfrs, 1:5, sum)
+
+    loglike_CAL_ymfr <- sapply2(1:nr, function(r) {
+      sapply2(1:nf, function(f) {
+        sapply(1:nm, function(m) {
+          sapply(1:ny, function(y) {
+            pred <- CN_ymlfr[y, m, , f, r]
+            like_comp(obs = CALobs_ymlfr[y, m, , f, r], pred = pred, type = fcomp_like,
+                      N = CALN_ymfr[y, m, f, r], theta = CALtheta_f[f],
+                      stdev = sqrt(sum(pred)/pred))
+          })
+        })
+      })
+    })
+  } else {
+    loglike_CAL_ymfr <- 0
+  }
+
   ## Index ----
   if (ni > 0) {
     q_i <- sapply(1:ni, function(i) calc_q(Iobs_ymi[, , i], B = VI_ymi[, , i]))
@@ -327,46 +367,6 @@ update_report <- function(r, MARSdata) {
     })
   } else {
     loglike_IAL_ymi <- 0
-  }
-
-  ## Marginal fishery age composition ----
-  if (any(CAAobs_ymafr > 0, na.rm = TRUE)) {
-    CN_ymafr <- apply(CN_ymafrs, 1:5, sum)
-
-    loglike_CAA_ymfr <- sapply2(1:nr, function(r) {
-      sapply2(1:nf, function(f) {
-        sapply(1:nm, function(m) {
-          sapply(1:ny, function(y) {
-            pred <- CN_ymafr[y, m, , f, r]
-            like_comp(obs = CAAobs_ymafr[y, m, , f, r], pred = pred, type = fcomp_like,
-                      N = CAAN_ymfr[y, m, f, r], theta = CAAtheta_f[f],
-                      stdev = sqrt(sum(pred)/pred))
-          })
-        })
-      })
-    })
-  } else {
-    loglike_CAA_ymfr <- 0
-  }
-
-  ## Marginal fishery length composition ----
-  if (any(CALobs_ymlfr > 0, na.rm = TRUE)) { # If there's any length data
-    CN_ymlfr <- apply(CN_ymlfrs, 1:5, sum)
-
-    loglike_CAL_ymfr <- sapply2(1:nr, function(r) {
-      sapply2(1:nf, function(f) {
-        sapply(1:nm, function(m) {
-          sapply(1:ny, function(y) {
-            pred <- CN_ymlfr[y, m, , f, r]
-            like_comp(obs = CALobs_ymlfr[y, m, , f, r], pred = pred, type = fcomp_like,
-                      N = CALN_ymfr[y, m, f, r], theta = CALtheta_f[f],
-                      stdev = sqrt(sum(pred)/pred))
-          })
-        })
-      })
-    })
-  } else {
-    loglike_CAL_ymfr <- 0
   }
 
   ## Stock composition ----
@@ -413,11 +413,11 @@ update_report <- function(r, MARSdata) {
     loglike_HSP_s <- 0
   }
 
-  #loglike_tag <- 0
+  loglike_tag <- 0
 
   loglike <- sum(loglike_I_ymi) + sum(loglike_IAA_ymi) + sum(loglike_IAL_ymi) +
     sum(loglike_CAA_ymfr) + sum(loglike_CAL_ymfr) + sum(loglike_SC_ymafr) +
-    Reduce(sum, loglike_POP_s) + Reduce(sum, loglike_HSP_s) #+ sum(loglike_tag)
+    Reduce(sum, loglike_POP_s) + Reduce(sum, loglike_HSP_s) + sum(loglike_tag)
 
   # Priors ----
   sdr_s <- exp(p$log_sdr_s)
@@ -452,17 +452,56 @@ update_report <- function(r, MARSdata) {
 
   # Report out variables ----
   ## Parameters ----
+  ADREPORT(R0_s)
   ADREPORT(h_s)
+  REPORT(kappa_s)
+  REPORT(SB0_s)
+  REPORT(sralpha_s)
+  REPORT(srbeta_s)
+  REPORT(sdr_s)
+
+  REPORT(selconv_pf)
+  REPORT(sel_lf)
+  REPORT(q_fs)
+
   if (ni > 0) {
-    REPORT(q_i)
+    REPORT(selconv_pi)
+    REPORT(sel_li)
+
     ADREPORT(q_i)
-    REPORT(I_ymi)
   }
 
-  ## Population parameters (and predicted values) ----
+  REPORT(M_yas)
+  REPORT(mat_yas)
+
+  ## Population arrays ----
+  REPORT(N_ymars)
+  REPORT(SB_yrs)
+  REPORT(R_ys)
+  REPORT(Rdev_ys)
+  REPORT(FM_ymars)
+  REPORT(Z_ymars)
+  REPORT(B_ymrs)
+  if (nr > 1) REPORT(mov_ymarrs)
+
+  ## Fishery arrays ----
+  REPORT(sel_ymafs)
+  REPORT(FM_ymafrs)
   REPORT(CN_ymafrs)
   if (any(CALobs_ymlfr > 0, na.rm = TRUE)) REPORT(CN_ymlfrs)
+  REPORT(CB_ymfrs)
+  #REPORT(VB_ymfrs)
 
+  ## Index of abundance arrays ----
+  if (ni > 0) {
+    REPORT(sel_ymais)
+    REPORT(I_ymi)
+    if (any(IAAobs_ymai > 0, na.rm = TRUE)) REPORT(IN_ymais)
+    if (any(IALobs_ymli > 0, na.rm = TRUE)) REPORT(IN_ymlis)
+    REPORT(q_i)
+  }
+
+  ## CKMR ----
   if (length(POP_s)) REPORT(pPOP_s)
 
   if (length(HSP_s)) {
@@ -473,10 +512,26 @@ update_report <- function(r, MARSdata) {
 
   ## Objective function values ----
   REPORT(loglike)
+  REPORT(logprior)
+  REPORT(penalty)
+  REPORT(fn)
+
+  REPORT(loglike_I_ymi)
+  REPORT(loglike_IAA_ymi)
+  REPORT(loglike_IAL_ymi)
+
+  REPORT(loglike_CAA_ymfr)
+  REPORT(loglike_CAL_ymfr)
+
+  REPORT(loglike_SC_ymafr)
+
+  REPORT(loglike_POP_s)
+  REPORT(loglike_HSP_s)
+
+  REPORT(loglike_tag)
 
   REPORT(logprior_rdev_ys)
   REPORT(logprior_dist_ymas)
-  REPORT(fn)
 
   return(fn)
 }
