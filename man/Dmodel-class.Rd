@@ -37,7 +37,8 @@ observed catch with the dimension following the underscore, following this templ
 \item{\code{nitF}}{Integer, number of iterations to solve Baranov catch equation from observed catch. Defaults to 5.}
 \item{\code{dist_type}}{Character. Whether to estimate seasonal stock distribution with a movement matrix \code{"mov"} or re-distributing total abundance by a distribution vector \code{"dist"}}
 \item{\code{y_phi}}{Integer, the year from which to obtain values of natural mortality and fecundity for the unfished stock-recruit replacement line (\code{phi}). Relevant if natural mortality or fecundity are time-varying. Defaults to 1.}
-\item{\code{scale_s}}{Vector, length \code{ns}. Logarithmic scalar that informs relative stock size to aid parameter estimation. Larger values implies larger stocks. Default set to zero. See \code{\link[=make_parameters]{make_parameters()}}.}
+\item{\code{scale_s}}{Vector, length \code{ns}. Multiplicative scaling factor that informs relative stock size to aid parameter estimation. Larger values implies larger stocks. Default set to 1. See \code{\link[=make_parameters]{make_parameters()}}.}
+\item{\code{nyinit}}{Integer, number of years of spool-up to calculate equilibrium unfished and starting conditions for the population model to account for seasonal and spatial dynamics. The numerical spool-up is not needed when both \code{nm = 1} and \code{nr = 1}, i.e., \code{nyinit = 1}. Otherwise, set to \code{1.5 * na} by default.}
 }
 }
 

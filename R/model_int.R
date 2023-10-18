@@ -194,20 +194,6 @@ calc_summary_F <- function(M, N, CN, Fmax) {
   out$root
 }
 
-calc_phi <- function(Z, fec, delta = 0) {
-  NPR <- calc_NPR(exp(-Z))
-  sum(NPR * fec * exp(-Z * delta))
-}
-
-calc_NPR <- function(surv, na = length(surv), plusgroup = TRUE) {
-  NPR <- numeric(na)
-  NPR[1] <- 1
-  for(a in 2:na) NPR[a] <- NPR[a-1] * surv[a-1]
-  if (plusgroup) NPR[na] <- NPR[na]/(1 - surv[na])
-  return(NPR)
-}
-
-
 #' Calculate recruitment from stock-recruit function
 #'
 #' @param x Numeric, either the spawning output or the equilibrium spawners per recruit, from which
@@ -248,9 +234,9 @@ calc_recruitment <- function(x, SRR = c("BH", "Ricker"), eq = FALSE, ...) {
   }
 
   if (SRR == "BH") {
-    val <- if (eq) a*x/(1 + b*x) else (a*x - 1)/b/x
+    val <- if (eq) (a*x - 1)/b/x else a*x/(1 + b*x)
   } else {
-    val <- if (eq) a*x*exp(-b*x) else log(a*x)/b/x
+    val <- if (eq) log(a*x)/b/x else a*x*exp(-b*x)
   }
   return(val)
 }
@@ -327,55 +313,34 @@ calc_LAK <- function(len_a, sd_la, lbin, nl = length(lbin) - 1) {
 #' @param ns Integer, number of stocks
 #' @param advance_age Logical, whether the animals advance to their next age class
 #' @param R Incoming recruitment. Only assigned if `advance_age = TRUE`. Vector of `s`
-# #' @param type Character that indicates whether the stock distribution is assigned based on a distribution array or a movement array.
-# #' @param dist Distribution of the stock in the next time step. Array `[a, r, s]`
 #' @param mov Movement array in the next time step. Array `[a, r, r, s]`. Rows denote region of origin and columns denote region of destination.
 #' @param plusgroup Logical, whether the last age class is an accumulator plus group.
 #' @return Abundance at the next time step. Array `[a, r, s]`
 #' @export
 calc_nextN <- function(N, surv, na = dim(N)[1], nr = dim(N)[2], ns = dim(N)[3],
                        advance_age = TRUE, R = numeric(ns),
-                       #type = c("dist", "mov"),
-                       #dist = array(1/nr, c(na, nr, ns)),
                        mov = array(1/nr, c(na, nr, nr, ns)),
                        plusgroup = TRUE) {
 
-  type <- match.arg(type)
-
   N <- array(N, c(na, nr, ns))
   surv <- array(surv, c(na, nr, ns))
-  #dist <- array(dist, c(na, nr, ns))
   mov <- array(mov, c(na, nr, nr, ns))
 
   # Apply survival and advance age class ----
   if (advance_age) {
-    Nsurv_ars <- array(NA_real_, c(na, nr, ns))
+    Nsurv_ars <- array(0, c(na, nr, ns))
     Nsurv_ars[2:na, , ] <- N[2:na - 1, , ] * surv[2:na - 1, , ]
     if (plusgroup) Nsurv_ars[na, , ] <- Nsurv_ars[na, , ] + N[na, , ] * surv[na, , ]
+    Nsurv_ars[1, 1, ] <- R
   } else {
     Nsurv_ars <- N * surv
   }
 
   # Distribute stock ----
   Nnext_ars <- sapply2(1:ns, function(s) {
-    Nout_ra <- sapply(2:na, function(a) Nsurv_ars[a, , s] %*% mov[a, , , s])
-    if (advance_age) {
-      R_ar <- R[s]/rep(nr, nr)
-      R_r <- R_ar %*% mov[1, , , s]
-    }
-    Nout_ar <- rbind(R_r, t(Nout_ra))
-
-    #if (type == "dist") { # Distribution vectors
-    #  Ntotal <- apply(Nsurv_ars[, , s], 1, sum)
-    #  if (advance_age) Ntotal[1] <- R
-    #  Nout_ar <- Ntotal * dist[, , s]
-    #} else { # Movement matrix
-    #  Nout_ra <- sapply(2:na, function(a) Nsurv_ars[a, , s] %*% mov[a, , , s])
-    #  if (advance_age) R_r <- R[s] * dist[1, , s]
-    #  Nout_ar <- rbind(R_r, t(Nout_ra))
-    #}
-    return(Nout_ar)
-  })
+    sapply(1:na, function(a) Nsurv_ars[a, , s] %*% mov[a, , , s]) %>% matrix(nr, na)
+  }) %>%
+    aperm(c(2, 1, 3))
 
   return(Nnext_ars)
 }

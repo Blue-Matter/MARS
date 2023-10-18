@@ -28,10 +28,13 @@ reference:
   contents:
   - calc_LAK
   - calc_F
-  - calc_recruitment
-  - calc_nextN
-  - calc_index
   - calc_POP
+  - calc_index
+  - calc_nextN
+  - calc_phi_project
+  - calc_phi_simple
+  - calc_population
+  - calc_recruitment
   - conv_mov
   - conv_selpar
 

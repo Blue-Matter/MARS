@@ -22,7 +22,7 @@ setClass(
   slots = c(ny = "numeric", nm = "numeric", na = "numeric", nl = "numeric", nr = "numeric", ns = "numeric",
             lbin = "numeric", lmid = "numeric",
             Fmax = "numeric", nitF = "numeric", dist_type = "character", y_phi = "numeric",
-            scale_s = "numeric")
+            scale_s = "numeric", nyinit = "numeric")
 )
 
 #' Dstock S4 object
@@ -45,7 +45,7 @@ setClass(
   "Dfishery",
   slots = c(nf = "numeric", Cobs_ymfr = "array", fwt_ymafs = "array", CAAobs_ymafr = "array", CALobs_ymlfr = "array",
             fcomp_like = "character", CAAN_ymfr = "array", CALN_ymfr = "array", CAAtheta_f = "numeric", CALtheta_f = "numeric",
-            sel_block_yf = "array", sel_f = "character",
+            sel_block_yf = "array", sel_f = "character", Cinit_mfr = "array",
             SC_ymafrs = "array", SC_aa = "matrix", SC_ff = "matrix",
             SC_like = "character", SCN_ymafr = "array", SCtheta_f = "numeric", SCstdev_f = "numeric")
 )
