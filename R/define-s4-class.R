@@ -84,12 +84,12 @@ setClass(
 #' MARSdata S4 object
 #' @keywords MARSdata
 #' @template MARSdata-template
-#' @slot Dmodel Class \linkS4class{Dmodel} containing parameters for model structure (number of years, ages, etc.)
-#' @slot Dstock Class \linkS4class{Dstock} containing stock parameters (growth, natural mortality, etc.)
-#' @slot Dfishery Class \linkS4class{Dfishery} containing fishery data (catch, size and stock composition, etc.)
-#' @slot Dsurvey Class \linkS4class{Dsurvey} containing survey data (indices of abundance)
-#' @slot DCKMR Class \linkS4class{DCKMR} containing genetic close-kin data
-#' @slot Dtag Class \linkS4class{Dtag} containing tagging data
+#' @slot Dmodel Class [Dmodel-class] containing parameters for model structure (number of years, ages, etc.)
+#' @slot Dstock Class [Dstock-class] containing stock parameters (growth, natural mortality, etc.)
+#' @slot Dfishery Class [Dfishery-class] containing fishery data (catch, size and stock composition, etc.)
+#' @slot Dsurvey Class [Dsurvey-class] containing survey data (indices of abundance)
+#' @slot DCKMR Class [DCKMR-class] containing genetic close-kin data
+#' @slot Dtag Class [Dtag-class] containing tagging data
 #' @slot Misc List for miscellaneous inputs as needed
 #' @template Dmodel-slot
 #' @template Dstock-slot

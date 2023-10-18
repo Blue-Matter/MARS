@@ -14,8 +14,10 @@ knitr::opts_chunk$set(
 ```
 
 
-# MARS <img src="man/figures/README-hex.png" align="right" height="139" />
- 
+# MARS <img src="man/figures/README-hex.png" style="float:right; height=139px;" />
+
+> Multi-stock assessment with RTMB
+
 <!-- badges: start -->
 [![R-CMD-check](https://github.com/Blue-Matter/MSA/actions/workflows/R-CMD-check.yaml/badge.svg)](https://github.com/Blue-Matter/MSA/actions/workflows/R-CMD-check.yaml)
 <!-- badges: end -->

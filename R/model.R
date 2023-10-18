@@ -4,7 +4,7 @@
 #'
 #' Wrapper function that calls RTMB to create the model and perform the numerical optimization
 #'
-#' @param MARSdata Data object. Class \linkS4class{MARSdata}, validated by [check_data()]
+#' @param MARSdata Data object. Class [MARSdata-class], validated by [check_data()]
 #' @param parameters List of parameters, validated by [check_parameters]
 #' @param map List of parameters indicated whether they are fixed and/or how they are shared. See [TMB::MakeADFun()].
 #' @param random Character vector indicating the parameters that are random effects.

@@ -448,10 +448,10 @@ check_Dtag <- function(Dtag, Dmodel, silent = FALSE) {
 #'
 #' Ensures that data inputs are of proper dimension. Whenever possible, default values are added to missing items.
 #'
-#' @param MARSdata S4 object containing data inputs. See \linkS4class{MARSdata}
+#' @param MARSdata S4 object containing data inputs. See [MARSdata-class]
 #' @param silent Logical, whether or not to report default values to the console
-#' @returns An updated \linkS4class{MARSdata} object.
-#' @seealso \link{MARSdata-class}
+#' @returns An updated [MARSdata-class] object.
+#' @seealso [MARSdata-class]
 #' @export
 check_data <- function(MARSdata, silent = FALSE) {
   MARSdata@Dmodel <- check_Dmodel(MARSdata@Dmodel, silent)
@@ -472,7 +472,7 @@ check_data <- function(MARSdata, silent = FALSE) {
 #'
 #' These functions provide a template for the parameter and map setup that can be adjusted for alternative configurations. [check_parameters()]
 #' checks whether custom made parameter lists are of the correct dimension.
-#' @seealso \link{MARSdata-class}
+#' @seealso [MARSdata-class]
 #'
 #' @section Parameters:
 #'
@@ -485,7 +485,7 @@ check_data <- function(MARSdata, silent = FALSE) {
 #' Second is the parameter name, e.g., `M` for natural mortality, `rdev` for recruitment deviates, etc.
 #'
 #' Third is the dimension of the parameter variable and the indexing for the vectors, matrices, and arrays, e.g., `y` for year, `s` for stock.
-#' See \link{MARSdata-class}. Here, an additional index `p` represents some other number of parameters that is described below.
+#' See [MARSdata-class]. Here, an additional index `p` represents some other number of parameters that is described below.
 #'
 #' \describe{
 #' \item{`t_R0_s`}{Vector by `s`. Unfished recruitment, i.e., intersection of unfished replacement line and average stock recruit function,

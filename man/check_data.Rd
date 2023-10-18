@@ -18,5 +18,5 @@ An updated \linkS4class{MARSdata} object.
 Ensures that data inputs are of proper dimension. Whenever possible, default values are added to missing items.
 }
 \seealso{
-\link{MARSdata-class}
+\linkS4class{MARSdata}
 }

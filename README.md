@@ -1,7 +1,9 @@
 
 <!-- README.md is generated from README.Rmd. Please edit that file -->
 
-# MARS <img src="man/figures/README-hex.png" align="right" height="139" />
+# MARS <img src="man/figures/README-hex.png" style="float:right; height=139px;" />
+
+> Multi-stock assessment with RTMB
 
 <!-- badges: start -->
 
@@ -18,8 +20,8 @@ Bluefin Tuna Research Program
 ([BTRP](https://www.fisheries.noaa.gov/grant/bluefin-tuna-research-program)
 Grant NA23NMF4720184) in collaboration with the Ocean Foundation.
 
-Atlantic bluefin tuna (*Thunnus thynnus*) will be the first intended
-case study.
+Atlantic bluefin tuna (*Thunnus thynnus*) is the first intended case
+study.
 
 ## Installation
 

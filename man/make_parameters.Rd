@@ -72,7 +72,7 @@ frequently, \code{log} or \code{logit}. Prefix \code{t} indicates some other cus
 Second is the parameter name, e.g., \code{M} for natural mortality, \code{rdev} for recruitment deviates, etc.
 
 Third is the dimension of the parameter variable and the indexing for the vectors, matrices, and arrays, e.g., \code{y} for year, \code{s} for stock.
-See \link{MARSdata-class}. Here, an additional index \code{p} represents some other number of parameters that is described below.
+See \linkS4class{MARSdata}. Here, an additional index \code{p} represents some other number of parameters that is described below.
 
 \describe{
 \item{\code{t_R0_s}}{Vector by \code{s}. Unfished recruitment, i.e., intersection of unfished replacement line and average stock recruit function,
@@ -115,5 +115,5 @@ season, age, and stock. Estimate all \code{mov_v_ymas}. Both \code{mov_g_ymars} 
 }
 
 \seealso{
-\link{MARSdata-class}
+\linkS4class{MARSdata}
 }
