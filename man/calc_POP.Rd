@@ -48,13 +48,13 @@ that the parent could be either a mother or a father.
 \section{Half-sibling pairs}{
 
 The half-sibling probability is calculated from Bravington et al. 2016, eq 3.10, and expanded
-by Hillary et al. 2018, Supplement S2.8.1 for
-age-specific survival and fecundity of the parent:
+by Hillary et al. 2018, Supplement S2.8.1 for age-specific survival and fecundity of the parent:
 
-\deqn{p_{\textrm{HSP}} = \sum_a\left(
-\dfrac{N(y_i, a)f(y_i, a)}{\sum_{a'} N(y_i, a')f(y_i,a')}
-\exp(-\sum_{t = 0}^{y_j - y_i - 1} Z(y_i + t,a' + t))
-\dfrac{f(y_j,a+y_j-y_i)}{\sum_{a'} N(y_j,a')f(y_i,a')}
+\deqn{p_{\textrm{HSP}} = 4 \times
+\sum_a\left(
+\dfrac{N(y_i, a)f(y_i, a)}{\sum_{a'} N(y_i, a')f(y_i,a')}\times
+\exp(-\sum_{t = 0}^{y_j - y_i - 1} Z(y_i + t,a + t))\times
+\dfrac{f(y_j,a+y_j-y_i)}{\sum_{a'} N(y_j,a')f(y_j,a')}
 \right)
 }
 \itemize{
