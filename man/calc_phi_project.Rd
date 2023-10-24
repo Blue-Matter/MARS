@@ -45,7 +45,7 @@ calc_phi_project(
 \item{fwt_mafs}{Fishery weight array by season, age, fleet, stock. Array \verb{[m, a, r, r]}. Can be used
 calculate yield per recruit.}
 
-\item{q_fs}{Relative catchability of stock \code{s} for fleet \code{f}. Matrix \verb{[f, s]}}
+\item{q_fs}{Relative catchability of stock \code{s} for fleet \code{f}. Defaults to 1 if missing. Matrix \verb{[f, s]}}
 
 \item{M_as}{Natural mortality. Matrix \verb{[a, s]}}
 

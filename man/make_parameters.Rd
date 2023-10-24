@@ -6,7 +6,7 @@
 \alias{check_parameters}
 \title{Make list of parameters for RTMB}
 \usage{
-make_parameters(MARSdata, start = list(), ...)
+make_parameters(MARSdata, start = list(), silent = FALSE, ...)
 
 make_map(
   p,
@@ -20,13 +20,15 @@ make_map(
   silent = FALSE
 )
 
-check_parameters(p = list(), MARSdata)
+check_parameters(p = list(), map, MARSdata, silent = FALSE)
 }
 \arguments{
 \item{MARSdata}{S4 data object}
 
 \item{start}{An optional list of parameters. Named list of parameters with the associated dimensions and transformations below.
 Overrides default values created by \code{\link[=make_parameters]{make_parameters()}}.}
+
+\item{silent}{Logical, whether to report messages to the console}
 
 \item{...}{Various arguments for \code{\link[=make_map]{make_map()}} (could be important!)}
 
@@ -44,7 +46,7 @@ Overrides default values created by \code{\link[=make_parameters]{make_parameter
 
 \item{est_qfs}{Logical, estimate relative catchability of stocks by each fleet? Fix \code{log_q_fs} for the first stock if \code{TRUE}}
 
-\item{silent}{Logical, whether to report messages to the console}
+\item{map}{List of mapped parameters. Used by \code{\link[=check_parameters]{check_parameters()}} only to count parameters.}
 }
 \value{
 \code{\link[=make_parameters]{make_parameters()}} returns a list of parameters (\code{"p"}) concatenated with the output of \code{\link[=make_map]{make_map()}}.
@@ -91,13 +93,13 @@ Default parameter value for all stocks: \code{M <- -log(0.05)/MARSdata@Dmodel@na
 Equal values imply equal catchability of all stocks. See equations in \code{\link[=calc_F]{calc_F()}}. Default sets all values to zero.}
 \item{\code{sel_pf}}{Matrix \verb{[3, f]}. Fishery selectivity parameters in logit or log space. See equations \code{\link[=conv_selpar]{conv_selpar()}}, where \code{sel_pf} is the \code{x} matrix.}
 \item{\code{sel_pi}}{Matrix \verb{[3, i]}. Index selectivity parameters in logit or log space. See equations \code{\link[=conv_selpar]{conv_selpar()}}, where \code{sel_pi} is the \code{x} matrix.}
-\item{\code{mov_x_ymarrs}}{Array \verb{[y, m, a, r, r, s]}. Base movement matrix. Set to -1000 to effectively exclude movements from region pairs.
+\item{\code{mov_x_marrs}}{Array \verb{[m, a, r, r, s]}. Base movement matrix. Set to -1000 to effectively exclude movements from region pairs.
 See equations in \code{\link[=conv_mov]{conv_mov()}}}
 \item{\code{mov_g_ymars}}{Array \verb{[y, m, a, r, s]}. Attractivity term in gravity model for movement. If \code{x} and \code{v} are zero,
 this matrix specifies the distribution of total stock abundance into the various regions. See equations in \code{\link[=conv_mov]{conv_mov()}}}
 \item{\code{mov_v_ymas}}{Array \verb{[y, m, a, s]}. Viscosity term in gravity model for movement. See equations in \code{\link[=conv_mov]{conv_mov()}}}
 \item{\code{log_sdg_rs}}{Array \verb{[r, s]}. Marginal log standard deviation in the stock distribution (\code{mov_g_ymars}) among regions for stock \code{s}.
-Only used when \code{est_mov = dist_random}. Default SD of 0.1.}
+Only used when \code{est_mov = "dist_random"}. Default SD of 0.1.}
 \item{\code{t_corg_ps}}{Array \verb{[sum(1:(nr - 1)), s]}. Lower triangle of the correlation matrix for \code{mov_g_ymars}, to be obtained with the
 Cholesky factorization. Only used when \code{est_mov = dist_random}. Default values of zero.}
 \item{\code{log_initF_mfr}}{Array \verb{[m, f, r]}. Initial F corresponding to the equilibrium catch.}
@@ -109,10 +111,10 @@ Cholesky factorization. Only used when \code{est_mov = dist_random}. Default val
 
 If a single region model or \code{est_mov = "none"}: no movement parameters are estimated.
 
-If \code{est_mov = "dist_random"}: fix all values for \code{mov_x_ymarrs} and \code{mov_v_ymas}. Fix \code{mov_g_ymars} for the first region for each year,
+If \code{est_mov = "dist_random"}: fix all values for \code{mov_x_marrs} and \code{mov_v_ymas}. Fix \code{mov_g_ymars} for the first region for each year,
 season, age, and stock. \code{mov_g_ymars} are random effects.
 
-If \code{est_mov = "gravity_fixed"}: fix all values for \code{mov_x_ymarrs}. Fix \code{mov_g_ymars} for the first region for each year,
+If \code{est_mov = "gravity_fixed"}: fix all values for \code{mov_x_marrs}. Fix \code{mov_g_ymars} for the first region for each year,
 season, age, and stock. Estimate all \code{mov_v_ymas}. Both \code{mov_g_ymars} and \code{mov_v_ymas} are fixed effects.
 }
 

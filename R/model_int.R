@@ -9,7 +9,7 @@
 #' @param sel Selectivity. Array `[a, f, s]`
 #' @param wt Fishery weight at age. Array `[a, f, s]`
 #' @param M Instantaneous natural mortality. Units of per year `[a, s]`
-#' @param q_fs Relative catchability of stock `s` for fleet `f`. Matrix `[f, s]`
+#' @param q_fs Relative catchability of stock `s` for fleet `f`. Defaults to 1 if missing. Matrix `[f, s]`
 #' @param delta Numeric, the duration of time in years corresponding to the observed catch, e.g., 0.25 is a quarterly time step.
 #' @param na Integer, number of age classes
 #' @param nr Integer, number of regions
@@ -120,14 +120,15 @@ calc_F <- function(Cobs, N, sel, wt, M, q_fs, delta = 1,
       F_loop <- Fmax * plogis(x_loop[[i]])
     }
 
-    F_frs <- sapply2(1:ns, function(s) q_fs[, s] * F_loop)
+    F_frs <- sapply2(1:ns, function(s) q_fs[, s] * F_loop) %>% array(c(nf, nr, ns))
     F_afrs <- sapply2(1:ns, function(s) {
       sapply2(1:nr, function(r) {
         sapply(1:nf, function(f) F_frs[f, r, s] * sel[, f, s])
       })
     })
     F_ars <- apply(F_afrs, c(1, 3, 4), sum)
-    Z_ars <- sapply2(1:nr, function(r) F_ars[, r, ] + delta * M) %>% # a s r
+    Z_ars <- sapply2(1:nr, function(r) F_ars[, r, ] + delta * M) %>%
+      array(c(na, ns, nr)) %>%
       aperm(c(1, 3, 2))
     .gamma_ars <- 1 - exp(-Z_ars)
 
@@ -136,7 +137,7 @@ calc_F <- function(Cobs, N, sel, wt, M, q_fs, delta = 1,
         sapply(1:nf, function(f) calc_Baranov(F_afrs[, f, r, s], Z_ars[, r, s], N[, r, s]))
       })
     })
-    CB_afsr <- sapply2(1:nr, function(r) CN_afrs[, , r, ] * wt)
+    CB_afsr <- sapply2(1:nr, function(r) CN_afrs[, , r, ] * wt) %>% array(c(na, nf, ns, nr))
     CB_fr <- apply(CB_afsr, c(2, 4), sum)
 
     fn[[i]] <- CB_fr - Cobs
@@ -151,7 +152,8 @@ calc_F <- function(Cobs, N, sel, wt, M, q_fs, delta = 1,
     })
     deriv_gamma_afrs <- sapply2(1:ns, function(s) {
       sapply2(1:nr, function(r) exp(-Z_ars[, r, s]) * t(deriv_Z_fars[, , r, s]))
-    })
+    }) %>%
+      array(c(na, nf, nr, ns))
 
     constants_afrs <- sapply2(1:ns, function(s) {
       sapply2(1:nr, function(r) {
@@ -163,25 +165,25 @@ calc_F <- function(Cobs, N, sel, wt, M, q_fs, delta = 1,
       sapply2(1:nr, function(r) {
         outer(deriv_F[, r], .gamma_ars[, r, s]) + F_loop[, r] * t(deriv_gamma_afrs[, , r, s])
       })
-    })
-    deriv2_arsf <- sapply2(1:nf, function(f) deriv1_fars[f, , , ] * Z_ars)
+    }) %>% array(c(nf, na, nr, ns))
+    deriv2_arsf <- sapply2(1:nf, function(f) deriv1_fars[f, , , ] * Z_ars) %>% array(c(na, nr, ns, nf))
     deriv3_afrs <- sapply2(1:ns, function(s) {
       sapply2(1:nr, function(r) {
-        deriv2_arsf[, r, s, ] -  outer(.gamma_ars[, r, s], F_loop[, r]) * t(deriv_Z_fars[, , r, s])
+        sapply(1:nf, function(f) deriv2_arsf[, r, s, f] -  .gamma_ars[, r, s] * F_loop[f, r] * deriv_Z_fars[f, , r, s])
+        #deriv2_arsf[, r, s, ] -  outer(.gamma_ars[, r, s], F_loop[, r]) * t(deriv_Z_fars[, , r, s])
       })
-    })
-    deriv4_arsf <- sapply2(1:nf, function(f) deriv3_afrs[, f, , ]/Z_ars/Z_ars)
+    }) #%>% array(c(na, nf, nr, ns))
+    deriv4_arsf <- sapply2(1:nf, function(f) deriv3_afrs[, f, , ]/Z_ars/Z_ars) %>% array(c(na, nr, ns, nf))
 
-    gr[[i]] <- apply(constants_afrs * aperm(deriv4_arsf, c(1, 4, 2, 3)), c(2, 33), sum)
+    gr[[i]] <- apply(constants_afrs * aperm(deriv4_arsf, c(1, 4, 2, 3)), c(2, 3), sum)
 
     if (i <= nitF) x_loop[[i+1]] <- x_loop[[i]] - fn[[i]]/gr[[i]]
   }
 
   CB_frs <- apply(CB_afsr, c(2, 4, 3), sum)
-
   list(F_afrs = F_afrs, F_ars = F_ars, F_index = F_loop, Z_ars = Z_ars,
        CB_frs = CB_frs, CN_afrs = CN_afrs, VB_afrs = VB_afrs,
-       penalty = penalty, fr = fn[[i+1]], gr = gr[[i+1]])
+       penalty = penalty, fn = fn[[nitF + 1]], gr = gr[[nitF + 1]])
 }
 
 calc_Baranov <- function(FM, Z, N) FM/Z * (1 - exp(-Z)) * N
@@ -201,10 +203,9 @@ calc_summary_F <- function(M, N, CN, Fmax) {
 #' @param SRR Character to indicate the functional form of the stock recruit function
 #' @param eq Logical, indicates whether `x` is the spawning output (`FALSE`) or equilibrium spawners per recruit (`TRUE`)
 #' @param ... Parameters of the SRR function. Provide one of two sets of variables:
-#' \itemize{
-#' \item `h`, `R0` and `phi0`
-#' \item `a` and `b` (alpha, beta values)
-#' }
+#' 1. `h`, `R0` and `phi0`, or
+#' 2. `a` and `b` (alpha, beta values)
+#'
 #' @examples
 #' calc_recruitment(10, SRR = "Ricker", a = 2, b = 0.5)
 #' calc_recruitment(10, SRR = "Ricker", h = 0.9, R0 = 1, phi0 = 1)
@@ -328,6 +329,7 @@ calc_nextN <- function(N, surv, na = dim(N)[1], nr = dim(N)[2], ns = dim(N)[3],
 
   # Apply survival and advance age class ----
   if (advance_age) {
+    `[<-` <- RTMB::ADoverload("[<-")
     Nsurv_ars <- array(0, c(na, nr, ns))
     Nsurv_ars[2:na, , ] <- N[2:na - 1, , ] * surv[2:na - 1, , ]
     if (plusgroup) Nsurv_ars[na, , ] <- Nsurv_ars[na, , ] + N[na, , ] * surv[na, , ]
@@ -372,7 +374,11 @@ calc_nextN <- function(N, surv, na = dim(N)[1], nr = dim(N)[2], ns = dim(N)[3],
 calc_index <- function(N, Z, sel, na = dim(N)[1], ni = dim(sel)[2], ns = dim(N)[3],
                        samp = array(1, c(ni, na, ns)), delta = rep(0, ni)) {
 
-  N_ais <- sapply(1:ns, function(s) {
+  N <- array(N, c(na, nr, ns))
+  Z <- array(Z, c(na, nr, ns))
+  sel <- array(sel, c(na, ni, ns))
+
+  N_ais <- sapply2(1:ns, function(s) {
     sapply(1:ni, function(i) {
       r_i <- samp[i, , s]
       if (sum(r_i)) {

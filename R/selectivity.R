@@ -2,15 +2,13 @@
 #' Selectivity at age and length
 #'
 #' @description
-#' A series of functions to calculate selectivity at age and length from a matrix of parameters.
+#' Calculate selectivity at age and length from a matrix of parameters.
+#' * [conv_selpar()] converts parameters from log or logit space to real units.
+#' * [calc_sel_len()] calculates selectivity at length.
+#' * [calc_fsel_age()] calculates selectivity at age for fisheries, and coordinates dummy fleets.
+#' * [calc_isel_age()] calculates selectivity at age for indices, and can map selectivity from fisheries
+#' or population parameters (e.g, mature or total biomass).
 #'
-#' \itemize{
-#' \item [conv_selpar()] converts parameters from log or logit space to real units.
-#' \item [calc_sel_len()] calculates selectivity at length.
-#' \item [calc_fsel_age()] calculates selectivity at age for fisheries, and coordinates dummy fleets.
-#' \item [calc_isel_age()] calculates selectivity at age for indices, and can map selectivity from fisheries
-#' or population parameters (e.g, mature biomass).
-#' }
 #' @param x Estimated parameters. Matrix `[3, f]`
 #' @param type Character string to indicate the functional form of selectivity. Options include:
 #' `"logistic_length", "dome_length", "logistic_age", "dome_age"`, an integer (`f`) to map index selectivity

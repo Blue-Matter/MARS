@@ -76,7 +76,7 @@ time of spawning. See example in \linkS4class{Dstock}.}
 
 \item{fwt_ymafs}{Fishery weight at age. Array \verb{[y, m, a, f, s]}}
 
-\item{q_fs}{Relative catchability of stock \code{s} for fleet \code{f}. Matrix \verb{[f, s]}}
+\item{q_fs}{Relative catchability of stock \code{s} for fleet \code{f}. Defaults to 1 if missing. Matrix \verb{[f, s]}}
 
 \item{sel_ymafs}{Fishery selectivity. Array \verb{[y, m, a, f, s]}}
 
@@ -92,7 +92,6 @@ time of spawning. See example in \linkS4class{Dstock}.}
 }
 \value{
 A named list containing:
-
 \itemize{
 \item \code{N_ymars} Stock abundance
 \item \code{F_ymars} Fishing mortality (summed across fleets)

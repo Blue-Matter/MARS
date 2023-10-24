@@ -5,18 +5,21 @@
 #' Wrapper function that calls RTMB to create the model and perform the numerical optimization
 #'
 #' @param MARSdata Data object. Class [MARSdata-class], validated by [check_data()]
-#' @param parameters List of parameters, validated by [check_parameters()]
-#' @param map List of parameters indicated whether they are fixed and/or how they are shared. See [TMB::MakeADFun()].
-#' @param random Character vector indicating the parameters that are random effects.
-#' @param run_model Logical, indicates whether the model will be fitted through [stats::nlminb()].
-#' @param do_sd Logical, indicates whether the standard deviations of parameters will be calculated with [TMB::sdreport()].
-#' @param silent Logical, passed to `MakeADFun`
+#' @param parameters List of parameters, e.g., returned by [make_parameters()] and validated by [check_parameters()].
+#' @param map List of parameters indicated whether they are fixed and how they are shared, e.g., returned by [make_parameters()].
+#' See [TMB::MakeADFun()].
+#' @param random Character vector indicating the parameters that are random effects, e.g., returned by [make_parameters()].
+#' @param run_model Logical, whether to fit the model through [stats::nlminb()].
+#' @param do_sd Logical, whether to calculate the standard errors with [TMB::sdreport()].
+#' @param report Logical, whether to return the report list with `obj$report(obj$env$last.par.best)`.
+#' @param silent Logical, whether to report progress to console. **Not passed to [TMB::MakeADFun()].**
 #' @param control Passed to [stats::nlminb()]
 #' @param ... Other arguments to [TMB::MakeADFun()].
+#' @returns A [MARSassess-class] object.
 #' @importFrom methods new
 #' @export
 fit_MARS <- function(MARSdata, parameters, map = list(), random = NULL,
-                     run_model = TRUE, do_sd = TRUE, silent = TRUE,
+                     run_model = TRUE, do_sd = TRUE, report = TRUE, silent = FALSE,
                      control = list(iter.max = 2e+05, eval.max = 4e+05), ...) {
 
   MARSdata@Misc$map <- map
@@ -25,46 +28,52 @@ fit_MARS <- function(MARSdata, parameters, map = list(), random = NULL,
   RTMB::TapeConfig(comparison = "tape")
   func <- function(p) .MARS(p, d = MARSdata)
 
+  if (!silent) message("Building model..")
   obj <- MakeADFun(
     func = func, parameters = parameters,
     map = map, random = random,
-    silent = silent,
+    silent = TRUE,
     ...
   )
 
-  if (run_model) m <- optimize_RTMB_model(obj, do_sd = do_sd, control = control)
-
-  M <- new(
-    "MARSassess",
-    obj = obj,
-    report = obj$report(obj$env$last.par.best) %>% update_report(MARSdata)
-  )
+  M <- new("MARSassess", obj = obj)
 
   if (run_model) {
+    m <- optimize_RTMB(obj, do_sd = do_sd, control = control, silent = silent)
     M@opt <- m$opt
     if (do_sd) M@SD <- m$SD
   }
+
+  if (report) {
+    if (!silent) message("Generating report list..")
+    M@report <- obj$report(obj$env$last.par.best) %>% update_report(MARSdata)
+  }
+  if (!silent) message("Complete.")
   return(M)
 }
 
 update_report <- function(r, MARSdata) {
 
   if (is.null(r$F_yas)) {
-    ny <- MARSdata@Dmodel@ny
-    na <- MARSdata@Dmodel@na
-    ns <- MARSdata@Dmodel@ns
-    nf <- MARSdata@Dmodel@nf
-    Fmax <- MARSdata@Dmodel@Fmax
+    nr <- MARSdata@Dmodel@nr
+    nf <- MARSdata@Dfishery@nf
 
-    r$F_yas <- sapply2(1:ns, function(s) {
-      sapply(1:na, function(a) {
-        sapply(1:ny, function(y) {
-          calc_summary_F(M = r$M_yas[y, a, s], N = sum(r$N_ymars[y, 1, a, , s]),
-                         CN = sum(r$CN_ymafrs[y, , a, , , s]), Fmax = nf * Fmax)
+    if (nf > 1 || nr > 1) {
+      ny <- MARSdata@Dmodel@ny
+      na <- MARSdata@Dmodel@na
+      ns <- MARSdata@Dmodel@ns
+      Fmax <- MARSdata@Dmodel@Fmax
+
+      r$F_yas <- sapply2(1:ns, function(s) {
+        sapply(1:na, function(a) {
+          sapply(1:ny, function(y) {
+            calc_summary_F(M = r$M_yas[y, a, s], N = sum(r$N_ymars[y, 1, a, , s]),
+                           CN = sum(r$CN_ymafrs[y, , a, , , s]), Fmax = nf * Fmax)
+          })
         })
       })
-    })
-    r$Z_yas <- r$F_yas + r$M_yas
+      r$Z_yas <- r$F_yas + r$M_yas
+    }
   }
   return(r)
 }
@@ -81,10 +90,11 @@ update_report <- function(r, MARSdata) {
 
   # Population arrays ----
   N_ymars <- array(NA_real_, c(ny + 1, nm, na, nr, ns))
-  B_ymrs <- array(NA_real_, c(ny + 1, nm, nr, ns))
+  B_ymrs <- array(NA_real_, c(ny, nm, nr, ns))
 
-  Nsp_yars <- array(NA_real_, c(ny, na, ns))
-  SB_yrs <- array(NA_real_, c(ny, nr, ns))
+  Npsp_yars <-
+    Nsp_yars <- array(NA_real_, c(ny, na, nr, ns))
+  S_yrs <- array(NA_real_, c(ny, nr, ns))
   R_ys <-
     Rdev_ys <- array(NA_real_, c(ny, ns))
   F_ymars <-
@@ -112,7 +122,7 @@ update_report <- function(r, MARSdata) {
   # Transform parameters ----
   ## Maturity at age ogive ----
   mat_yas <- sapply2(1:ns, function(s) {
-    if (all(is.na(map$log_M_ps[, s]))) {
+    if (!is.null(map$mat_ps) && all(is.na(map$mat_ps[, s]))) {
       matd_yas[, , s]
     } else {
       a50 <- na * plogis(p$mat_ps[1, s])
@@ -126,7 +136,7 @@ update_report <- function(r, MARSdata) {
 
   ## Natural mortality ----
   M_yas <- sapply2(1:ns, function(s) {
-    if (is.na(map$log_M_s[s])) {
+    if (!is.null(map$log_M_s) && is.na(map$log_M_s[s])) {
       Md_yas[, , s]
     } else {
       matrix(exp(p$log_M_s[s]), ny, na)
@@ -149,7 +159,7 @@ update_report <- function(r, MARSdata) {
   for(y in 1:ny) {
     for(m in 1:nm) {
       mov_ymarrs[y, m, , , , ] <- sapply2(1:ns, function(s) {
-        conv_mov(p$mov_x_ymarrs[y, m, , , , s], p$mov_g_ymars[y, m, , , s], p$mov_v_ymas[y, m, , s], na, nr)
+        conv_mov(p$mov_x_marrs[m, , , , s], p$mov_g_ymars[y, m, , , s], p$mov_v_ymas[y, m, , s], na, nr)
       })
       sel_ymafs[y, m, , , ] <- sapply2(1:ns, function(s) {
         calc_fsel_age(sel_lf, LAK_ymals[y, m, , , s], sel_f, selconv_pf, sel_block_yf[y, ],
@@ -326,7 +336,6 @@ update_report <- function(r, MARSdata) {
 
   ## Index ----
   if (ni > 0) {
-
     for(y in 1:ny) {
       for(m in 1:nm) {
         IN_ymais[y, m, , , ] <- calc_index(
@@ -342,9 +351,8 @@ update_report <- function(r, MARSdata) {
         })
       }
     }
-
     q_i <- sapply(1:ni, function(i) calc_q(Iobs_ymi[, , i], B = VI_ymi[, , i]))
-    I_ymi <- sapply2(1:ni, function(i) q_i[i] * VI_ymi[, , i])
+    I_ymi[] <- sapply2(1:ni, function(i) q_i[i] * VI_ymi[, , i])
     loglike_I_ymi <- ifelse(is.na(Iobs_ymi), 0, dnorm(log(Iobs_ymi/I_ymi), 0, Isd_ymi, log = TRUE))
   } else {
     loglike_I_ymi <- 0
@@ -456,14 +464,22 @@ update_report <- function(r, MARSdata) {
   sdr_s <- exp(p$log_sdr_s)
   bcr_s <- -0.5 * sdr_s * sdr_s
 
-  par_initrdev_as <- !is.na(map$log_initrdev_as) & !duplicated(map$log_initrdev_as, MARGIN = 0)
+  if (is.null(map$log_initrdev_as)) {
+    par_initrdev_as <- matrix(TRUE, na, ns)
+  } else {
+    par_initrdev_as <- matrix(!is.na(map$log_initrdev_as) & !duplicated(map$log_initrdev_as, MARGIN = 0), na, ns)
+  }
   logprior_initrdev_as <- sapply(1:ns, function(s) {
     ifelse(par_initrdev_as[, s], dnorm(p$log_initrdev_as[, s], bcr_s[s], sdr_s[s], log = TRUE), 0)
   })
 
-  par_rdev_ys <- !is.na(map$log_rdev_ys) & !duplicated(map$log_rdev_ys, MARGIN = 0)
+  if (is.null(map$log_rdev_ys)) {
+    par_rdev_ys <- matrix(TRUE, ny, ns)
+  } else {
+    par_rdev_ys <- matrix(!is.na(map$log_rdev_ys) & !duplicated(map$log_rdev_ys, MARGIN = 0), ny, ns)
+  }
   logprior_rdev_ys <- sapply(1:ns, function(s) {
-    ifelse(par_rdev_ys, dnorm(p$log_rdev_ys[, s], bcr_s[s], sdr_s[s], log = TRUE), 0)
+    ifelse(par_rdev_ys[, s], dnorm(p$log_rdev_ys[, s], bcr_s[s], sdr_s[s], log = TRUE), 0)
   })
 
   if (nr > 1 && "mov_g_ymars" %in% random) {
@@ -497,12 +513,12 @@ update_report <- function(r, MARSdata) {
   REPORT(phi_s)
 
   REPORT(selconv_pf)
-  REPORT(sel_lf)
+  if (length(lmid)) REPORT(sel_lf)
   REPORT(q_fs)
 
   if (ni > 0) {
     REPORT(selconv_pi)
-    REPORT(sel_li)
+    if (length(lmid)) REPORT(sel_li)
 
     ADREPORT(q_i)
   }
@@ -525,7 +541,7 @@ update_report <- function(r, MARSdata) {
 
   ## Population arrays ----
   REPORT(N_ymars)
-  REPORT(SB_yrs)
+  REPORT(S_yrs)
   REPORT(R_ys)
   REPORT(Rdev_ys)
   REPORT(F_ymars)
@@ -565,23 +581,26 @@ update_report <- function(r, MARSdata) {
   REPORT(penalty)
   REPORT(fn)
 
-  REPORT(loglike_Cinit_mfr)
-  REPORT(loglike_CAA_ymfr)
-  REPORT(loglike_CAL_ymfr)
+  if (any(Cinit_mfr >= 1e-8)) REPORT(loglike_Cinit_mfr)
+  if (any(CAAobs_ymafr > 0, na.rm = TRUE)) REPORT(loglike_CAA_ymfr)
+  if (any(CALobs_ymlfr > 0, na.rm = TRUE)) REPORT(loglike_CAL_ymfr)
 
-  REPORT(loglike_I_ymi)
-  REPORT(loglike_IAA_ymi)
-  REPORT(loglike_IAL_ymi)
+  if (ni > 0) {
+    REPORT(loglike_I_ymi)
+    if (any(IAAobs_ymai > 0, na.rm = TRUE)) REPORT(loglike_IAA_ymi)
+    if (any(IALobs_ymli > 0, na.rm = TRUE)) REPORT(loglike_IAL_ymi)
+  }
 
-  REPORT(loglike_SC_ymafr)
+  if (ns > 1 && length(SC_ymafrs)) REPORT(loglike_SC_ymafr)
 
-  REPORT(loglike_POP_s)
-  REPORT(loglike_HSP_s)
+  if (length(POP_s)) REPORT(loglike_POP_s)
+  if (length(HSP_s)) REPORT(loglike_HSP_s)
 
-  REPORT(loglike_tag)
+  #REPORT(loglike_tag)
 
-  REPORT(logprior_rdev_ys)
-  REPORT(logprior_dist_ymas)
+  if (any(par_initrdev_as)) REPORT(logprior_initrdev_as)
+  if (any(par_rdev_ys)) REPORT(logprior_rdev_ys)
+  if (nr > 1 && "mov_g_ymars" %in% random) REPORT(logprior_dist_ymas)
 
   return(fn)
 }

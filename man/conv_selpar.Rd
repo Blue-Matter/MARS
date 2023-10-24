@@ -69,14 +69,13 @@ to the corresponding fleet \code{f} (will be coerced to integer), \code{"SB"} to
 \code{\link[=calc_isel_age]{calc_isel_age()}} returns a matrix \verb{[a, i]}, i.e., \verb{[a, length(type)]}
 }
 \description{
-A series of functions to calculate selectivity at age and length from a matrix of parameters.
-
+Calculate selectivity at age and length from a matrix of parameters.
 \itemize{
 \item \code{\link[=conv_selpar]{conv_selpar()}} converts parameters from log or logit space to real units.
 \item \code{\link[=calc_sel_len]{calc_sel_len()}} calculates selectivity at length.
 \item \code{\link[=calc_fsel_age]{calc_fsel_age()}} calculates selectivity at age for fisheries, and coordinates dummy fleets.
 \item \code{\link[=calc_isel_age]{calc_isel_age()}} calculates selectivity at age for indices, and can map selectivity from fisheries
-or population parameters (e.g, mature biomass).
+or population parameters (e.g, mature or total biomass).
 }
 }
 \section{Converting selectivity parameters (conv_selpar)}{

@@ -15,8 +15,8 @@ the recruitment will be calculated. See argument \code{eq}.}
 \item{eq}{Logical, indicates whether \code{x} is the spawning output (\code{FALSE}) or equilibrium spawners per recruit (\code{TRUE})}
 
 \item{...}{Parameters of the SRR function. Provide one of two sets of variables:
-\itemize{
-\item \code{h}, \code{R0} and \code{phi0}
+\enumerate{
+\item \code{h}, \code{R0} and \code{phi0}, or
 \item \code{a} and \code{b} (alpha, beta values)
 }}
 }

@@ -32,7 +32,7 @@ calc_F(
 
 \item{M}{Instantaneous natural mortality. Units of per year \verb{[a, s]}}
 
-\item{q_fs}{Relative catchability of stock \code{s} for fleet \code{f}. Matrix \verb{[f, s]}}
+\item{q_fs}{Relative catchability of stock \code{s} for fleet \code{f}. Defaults to 1 if missing. Matrix \verb{[f, s]}}
 
 \item{delta}{Numeric, the duration of time in years corresponding to the observed catch, e.g., 0.25 is a quarterly time step.}
 

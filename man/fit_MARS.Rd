@@ -11,7 +11,8 @@ fit_MARS(
   random = NULL,
   run_model = TRUE,
   do_sd = TRUE,
-  silent = TRUE,
+  report = TRUE,
+  silent = FALSE,
   control = list(iter.max = 2e+05, eval.max = 4e+05),
   ...
 )
@@ -19,21 +20,27 @@ fit_MARS(
 \arguments{
 \item{MARSdata}{Data object. Class \linkS4class{MARSdata}, validated by \code{\link[=check_data]{check_data()}}}
 
-\item{parameters}{List of parameters, validated by \code{\link[=check_parameters]{check_parameters()}}}
+\item{parameters}{List of parameters, e.g., returned by \code{\link[=make_parameters]{make_parameters()}} and validated by \code{\link[=check_parameters]{check_parameters()}}.}
 
-\item{map}{List of parameters indicated whether they are fixed and/or how they are shared. See \code{\link[TMB:MakeADFun]{TMB::MakeADFun()}}.}
+\item{map}{List of parameters indicated whether they are fixed and how they are shared, e.g., returned by \code{\link[=make_parameters]{make_parameters()}}.
+See \code{\link[TMB:MakeADFun]{TMB::MakeADFun()}}.}
 
-\item{random}{Character vector indicating the parameters that are random effects.}
+\item{random}{Character vector indicating the parameters that are random effects, e.g., returned by \code{\link[=make_parameters]{make_parameters()}}.}
 
-\item{run_model}{Logical, indicates whether the model will be fitted through \code{\link[stats:nlminb]{stats::nlminb()}}.}
+\item{run_model}{Logical, whether to fit the model through \code{\link[stats:nlminb]{stats::nlminb()}}.}
 
-\item{do_sd}{Logical, indicates whether the standard deviations of parameters will be calculated with \code{\link[TMB:sdreport]{TMB::sdreport()}}.}
+\item{do_sd}{Logical, whether to calculate the standard errors with \code{\link[TMB:sdreport]{TMB::sdreport()}}.}
 
-\item{silent}{Logical, passed to \code{MakeADFun}}
+\item{report}{Logical, whether to return the report list with \code{obj$report(obj$env$last.par.best)}.}
+
+\item{silent}{Logical, whether to report progress to console. \strong{Not passed to \code{\link[TMB:MakeADFun]{TMB::MakeADFun()}}.}}
 
 \item{control}{Passed to \code{\link[stats:nlminb]{stats::nlminb()}}}
 
 \item{...}{Other arguments to \code{\link[TMB:MakeADFun]{TMB::MakeADFun()}}.}
+}
+\value{
+A \linkS4class{MARSassess} object.
 }
 \description{
 Wrapper function that calls RTMB to create the model and perform the numerical optimization

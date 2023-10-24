@@ -33,7 +33,7 @@ check_Dmodel <- function(Dmodel, silent = FALSE) {
   }
   if (!length(na)) stop("Need ", ch, "@na")
   if (!length(nl)) {
-    if (!silent) message("No length bins in the model.")
+    if (!silent) message_info("No length bins in the model.")
     Dmodel@nl <- nl <- 0L
   }
   if (!length(nr)) {

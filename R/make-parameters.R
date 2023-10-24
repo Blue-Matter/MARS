@@ -39,13 +39,13 @@
 #' Equal values imply equal catchability of all stocks. See equations in [calc_F()]. Default sets all values to zero.}
 #' \item{`sel_pf`}{Matrix `[3, f]`. Fishery selectivity parameters in logit or log space. See equations [conv_selpar()], where `sel_pf` is the `x` matrix.}
 #' \item{`sel_pi`}{Matrix `[3, i]`. Index selectivity parameters in logit or log space. See equations [conv_selpar()], where `sel_pi` is the `x` matrix.}
-#' \item{`mov_x_ymarrs`}{Array `[y, m, a, r, r, s]`. Base movement matrix. Set to -1000 to effectively exclude movements from region pairs.
+#' \item{`mov_x_marrs`}{Array `[m, a, r, r, s]`. Base movement matrix. Set to -1000 to effectively exclude movements from region pairs.
 #' See equations in [conv_mov()]}
 #' \item{`mov_g_ymars`}{Array `[y, m, a, r, s]`. Attractivity term in gravity model for movement. If `x` and `v` are zero,
 #' this matrix specifies the distribution of total stock abundance into the various regions. See equations in [conv_mov()]}
 #' \item{`mov_v_ymas`}{Array `[y, m, a, s]`. Viscosity term in gravity model for movement. See equations in [conv_mov()]}
 #' \item{`log_sdg_rs`}{Array `[r, s]`. Marginal log standard deviation in the stock distribution (`mov_g_ymars`) among regions for stock `s`.
-#' Only used when `est_mov = dist_random`. Default SD of 0.1.}
+#' Only used when `est_mov = "dist_random"`. Default SD of 0.1.}
 #' \item{`t_corg_ps`}{Array `[sum(1:(nr - 1)), s]`. Lower triangle of the correlation matrix for `mov_g_ymars`, to be obtained with the
 #' Cholesky factorization. Only used when `est_mov = dist_random`. Default values of zero.}
 #' \item{`log_initF_mfr`}{Array `[m, f, r]`. Initial F corresponding to the equilibrium catch.}
@@ -55,11 +55,12 @@
 #' @param MARSdata S4 data object
 #' @param start An optional list of parameters. Named list of parameters with the associated dimensions and transformations below.
 #' Overrides default values created by [make_parameters()].
+#' @param silent Logical, whether to report messages to the console
 #' @param ... Various arguments for [make_map()] (could be important!)
 #' @return
 #' [make_parameters()] returns a list of parameters (`"p"`) concatenated with the output of [make_map()].
 #' @export
-make_parameters <- function(MARSdata, start = list(), ...) {
+make_parameters <- function(MARSdata, start = list(), silent = FALSE, ...) {
 
   getAllS4(MARSdata@Dmodel)
 
@@ -87,7 +88,7 @@ make_parameters <- function(MARSdata, start = list(), ...) {
   if (is.null(p$log_rdev_ys)) p$log_rdev_ys <- matrix(0, ny, ns)
   if (is.null(p$log_sdr_s)) p$log_sdr_s <- rep(0.4, ns)
 
-  if (is.null(p$mov_x_ymarrs)) p$mov_x_ymarrs <- array(0, c(ny, nm, na, nr, nr, ns))
+  if (is.null(p$mov_x_marrs)) p$mov_x_marrs <- array(0, c(nm, na, nr, nr, ns))
   if (is.null(p$mov_g_ymars)) p$mov_g_ymars <- array(0, c(ny, nm, na, nr, ns))
   if (is.null(p$mov_v_ymas)) p$mov_v_ymas <- array(0, c(ny, nm, na, ns))
   if (is.null(p$log_sdg_rs)) p$log_sdg_rs <- array(log(0.1), c(nr, ns))
@@ -123,8 +124,10 @@ make_parameters <- function(MARSdata, start = list(), ...) {
   if (is.null(p$log_initrdev_as)) p$log_initrdev_as <- matrix(0, na, ns)
 
   do_map <- make_map(p, MARSdata, ...)
+  out <- c(list(p = p), do_map)
+  out$p <- check_parameters(out$p, out$map, MARSdata, silent)
 
-  c(list(p = p), do_map)
+  return(out)
 }
 
 #' @rdname make_parameters
@@ -136,14 +139,13 @@ make_parameters <- function(MARSdata, start = list(), ...) {
 #' @param est_sdr Logical, estimate standard deviation of recruitment deviates?
 #' @param est_mov Character describing structure of stock movement parameters. See details below.
 #' @param est_qfs Logical, estimate relative catchability of stocks by each fleet? Fix `log_q_fs` for the first stock if `TRUE`
-#' @param silent Logical, whether to report messages to the console
 #' @section Movement setup for `make_map()`:
 #' If a single region model or `est_mov = "none"`: no movement parameters are estimated.
 #'
-#' If `est_mov = "dist_random"`: fix all values for `mov_x_ymarrs` and `mov_v_ymas`. Fix `mov_g_ymars` for the first region for each year,
+#' If `est_mov = "dist_random"`: fix all values for `mov_x_marrs` and `mov_v_ymas`. Fix `mov_g_ymars` for the first region for each year,
 #' season, age, and stock. `mov_g_ymars` are random effects.
 #'
-#' If `est_mov = "gravity_fixed"`: fix all values for `mov_x_ymarrs`. Fix `mov_g_ymars` for the first region for each year,
+#' If `est_mov = "gravity_fixed"`: fix all values for `mov_x_marrs`. Fix `mov_g_ymars` for the first region for each year,
 #' season, age, and stock. Estimate all `mov_v_ymas`. Both `mov_g_ymars` and `mov_v_ymas` are fixed effects.
 #'
 #' @importFrom dplyr filter
@@ -166,42 +168,42 @@ make_map <- function(p, MARSdata,
 
   # Stock parameters ----
   if (est_M) {
-    if (!silent) message("Estimating natural mortality")
+    if (!silent) message_info("Estimating natural mortality")
   } else {
     map$log_M_s <- factor(rep(NA, ns))
     if (!length(Dstock@Md_yas)) stop("Natural mortality is not estimated. Need M values in the Dstock data object.")
   }
   if (est_h) {
-    if (!silent) message("Estimating steepness")
+    if (!silent) message_info("Estimating steepness")
   } else {
     map$t_h_s <- factor(rep(NA, ns))
   }
   if (est_mat) {
-    if (!silent) message("Estimating maturity ogive")
+    if (!silent) message_info("Estimating maturity ogive")
   } else {
     map$mat_ps <- factor(array(NA, dim(p$mat_ps)))
     if (!length(Dstock@matd_yas)) stop("Maturity ogive is not estimated. Need maturity at age values in the Dstock data object.")
   }
 
   if (est_sdr) {
-    if (!silent) message("Estimating sigma_R (SD of recruitment deviates)")
+    if (!silent) message_info("Estimating sigma_R (SD of recruitment deviates)")
   } else {
     map$log_sdr_s <- factor(rep(NA, ns))
   }
 
   if (nr == 1 || est_mov == "none") {
-    map$mov_x_ymarrs <- factor(array(NA, dim(p$mov_x_ymarrs)))
+    map$mov_x_marrs <- factor(array(NA, dim(p$mov_x_marrs)))
     map$mov_g_ymars <- factor(array(NA, dim(p$mov_g_ymars)))
     map$mov_v_ymas <- factor(array(NA, dim(p$mov_v_ymas)))
 
     map$log_sdg_rs <- factor(array(NA, dim(p$log_sdg_rs)))
     map$t_corg_ps <- factor(array(NA, dim(p$t_corg_ps)))
 
-    #if (!silent) message("No movement parameters are estimated")
+    #if (!silent) message_info("No movement parameters are estimated")
 
   } else if (est_mov == "dist_random") {
 
-    map$mov_x_ymarrs <- factor(array(NA, dim(p$mov_x_ymarrs)))
+    map$mov_x_marrs <- factor(array(NA, dim(p$mov_x_marrs)))
 
     gval <- expand.grid(r = 2:nr, y = 1:ny, m = 1:nm, a = 1:na, s = 1:ns)
     gval$g <- seq(1, nrow(gval))
@@ -224,10 +226,10 @@ make_map <- function(p, MARSdata,
     map$mov_v_ymas <- factor(array(NA, dim(p$mov_v_ymas)))
     random <- c(random, "mov_g_ymars")
 
-    if (!silent) message("Stock distribution is estimated as a random effect")
+    if (!silent) message_info("Stock distribution is estimated as a random effect")
 
   } else {
-    map$mov_x_ymarrs <- factor(array(NA, dim(p$mov_x_ymarrs)))
+    map$mov_x_marrs <- factor(array(NA, dim(p$mov_x_marrs)))
 
     gval <- expand.grid(r = 2:nr, y = 1:ny, m = 1:nm, a = 1:na, s = 1:ns)
     gval$g <- seq(1, nrow(gval))
@@ -250,7 +252,7 @@ make_map <- function(p, MARSdata,
     map$log_sdg_rs <- factor(array(NA, dim(p$log_sdg_rs)))
     map$t_corg_ps <- factor(array(NA, dim(p$t_corg_ps)))
 
-    if (!silent) message("Stock movement is estimated as a fixed effect")
+    if (!silent) message_info("Stock movement is estimated as a fixed effect")
   }
 
   # Fleet parameters ----
@@ -315,9 +317,30 @@ make_map <- function(p, MARSdata,
 }
 
 #' @rdname make_parameters
+#' @param map List of mapped parameters. Used by [check_parameters()] only to count parameters.
 #' @return
 #' [check_parameters()] invisibly returns the parameter list if no problems are encountered.
 #' @export
-check_parameters <- function(p = list(), MARSdata) {
+check_parameters <- function(p = list(), map, MARSdata, silent = FALSE) {
+
+  if (!silent && !missing(map)) {
+    vars <- names(p)
+    npar <- lapply(vars, function(x) {
+      if (is.null(map[[x]])) {
+        nparam <- length(p[[x]])
+      } else {
+        m_x <- map[[x]]
+        nparam <- length(unique(m_x[!is.na(m_x)]))
+      }
+      if (nparam) {
+        data.frame(Variable = x, Parameters = nparam)
+      } else {
+        NULL
+      }
+    })
+    message_info("Estimated parameters:")
+    print(do.call(rbind, npar))
+  }
+
   return(invisible(p))
 }

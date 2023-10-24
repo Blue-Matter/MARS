@@ -47,7 +47,9 @@ reference:
 - title: Miscellaneous
   desc: Other useful functions.
   contents:
-  - conv_Sigma
   - CondExpLt
-  - softmax
+  - conv_Sigma
+  - get_sdreport
+  - optimize_RTMB
   - posfun
+  - softmax

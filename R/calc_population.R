@@ -33,20 +33,19 @@
 #' @return
 #' A named list containing:
 #'
-#' \itemize{
-#' \item `N_ymars` Stock abundance
-#' \item `F_ymars` Fishing mortality (summed across fleets)
-#' \item `Z_ymars` Total mortality
-#' \item `F_ymafrs` Fishing mortality (disaggregated by fleet)
-#' \item `CN_ymafrs` Catch at age (abundance)
-#' \item `CB_ymfrs` Fishery catch (weight)
-#' \item `VB_ymfrs` Vulnerable biomass available to the fishing fleets
-#' \item `Nsp_yars` Spawning abundance (in the spawning season)
-#' \item `Npsp_yars` Mature abundance (that does not if outside natal regions)
-#' \item `S_yrs` Spawning output
-#' \item `R_ys` Recruitment
-#' \item `penalty` Numeric quadratic penalty if apical fishing mortality (by fleet) exceeds `Fmax`. See [calc_F()].
-#' }
+#' * `N_ymars` Stock abundance
+#' * `F_ymars` Fishing mortality (summed across fleets)
+#' * `Z_ymars` Total mortality
+#' * `F_ymafrs` Fishing mortality (disaggregated by fleet)
+#' * `CN_ymafrs` Catch at age (abundance)
+#' * `CB_ymfrs` Fishery catch (weight)
+#' * `VB_ymfrs` Vulnerable biomass available to the fishing fleets
+#' * `Nsp_yars` Spawning abundance (in the spawning season)
+#' * `Npsp_yars` Mature abundance (that does not if outside natal regions)
+#' * `S_yrs` Spawning output
+#' * `R_ys` Recruitment
+#' * `penalty` Numeric quadratic penalty if apical fishing mortality (by fleet) exceeds `Fmax`. See [calc_F()].
+#'
 #' @export
 calc_population <- function(ny = 10, nm = 4, na = 20, nf = 1, nr = 4, ns = 2,
                             initN_ars = array(1, c(na, nr, ns)),
@@ -106,14 +105,14 @@ calc_population <- function(ny = 10, nm = 4, na = 20, nf = 1, nr = 4, ns = 2,
         )
         penalty <- penalty + Fsearch[["penalty"]] # Report penalty for exceeding Fmax
 
-        F_ymafrs[y, m, , , ] <- Fsearch[["F_afrs"]]
+        F_ymafrs[y, m, , , , ] <- Fsearch[["F_afrs"]]
         F_ymars[y, m, , , ] <- Fsearch[["F_ars"]]
         Z_ymars[y, m, , , ] <- Fsearch[["Z_ars"]]
 
         ## This season's fishery catch, vulnerable biomass, and total biomass ----
-        CN_ymafrs[y, m, , , ] <- Fsearch[["CN_afrs"]]
+        CN_ymafrs[y, m, , , , ] <- Fsearch[["CN_afrs"]]
         CB_ymfrs[y, m, , , ] <- Fsearch[["CB_frs"]]
-        VB_ymfrs[y, m, , ] <- apply(Fsearch[["VB_afrs"]], 2:4, sum)
+        VB_ymfrs[y, m, , , ] <- apply(Fsearch[["VB_afrs"]], 2:4, sum)
       } else {
         F_ymafrs[y, m, , , , ] <- sapply2(1:ns, function(s) {
           sapply2(1:nr, function(r) {
