@@ -100,7 +100,7 @@ this matrix specifies the distribution of total stock abundance into the various
 Only used when \code{est_mov = dist_random}. Default SD of 0.1.}
 \item{\code{t_corg_ps}}{Array \verb{[sum(1:(nr - 1)), s]}. Lower triangle of the correlation matrix for \code{mov_g_ymars}, to be obtained with the
 Cholesky factorization. Only used when \code{est_mov = dist_random}. Default values of zero.}
-\item{\code{log_initF_fr}}{Array \verb{[f, r, s]}. Initial F corresponding to the equilibrium catch.}
+\item{\code{log_initF_mfr}}{Array \verb{[m, f, r]}. Initial F corresponding to the equilibrium catch.}
 \item{\code{log_initrdev_as}}{Array \verb{[a, s]}. Recruitment deviations for the initial abundance-at-age vector.}
 }
 }

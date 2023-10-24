@@ -19,7 +19,7 @@ fit_MARS(
 \arguments{
 \item{MARSdata}{Data object. Class \linkS4class{MARSdata}, validated by \code{\link[=check_data]{check_data()}}}
 
-\item{parameters}{List of parameters, validated by \link{check_parameters}}
+\item{parameters}{List of parameters, validated by \code{\link[=check_parameters]{check_parameters()}}}
 
 \item{map}{List of parameters indicated whether they are fixed and/or how they are shared. See \code{\link[TMB:MakeADFun]{TMB::MakeADFun()}}.}
 

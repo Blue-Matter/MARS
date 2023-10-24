@@ -20,9 +20,6 @@
 #' @export
 posfun <- function(x, eps) CondExpGe(x, eps, 0, 0.01 * (x - eps) * (x - eps))
 
-sapply2 <- base::sapply
-formals(sapply2)$simplify <- "array"
-
 #' Softmax function
 #'
 #' Takes a vector of real numbers and returns the corresponding vector of probabilities

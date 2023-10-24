@@ -65,9 +65,12 @@ calc_population <- function(ny = 10, nm = 4, na = 20, nf = 1, nr = 4, ns = 2,
                             Cobs_ymfr = matrix(1e-8, c(ny, nm, nf, nr)),
                             Fmax = 2, nitF = 5L) {
 
+  # Dispatch method for AD variables ----
+  `[<-` <- RTMB::ADoverload("[<-")
+
   condition <- match.arg(condition)
 
-  # Population arrays
+  # Population arrays ----
   delta_m <- 1/nm
   N_ymars <- array(0, c(ny + 1, nm, na, nr, ns))
   Npsp_yars <-

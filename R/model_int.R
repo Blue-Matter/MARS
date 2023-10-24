@@ -77,9 +77,9 @@ calc_F <- function(Cobs, N, sel, wt, M, q_fs, delta = 1,
                    Fmax = 2, nitF = 5L, trans = c("log", "logit")) {
 
   trans <- match.arg(trans)
-  if (missing(q_fs) && ns == 1 && nr == 1 && nf == 1) q_fs <- 1
-  if (is.null(dim(Cobs)) && nr == 1 && nf == 1) Cobs <- matrix(Cobs, nf, nr)
+  if (missing(q_fs)) q_fs <- 1
 
+  Cobs <- matrix(Cobs, nf, nr)
   N <- array(N, c(na, nr, ns))
   sel <- array(sel, c(na, nf, ns))
   wt <- array(wt, c(na, nf, ns))
@@ -91,7 +91,7 @@ calc_F <- function(Cobs, N, sel, wt, M, q_fs, delta = 1,
   #matrix(NA_real_, nitF + 1, nf)
 
   VB_afrs <- sapply2(1:ns, function(s) {
-    sapply2(1:nf, function(r) {
+    sapply2(1:nr, function(r) {
       sapply(1:nf, function(f) N[, r, s] * sel[, f, s] * wt[, f, s])
     })
   })
@@ -110,7 +110,7 @@ calc_F <- function(Cobs, N, sel, wt, M, q_fs, delta = 1,
   for(i in seq(1, nitF + 1)) {
     if (trans == "log") {
       if (i < nitF + 1) {
-        F_loop <- exp(x_loop[[1]])
+        F_loop <- exp(x_loop[[i]])
       } else {  # Last iteration just calculates f and g
         F_loop <- CondExpGt(x_loop[[i]], ln_Fmax, Fmax, exp(x_loop[[i]]))
         F_loop <- CondExpLe(Cobs, 1e-8, 0, F_loop)
@@ -452,11 +452,12 @@ conv_mov <- function(x, g, v, na = dim(x)[1], nr = dim(x)[2], aref = ceiling(0.5
   mov_rra <- sapply2(1:na, function(a) {
     gg <- g[a, ] + (a != aref) * g[aref, ]
     ln_mov <- x[a, , ] + v[a] * diag(nr) + matrix(gg, nr, nr, byrow = TRUE)
-    apply(ln_mov, 1, softmax) %>% t()
+    matrix(ln_mov, nr, nr) %>%
+      apply(1, softmax) # This operation flips matrix orientation. FROM = col, TO = row
   }) %>%
     array(c(nr, nr, na))
 
-  return(aperm(mov_rra, c(3, 1, 2)))
+  return(aperm(mov_rra, 3:1))
 }
 
 

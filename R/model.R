@@ -5,7 +5,7 @@
 #' Wrapper function that calls RTMB to create the model and perform the numerical optimization
 #'
 #' @param MARSdata Data object. Class [MARSdata-class], validated by [check_data()]
-#' @param parameters List of parameters, validated by [check_parameters]
+#' @param parameters List of parameters, validated by [check_parameters()]
 #' @param map List of parameters indicated whether they are fixed and/or how they are shared. See [TMB::MakeADFun()].
 #' @param random Character vector indicating the parameters that are random effects.
 #' @param run_model Logical, indicates whether the model will be fitted through [stats::nlminb()].
@@ -70,6 +70,9 @@ update_report <- function(r, MARSdata) {
 }
 
 .MARS <- function(p = list(), d) {
+
+  # Dispatch method for AD variables ----
+  `[<-` <- RTMB::ADoverload("[<-")
 
   # Assign data variables to environment, see OBS() for simulation ----
   getAllS4(d@Dmodel, d@Dstock, d@Dfishery, d@Dsurvey, d@DCKMR, d@Dtag)
@@ -168,7 +171,7 @@ update_report <- function(r, MARSdata) {
 
   if (nr == 1 && nm == 1) {
     nyinit <- 1L
-    initNPR0_yars <- sapply(1:ns, function(s) calc_NPR(M_yas[y_phi, , s]) %>% array(c(1, na, nr)))
+    initNPR0_yars <- sapply(1:ns, function(s) calc_NPR(M_yas[y_phi, , s]) %>% array(c(nyinit, na, nr)))
     phi_s <- sapply(1:ns, function(s) {
       calc_phi_simple(M_yas[y_phi, , s], mat_a = mat_yas[y_phi, , s], fec_a = fec_yas[y_phi, , s],
                       delta = delta_s[s])
@@ -228,7 +231,7 @@ update_report <- function(r, MARSdata) {
   initR_s <- sapply(1:ns, function(s) {
     calc_recruitment(initphi_s[s], SRR_s[s], eq = TRUE, a = sralpha_s[s], b = srbeta_s[s])
   })
-  initN_ars[] <- sapply2(1:ns, function(s) initR_s[s] * initRdev_as[, s] * initNPR_yars[nyinit, , , s])
+  initN_ars <- sapply2(1:ns, function(s) initR_s[s] * initRdev_as[, s] * initNPR_yars[nyinit, , , s])
 
   # Run population model ----
   pop <- calc_population(
