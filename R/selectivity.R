@@ -12,9 +12,9 @@
 #' or population parameters (e.g, mature biomass).
 #' }
 #' @param x Estimated parameters. Matrix `[3, f]`
-#' @param type Character string to indicate the functional form of selectivity. Options include: "logistic_length", "dome_length",
-#' "logistic_age", "dome_age", an integer (`f`) to map index selectivity to the corresponding fleet `f` (will be coerced to integer),
-#' or "SB" to fix to maturity at age schedule.
+#' @param type Character string to indicate the functional form of selectivity. Options include:
+#' `"logistic_length", "dome_length", "logistic_age", "dome_age"`, an integer (`f`) to map index selectivity
+#' to the corresponding fleet `f` (will be coerced to integer), `"SB"` to fix to maturity at age schedule, or `"B"` to fix to 1 for all ages.
 #' @param maxage Maximum value of the age of full selectivity
 #' @param maxL Maximum value of the length of full selectivity
 #' @section Converting selectivity parameters (conv_selpar):
@@ -146,6 +146,8 @@ calc_fsel_age <- function(sel_len, LAK, type, sel_par, sel_block = seq(1, length
       v <- CondExpLt(a, sel_par[1, f], asc, desc)
     } else if (type[f] == "SB") {
       v <- mat
+    } else if (type[f] == "B") {
+      v <- rep(1, length(a))
     } else if (type[f] == "free") {
       v <- plogis(sel_par[, f])
     }
@@ -192,6 +194,8 @@ calc_isel_age <- function(sel_len, LAK, type, sel_par, fsel_age, maxage, mat, a 
         v <- CondExpLt(a, sel_par[1, i], asc, desc)
       } else if (ti == "SB") {
         v <- mat
+      } else if (ti == "B") {
+        v <- rep(1, length(a))
       } else if (ti == "free") {
         v <- plogis(sel_par[, i])
       }

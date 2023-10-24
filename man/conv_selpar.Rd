@@ -35,9 +35,9 @@ calc_isel_age(
 \arguments{
 \item{x}{Estimated parameters. Matrix \verb{[3, f]}}
 
-\item{type}{Character string to indicate the functional form of selectivity. Options include: "logistic_length", "dome_length",
-"logistic_age", "dome_age", an integer (\code{f}) to map index selectivity to the corresponding fleet \code{f} (will be coerced to integer),
-or "SB" to fix to maturity at age schedule.}
+\item{type}{Character string to indicate the functional form of selectivity. Options include:
+\verb{"logistic_length", "dome_length", "logistic_age", "dome_age"}, an integer (\code{f}) to map index selectivity
+to the corresponding fleet \code{f} (will be coerced to integer), \code{"SB"} to fix to maturity at age schedule, or \code{"B"} to fix to 1 for all ages.}
 
 \item{maxage}{Maximum value of the age of full selectivity}
 
