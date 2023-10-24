@@ -98,14 +98,14 @@ observed catch with the dimension following the underscore, following this templ
 <dt><code>nitF</code></dt>
 <dd><p>Integer, number of iterations to solve Baranov catch equation from observed catch. Defaults to 5.</p></dd>
 
-<dt><code>dist_type</code></dt>
-<dd><p>Character. Whether to estimate seasonal stock distribution with a movement matrix <code>"mov"</code> or re-distributing total abundance by a distribution vector <code>"dist"</code></p></dd>
-
 <dt><code>y_phi</code></dt>
 <dd><p>Integer, the year from which to obtain values of natural mortality and fecundity for the unfished stock-recruit replacement line (<code>phi</code>). Relevant if natural mortality or fecundity are time-varying. Defaults to 1.</p></dd>
 
 <dt><code>scale_s</code></dt>
-<dd><p>Vector, length <code>ns</code>. Logarithmic scalar that informs relative stock size to aid parameter estimation. Larger values implies larger stocks. Default set to zero. See <code><a href="make_parameters.html">make_parameters()</a></code>.</p></dd>
+<dd><p>Vector, length <code>ns</code>. Multiplicative scaling factor that informs relative stock size to aid parameter estimation. Larger values implies larger stocks. Default set to 1. See <code><a href="make_parameters.html">make_parameters()</a></code>.</p></dd>
+
+<dt><code>nyinit</code></dt>
+<dd><p>Integer, number of years of spool-up to calculate equilibrium unfished and starting conditions for the population model to account for seasonal and spatial dynamics. The numerical spool-up is not needed when both <code>nm = 1</code> and <code>nr = 1</code>, i.e., <code>nyinit = 1</code>. Otherwise, set to <code>1.5 * na</code> by default.</p></dd>
 
 
 </dl></div>

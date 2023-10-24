@@ -102,7 +102,11 @@ observed catch with the dimension following the underscore, following this templ
 <dd><p>Index of dummy fleets to model time blocks of selectivity</p></dd>
 
 <dt><code>sel_f</code></dt>
-<dd><p>Character matrix of functional form for selectivity</p></dd>
+<dd><p>Character vector of the functional form for selectivity. Choose between: <code>"logistic_length", "dome_length", "logistic_age", "dome_age", "SB", "B"</code></p></dd>
+
+<dt><code>Cinit_mfr</code></dt>
+<dd><p>Equilibrium seasonal catch prior to the first year. One way to initialize the abundance at the start of the first year
+in the model. Default of zero.</p></dd>
 
 <dt><code>SC_ymafrs</code></dt>
 <dd><p>Stock composition data.</p></dd>

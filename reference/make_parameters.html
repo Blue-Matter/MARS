@@ -153,10 +153,10 @@ For example, <code>log_M_s</code> represents the natural logarithm of natural mo
 frequently, <code>log</code> or <code>logit</code>. Prefix <code>t</code> indicates some other custom transformation that is described below.</p>
 <p>Second is the parameter name, e.g., <code>M</code> for natural mortality, <code>rdev</code> for recruitment deviates, etc.</p>
 <p>Third is the dimension of the parameter variable and the indexing for the vectors, matrices, and arrays, e.g., <code>y</code> for year, <code>s</code> for stock.
-See <a href="MARSdata-class.html">MARSdata-class</a>. Here, an additional index <code>p</code> represents some other number of parameters that is described below.</p>
+See <a href="MARSdata-class.html">MARSdata</a>. Here, an additional index <code>p</code> represents some other number of parameters that is described below.</p>
 <dl><dt><code>t_R0_s</code></dt>
 <dd><p>Vector by <code>s</code>. Unfished recruitment, i.e., intersection of unfished replacement line and average stock recruit function,
-is represented as: <code>R0 &lt;- exp(t_R0_s + MARSdata@Dmodel@scalar_s)</code>. By default, <code>t_R0_s = 3</code></p></dd>
+is represented as: <code>R0_s &lt;- exp(t_R0_s) * MARSdata@Dmodel@scale_s</code>. By default, <code>t_R0_s = 3</code></p></dd>
 
 <dt><code>t_h_s</code></dt>
 <dd><p>Vector by <code>s</code>. Steepness of the stock-recruit function. Logit space for Beverton-Holt and log space for Ricker functions.
@@ -207,6 +207,12 @@ Only used when <code>est_mov = dist_random</code>. Default SD of 0.1.</p></dd>
 <dd><p>Array <code>[sum(1:(nr - 1)), s]</code>. Lower triangle of the correlation matrix for <code>mov_g_ymars</code>, to be obtained with the
 Cholesky factorization. Only used when <code>est_mov = dist_random</code>. Default values of zero.</p></dd>
 
+<dt><code>log_initF_mfr</code></dt>
+<dd><p>Array <code>[m, f, r]</code>. Initial F corresponding to the equilibrium catch.</p></dd>
+
+<dt><code>log_initrdev_as</code></dt>
+<dd><p>Array <code>[a, s]</code>. Recruitment deviations for the initial abundance-at-age vector.</p></dd>
+
 
 </dl></div>
     <div class="section level2">
@@ -221,7 +227,7 @@ season, age, and stock. Estimate all <code>mov_v_ymas</code>. Both <code>mov_g_y
     </div>
     <div class="section level2">
     <h2 id="see-also">See also<a class="anchor" aria-label="anchor" href="#see-also"></a></h2>
-    <div class="dont-index"><p><a href="MARSdata-class.html">MARSdata-class</a></p></div>
+    <div class="dont-index"><p><a href="MARSdata-class.html">MARSdata</a></p></div>
     </div>
 
   </main><aside class="col-md-3"><nav id="toc"><h2>On this page</h2>

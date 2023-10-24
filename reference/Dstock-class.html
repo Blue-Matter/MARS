@@ -68,7 +68,13 @@ observed catch with the dimension following the underscore, following this templ
     <h2 id="slots-inherited-from-dstock">Slots inherited from Dstock<a class="anchor" aria-label="anchor" href="#slots-inherited-from-dstock"></a></h2>
     
 
-<dl><dt><code>len_ymas</code></dt>
+<dl><dt><code>m_spawn</code></dt>
+<dd><p>Integer, season of spawning. Defaults to 1.</p></dd>
+
+<dt><code>m_rec</code></dt>
+<dd><p>Integer, season of recruitment. Defaults to 1.</p></dd>
+
+<dt><code>len_ymas</code></dt>
 <dd><p>Length-at-age. Only needed if <code>Dmodel@nl &gt; 0</code>.</p></dd>
 
 <dt><code>sdlen_ymas</code></dt>
@@ -80,20 +86,14 @@ observed catch with the dimension following the underscore, following this templ
 <dt><code>matd_yas</code></dt>
 <dd><p>Proportion mature by age class. Ignored if maturity ogive is estimated, e.g., when fitting to close-kin genetic data.</p></dd>
 
-<dt><code>fec_yas</code></dt>
-<dd><p>Fecundity, i.e., spawning output, of mature animals</p></dd>
-
 <dt><code>swt_ymas</code></dt>
 <dd><p>Stock weight-at-age</p></dd>
 
+<dt><code>fec_yas</code></dt>
+<dd><p>Fecundity, i.e., spawning output, of mature animals. Default uses stock weight at age.</p></dd>
+
 <dt><code>Md_yas</code></dt>
 <dd><p>Natural morality. Ignored if M is estimated.</p></dd>
-
-<dt><code>m_spawn</code></dt>
-<dd><p>Integer, season of spawning</p></dd>
-
-<dt><code>m_rec</code></dt>
-<dd><p>Integer, season of recruitment</p></dd>
 
 <dt><code>SRR_s</code></dt>
 <dd><p>Character vector of stock-recruit relationship by stock. See <code>SRR</code> argument in <code><a href="calc_recruitment.html">calc_recruitment()</a></code> for options.</p></dd>
@@ -103,7 +103,7 @@ observed catch with the dimension following the underscore, following this templ
 
 <dt><code>natal_rs</code></dt>
 <dd><p>Boolean matrix (0 = FALSE, 1 = TRUE) that indicates whether stock <code>s</code> spawns when in region <code>r</code> at time of spawning, see example.
-Default sets TRUE for all regions and stocks.</p></dd>
+Default of 1 for all regions and stocks.</p></dd>
 
 
 </dl></div>

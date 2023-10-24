@@ -123,12 +123,12 @@ that the parent could be either a mother or a father.
     
 
 <p>The half-sibling probability is calculated from Bravington et al. 2016, eq 3.10, and expanded
-by Hillary et al. 2018, Supplement S2.8.1 for
-age-specific survival and fecundity of the parent:</p>
-<p>$$p_{\textrm{HSP}} = \sum_a\left(
-\dfrac{N(y_i, a)f(y_i, a)}{\sum_{a'} N(y_i, a')f(y_i,a')}
-\exp(-\sum_{t = 0}^{y_j - y_i - 1} Z(y_i + t,a' + t))
-\dfrac{f(y_j,a+y_j-y_i)}{\sum_{a'} N(y_j,a')f(y_i,a')}
+by Hillary et al. 2018, Supplement S2.8.1 for age-specific survival and fecundity of the parent:</p>
+<p>$$p_{\textrm{HSP}} = 4 \times
+\sum_a\left(
+\dfrac{N(y_i, a)f(y_i, a)}{\sum_{a'} N(y_i, a')f(y_i,a')}\times
+\exp(-\sum_{t = 0}^{y_j - y_i - 1} Z(y_i + t,a + t))\times
+\dfrac{f(y_j,a+y_j-y_i)}{\sum_{a'} N(y_j,a')f(y_j,a')}
 \right)
 $$</p><ul><li><p>The first ratio is the probability that a fish at age \(a\) in year \(y_i\) is the parent of \(i\).</p></li>
 <li><p>The exponential term is that fish's survival from year \(y_i\) to \(y_j\).</p></li>

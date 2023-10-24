@@ -131,14 +131,14 @@ observed catch with the dimension following the underscore, following this templ
 <dt><code>nitF</code></dt>
 <dd><p>Integer, number of iterations to solve Baranov catch equation from observed catch. Defaults to 5.</p></dd>
 
-<dt><code>dist_type</code></dt>
-<dd><p>Character. Whether to estimate seasonal stock distribution with a movement matrix <code>"mov"</code> or re-distributing total abundance by a distribution vector <code>"dist"</code></p></dd>
-
 <dt><code>y_phi</code></dt>
 <dd><p>Integer, the year from which to obtain values of natural mortality and fecundity for the unfished stock-recruit replacement line (<code>phi</code>). Relevant if natural mortality or fecundity are time-varying. Defaults to 1.</p></dd>
 
 <dt><code>scale_s</code></dt>
-<dd><p>Vector, length <code>ns</code>. Logarithmic scalar that informs relative stock size to aid parameter estimation. Larger values implies larger stocks. Default set to zero. See <code><a href="make_parameters.html">make_parameters()</a></code>.</p></dd>
+<dd><p>Vector, length <code>ns</code>. Multiplicative scaling factor that informs relative stock size to aid parameter estimation. Larger values implies larger stocks. Default set to 1. See <code><a href="make_parameters.html">make_parameters()</a></code>.</p></dd>
+
+<dt><code>nyinit</code></dt>
+<dd><p>Integer, number of years of spool-up to calculate equilibrium unfished and starting conditions for the population model to account for seasonal and spatial dynamics. The numerical spool-up is not needed when both <code>nm = 1</code> and <code>nr = 1</code>, i.e., <code>nyinit = 1</code>. Otherwise, set to <code>1.5 * na</code> by default.</p></dd>
 
 
 </dl></div>
@@ -146,7 +146,13 @@ observed catch with the dimension following the underscore, following this templ
     <h2 id="slots-inherited-from-dstock">Slots inherited from Dstock<a class="anchor" aria-label="anchor" href="#slots-inherited-from-dstock"></a></h2>
     
 
-<dl><dt><code>len_ymas</code></dt>
+<dl><dt><code>m_spawn</code></dt>
+<dd><p>Integer, season of spawning. Defaults to 1.</p></dd>
+
+<dt><code>m_rec</code></dt>
+<dd><p>Integer, season of recruitment. Defaults to 1.</p></dd>
+
+<dt><code>len_ymas</code></dt>
 <dd><p>Length-at-age. Only needed if <code>Dmodel@nl &gt; 0</code>.</p></dd>
 
 <dt><code>sdlen_ymas</code></dt>
@@ -158,20 +164,14 @@ observed catch with the dimension following the underscore, following this templ
 <dt><code>matd_yas</code></dt>
 <dd><p>Proportion mature by age class. Ignored if maturity ogive is estimated, e.g., when fitting to close-kin genetic data.</p></dd>
 
-<dt><code>fec_yas</code></dt>
-<dd><p>Fecundity, i.e., spawning output, of mature animals</p></dd>
-
 <dt><code>swt_ymas</code></dt>
 <dd><p>Stock weight-at-age</p></dd>
 
+<dt><code>fec_yas</code></dt>
+<dd><p>Fecundity, i.e., spawning output, of mature animals. Default uses stock weight at age.</p></dd>
+
 <dt><code>Md_yas</code></dt>
 <dd><p>Natural morality. Ignored if M is estimated.</p></dd>
-
-<dt><code>m_spawn</code></dt>
-<dd><p>Integer, season of spawning</p></dd>
-
-<dt><code>m_rec</code></dt>
-<dd><p>Integer, season of recruitment</p></dd>
 
 <dt><code>SRR_s</code></dt>
 <dd><p>Character vector of stock-recruit relationship by stock. See <code>SRR</code> argument in <code><a href="calc_recruitment.html">calc_recruitment()</a></code> for options.</p></dd>
@@ -181,7 +181,7 @@ observed catch with the dimension following the underscore, following this templ
 
 <dt><code>natal_rs</code></dt>
 <dd><p>Boolean matrix (0 = FALSE, 1 = TRUE) that indicates whether stock <code>s</code> spawns when in region <code>r</code> at time of spawning, see example.
-Default sets TRUE for all regions and stocks.</p></dd>
+Default of 1 for all regions and stocks.</p></dd>
 
 
 </dl></div>
@@ -223,7 +223,11 @@ Default sets TRUE for all regions and stocks.</p></dd>
 <dd><p>Index of dummy fleets to model time blocks of selectivity</p></dd>
 
 <dt><code>sel_f</code></dt>
-<dd><p>Character matrix of functional form for selectivity</p></dd>
+<dd><p>Character vector of the functional form for selectivity. Choose between: <code>"logistic_length", "dome_length", "logistic_age", "dome_age", "SB", "B"</code></p></dd>
+
+<dt><code>Cinit_mfr</code></dt>
+<dd><p>Equilibrium seasonal catch prior to the first year. One way to initialize the abundance at the start of the first year
+in the model. Default of zero.</p></dd>
 
 <dt><code>SC_ymafrs</code></dt>
 <dd><p>Stock composition data.</p></dd>
@@ -289,7 +293,7 @@ Default sets TRUE for all regions and stocks.</p></dd>
 <dd><p>Boolean array that specifies the regions and stocks sampled by the index. <code>samp[i, r, s]</code> indicates whether index <code>i</code> operates in region <code>r</code> and catches stock <code>s</code>.</p></dd>
 
 <dt><code>sel_i</code></dt>
-<dd><p>Character matrix of functional forms for selectivity</p></dd>
+<dd><p>Character matrix of functional forms for selectivity. See <code>"type"</code> argument in <code>[conv_selpar()]</code> for options.</p></dd>
 
 <dt><code>delta_i</code></dt>
 <dd><p>The elapsed fraction of time in the seasonal time step when the index samples the population.</p></dd>
