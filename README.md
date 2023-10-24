@@ -1,7 +1,7 @@
 
 <!-- README.md is generated from README.Rmd. Please edit that file -->
 
-# MARS <img src="man/figures/README-hex.png" style="float:right; height=139px;" />
+# MARS <img src="man/figures/README-hex.png" align="right" height=139 width=120 />
 
 > Multi-stock assessment with RTMB
 
@@ -11,9 +11,11 @@
 <!-- badges: end -->
 
 MARS (**Multi-stock Assessment with Regional Spatiotemporal dynamics**)
-is a multi-stock, spatially-explicit age-structured model. It is
-intended for use in fisheries where stock composition can not be readily
-identified in fishery data.
+is a multi-stock, spatially-explicit age-structured model. As a
+multi-stock model, it is intended for use in fisheries where stock
+composition can not be readily identified in fishery data, e.g., catch
+and age/length composition. Seasonal stock availability and movement can
+also be explicitly modeled with a multi-spatial area configuration.
 
 Funding for development of MARS is provided by the NOAA Fisheries
 Bluefin Tuna Research Program
