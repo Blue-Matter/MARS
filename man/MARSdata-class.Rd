@@ -53,7 +53,6 @@ observed catch with the dimension following the underscore, following this templ
 \item{\code{lmid}}{Vector of midpoint of length bins. Length \code{nl}}
 \item{\code{Fmax}}{Numeric, maximum allowable instantaneous fishing mortality rate (units of per season). Defaults to 3.}
 \item{\code{nitF}}{Integer, number of iterations to solve Baranov catch equation from observed catch. Defaults to 5.}
-\item{\code{dist_type}}{Character. Whether to estimate seasonal stock distribution with a movement matrix \code{"mov"} or re-distributing total abundance by a distribution vector \code{"dist"}}
 \item{\code{y_phi}}{Integer, the year from which to obtain values of natural mortality and fecundity for the unfished stock-recruit replacement line (\code{phi}). Relevant if natural mortality or fecundity are time-varying. Defaults to 1.}
 \item{\code{scale_s}}{Vector, length \code{ns}. Multiplicative scaling factor that informs relative stock size to aid parameter estimation. Larger values implies larger stocks. Default set to 1. See \code{\link[=make_parameters]{make_parameters()}}.}
 \item{\code{nyinit}}{Integer, number of years of spool-up to calculate equilibrium unfished and starting conditions for the population model to account for seasonal and spatial dynamics. The numerical spool-up is not needed when both \code{nm = 1} and \code{nr = 1}, i.e., \code{nyinit = 1}. Otherwise, set to \code{1.5 * na} by default.}
@@ -63,19 +62,19 @@ observed catch with the dimension following the underscore, following this templ
 \section{Slots inherited from Dstock}{
 
 \describe{
+\item{\code{m_spawn}}{Integer, season of spawning. Defaults to 1.}
+\item{\code{m_rec}}{Integer, season of recruitment. Defaults to 1.}
 \item{\code{len_ymas}}{Length-at-age. Only needed if \code{Dmodel@nl > 0}.}
 \item{\code{sdlen_ymas}}{Standard deviation in length-at-age}
 \item{\code{LAK_ymals}}{Length-at-age probability array. If empty, values will be calculated by \code{\link[=check_data]{check_data()}} with \code{\link[=calc_LAK]{calc_LAK()}}.}
 \item{\code{matd_yas}}{Proportion mature by age class. Ignored if maturity ogive is estimated, e.g., when fitting to close-kin genetic data.}
-\item{\code{fec_yas}}{Fecundity, i.e., spawning output, of mature animals}
 \item{\code{swt_ymas}}{Stock weight-at-age}
+\item{\code{fec_yas}}{Fecundity, i.e., spawning output, of mature animals. Default uses stock weight at age.}
 \item{\code{Md_yas}}{Natural morality. Ignored if M is estimated.}
-\item{\code{m_spawn}}{Integer, season of spawning}
-\item{\code{m_rec}}{Integer, season of recruitment}
 \item{\code{SRR_s}}{Character vector of stock-recruit relationship by stock. See \code{SRR} argument in \code{\link[=calc_recruitment]{calc_recruitment()}} for options.}
 \item{\code{delta_s}}{Fraction of season that elapses when spawning occurs, e.g., midseason spawning occurs when \code{delta_s = 0.5}. Default is zero.}
 \item{\code{natal_rs}}{Boolean matrix (0 = FALSE, 1 = TRUE) that indicates whether stock \code{s} spawns when in region \code{r} at time of spawning, see example.
-Default sets TRUE for all regions and stocks.}
+Default of 1 for all regions and stocks.}
 }
 }
 
@@ -93,7 +92,7 @@ Default sets TRUE for all regions and stocks.}
 \item{\code{CAAtheta_f}}{Catch at age dispersion parameter if using the Dirichlet-multinomial likelihood. Default set to 1.}
 \item{\code{CALtheta_f}}{Catch at length dispersion parameter if using the Dirichlet-multinomial likelihood. Default set to 1.}
 \item{\code{sel_block_yf}}{Index of dummy fleets to model time blocks of selectivity}
-\item{\code{sel_f}}{Character vector of the functional form for selectivity. Choose between: \verb{"logistic_length", "dome_length", "logistic_age", "dome_age", "SB"}}.
+\item{\code{sel_f}}{Character vector of the functional form for selectivity. Choose between: \verb{"logistic_length", "dome_length", "logistic_age", "dome_age", "SB", "B"}}
 \item{\code{Cinit_mfr}}{Equilibrium seasonal catch prior to the first year. One way to initialize the abundance at the start of the first year
 in the model. Default of zero.}
 \item{\code{SC_ymafrs}}{Stock composition data.}
@@ -121,7 +120,7 @@ in the model. Default of zero.}
 \item{\code{IAAtheta_i}}{Index age composition dispersion parameter if using the Dirichlet-multinomial likelihood}
 \item{\code{IALtheta_i}}{Index length composition dispersion parameter if using the Dirichlet-multinomial likelihood}
 \item{\code{samp_irs}}{Boolean array that specifies the regions and stocks sampled by the index. \code{samp[i, r, s]} indicates whether index \code{i} operates in region \code{r} and catches stock \code{s}.}
-\item{\code{sel_i}}{Character matrix of functional forms for selectivity}
+\item{\code{sel_i}}{Character matrix of functional forms for selectivity. See \code{"type"} argument in \verb{[conv_selpar()]} for options.}
 \item{\code{delta_i}}{The elapsed fraction of time in the seasonal time step when the index samples the population.}
 }
 }

@@ -48,7 +48,7 @@
 #' Only used when `est_mov = dist_random`. Default SD of 0.1.}
 #' \item{`t_corg_ps`}{Array `[sum(1:(nr - 1)), s]`. Lower triangle of the correlation matrix for `mov_g_ymars`, to be obtained with the
 #' Cholesky factorization. Only used when `est_mov = dist_random`. Default values of zero.}
-#' \item{`log_initF_fr`}{Array `[f, r, s]`. Initial F corresponding to the equilibrium catch.}
+#' \item{`log_initF_mfr`}{Array `[m, f, r]`. Initial F corresponding to the equilibrium catch.}
 #' \item{`log_initrdev_as`}{Array `[a, s]`. Recruitment deviations for the initial abundance-at-age vector.}
 #' }
 #'
@@ -117,8 +117,8 @@ make_parameters <- function(MARSdata, start = list(), ...) {
   }
 
   # Initial conditions ----
-  if (is.null(p$log_initF_fr)) {
-    p$log_initF_fr <- ifelse(MARSdata@Dfishery@Cinit_mfr < 1e-8, -1000, log(0.1))
+  if (is.null(p$log_initF_mfr)) {
+    p$log_initF_mfr <- ifelse(MARSdata@Dfishery@Cinit_mfr < 1e-8, -1000, log(0.1))
   }
   if (is.null(p$log_initrdev_as)) p$log_initrdev_as <- matrix(0, na, ns)
 
@@ -158,6 +158,7 @@ make_map <- function(p, MARSdata,
                      silent = FALSE) {
 
   est_mov <- match.arg(est_mov)
+  getAllS4(MARSdata)
   getAllS4(MARSdata@Dmodel)
 
   random <- NULL
@@ -168,7 +169,7 @@ make_map <- function(p, MARSdata,
     if (!silent) message("Estimating natural mortality")
   } else {
     map$log_M_s <- factor(rep(NA, ns))
-    if (!length(MARSdata@Dmodel@Md_yas)) stop("Natural mortality is not estimated. Need M values in the Dstock data object.")
+    if (!length(Dstock@Md_yas)) stop("Natural mortality is not estimated. Need M values in the Dstock data object.")
   }
   if (est_h) {
     if (!silent) message("Estimating steepness")
@@ -179,7 +180,7 @@ make_map <- function(p, MARSdata,
     if (!silent) message("Estimating maturity ogive")
   } else {
     map$mat_ps <- factor(array(NA, dim(p$mat_ps)))
-    if (!length(MARSdata@Dmodel@matd_yas)) stop("Maturity ogive is not estimated. Need maturity at age values in the Dstock data object.")
+    if (!length(Dstock@matd_yas)) stop("Maturity ogive is not estimated. Need maturity at age values in the Dstock data object.")
   }
 
   if (est_sdr) {
@@ -188,7 +189,7 @@ make_map <- function(p, MARSdata,
     map$log_sdr_s <- factor(rep(NA, ns))
   }
 
-  if (MARSdata@Dmodel@nr == 1 || est_mov == "none") {
+  if (nr == 1 || est_mov == "none") {
     map$mov_x_ymarrs <- factor(array(NA, dim(p$mov_x_ymarrs)))
     map$mov_g_ymars <- factor(array(NA, dim(p$mov_g_ymars)))
     map$mov_v_ymas <- factor(array(NA, dim(p$mov_v_ymas)))
@@ -196,14 +197,12 @@ make_map <- function(p, MARSdata,
     map$log_sdg_rs <- factor(array(NA, dim(p$log_sdg_rs)))
     map$t_corg_ps <- factor(array(NA, dim(p$t_corg_ps)))
 
-    if (!silent) message("No movement parameters are estimated")
+    #if (!silent) message("No movement parameters are estimated")
 
   } else if (est_mov == "dist_random") {
-    getAllS4(MARSdata@Dmodel)
 
     map$mov_x_ymarrs <- factor(array(NA, dim(p$mov_x_ymarrs)))
 
-    #gval <- expand.grid(r = 2:nr, a = 1:na, m = 1:nm, y = 1:ny, s = 1:ns)
     gval <- expand.grid(r = 2:nr, y = 1:ny, m = 1:nm, a = 1:na, s = 1:ns)
     gval$g <- seq(1, nrow(gval))
     map$mov_g_ymars <- sapply2(1:ns, function(s) {
@@ -230,7 +229,6 @@ make_map <- function(p, MARSdata,
   } else {
     map$mov_x_ymarrs <- factor(array(NA, dim(p$mov_x_ymarrs)))
 
-    #gval <- expand.grid(r = 2:nr, a = 1:na, m = 1:nm, y = 1:ny, s = 1:ns)
     gval <- expand.grid(r = 2:nr, y = 1:ny, m = 1:nm, a = 1:na, s = 1:ns)
     gval$g <- seq(1, nrow(gval))
     map$mov_g_ymars <- sapply2(1:ns, function(s) {
@@ -268,14 +266,14 @@ make_map <- function(p, MARSdata,
   }
 
   ## Fix dome parameter if selectivity is logistic or all parameters if mirrored to maturity
-  if (any(!grepl("dome", MARSdata@Dfishery@sel_f))) {
+  if (any(!grepl("dome", Dfishery@sel_f))) {
     map$sel_pf <- local({
-      n <- max(MARSdata@Dfishery@sel_block_yf)
+      n <- max(Dfishery@sel_block_yf)
       m <- sapply(1:n, function(f) {
-        sel_f <- MARSdata@Dfishery@sel_f[f]
+        sel_f <- Dfishery@sel_f[f]
         vec <- rep(TRUE, 3)
         if (sel_f %in% c("logistic_age", "logistic_length")) vec[3] <- NA
-        if (sel_f == "SB") vec[] <- NA
+        if (sel_f %in% c("B", "SB")) vec[] <- NA
         return(vec)
       })
       m[!is.na(m)] <- 1:sum(m, na.rm = TRUE)
@@ -285,17 +283,17 @@ make_map <- function(p, MARSdata,
 
   # Survey parameters ----
   ## Fix dome parameter or all parameters or all parameters if mirrored to fleet or maturity
-  if (any(!grepl("dome", MARSdata@Dsurvey@sel_i))) {
+  if (any(!grepl("dome", Dsurvey@sel_i))) {
     old_warn <- options()$warn
     options(warn = -1)
     on.exit(options(warn = old_warn))
 
     map$sel_pi <- local({
-      m <- sapply(1:MARSdata@Dsurvey@ni, function(i) {
-        sel_i <- MARSdata@Dsurvey@sel_i[i]
+      m <- sapply(1:Dsurvey@ni, function(i) {
+        sel_i <- Dsurvey@sel_i[i]
         vec <- rep(TRUE, 3)
-        if (sel_f %in% c("logistic_age", "logistic_length")) vec[3] <- NA
-        if (sel_f == "SB" || !is.na(as.integer(sel_i))) vec[] <- NA
+        if (sel_i %in% c("logistic_age", "logistic_length")) vec[3] <- NA
+        if (sel_i %in% c("B", "SB") || !is.na(as.integer(sel_i))) vec[] <- NA
         return(vec)
       })
       m[!is.na(m)] <- 1:sum(m, na.rm = TRUE)
@@ -304,9 +302,9 @@ make_map <- function(p, MARSdata,
   }
 
   # Initial conditions ----
-  if (any(MARSdata@Dfishery@Cinit_mfr < 1e-8)) {
+  if (any(Dfishery@Cinit_mfr < 1e-8)) {
     map$log_initF_mfr <- local({
-      m <- ifelse(MARSdata@Dfishery@Cinit_mfr < 1e-8, NA, TRUE)
+      m <- ifelse(Dfishery@Cinit_mfr < 1e-8, NA, TRUE)
       m[!is.na(m)] <- 1:sum(m, na.rm = TRUE)
       factor(m)
     })

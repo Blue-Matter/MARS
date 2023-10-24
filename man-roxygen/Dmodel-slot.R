@@ -10,7 +10,6 @@
 #' \item{`lmid`}{Vector of midpoint of length bins. Length `nl`}
 #' \item{`Fmax`}{Numeric, maximum allowable instantaneous fishing mortality rate (units of per season). Defaults to 3.}
 #' \item{`nitF`}{Integer, number of iterations to solve Baranov catch equation from observed catch. Defaults to 5.}
-#' \item{`dist_type`}{Character. Whether to estimate seasonal stock distribution with a movement matrix `"mov"` or re-distributing total abundance by a distribution vector `"dist"`}
 #' \item{`y_phi`}{Integer, the year from which to obtain values of natural mortality and fecundity for the unfished stock-recruit replacement line (`phi`). Relevant if natural mortality or fecundity are time-varying. Defaults to 1.}
 #' \item{`scale_s`}{Vector, length `ns`. Multiplicative scaling factor that informs relative stock size to aid parameter estimation. Larger values implies larger stocks. Default set to 1. See [make_parameters()].}
 #' \item{`nyinit`}{Integer, number of years of spool-up to calculate equilibrium unfished and starting conditions for the population model to account for seasonal and spatial dynamics. The numerical spool-up is not needed when both `nm = 1` and `nr = 1`, i.e., `nyinit = 1`. Otherwise, set to `1.5 * na` by default.}

@@ -11,7 +11,7 @@
 #' \item{`CAAtheta_f`}{Catch at age dispersion parameter if using the Dirichlet-multinomial likelihood. Default set to 1.}
 #' \item{`CALtheta_f`}{Catch at length dispersion parameter if using the Dirichlet-multinomial likelihood. Default set to 1.}
 #' \item{`sel_block_yf`}{Index of dummy fleets to model time blocks of selectivity}
-#' \item{`sel_f`}{Character vector of the functional form for selectivity. Choose between: `"logistic_length", "dome_length", "logistic_age", "dome_age", "SB"`}.
+#' \item{`sel_f`}{Character vector of the functional form for selectivity. Choose between: `"logistic_length", "dome_length", "logistic_age", "dome_age", "SB", "B"`}
 #' \item{`Cinit_mfr`}{Equilibrium seasonal catch prior to the first year. One way to initialize the abundance at the start of the first year
 #' in the model. Default of zero.}
 #' \item{`SC_ymafrs`}{Stock composition data.}

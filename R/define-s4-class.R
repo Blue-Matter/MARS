@@ -21,8 +21,8 @@ setClass(
   "Dmodel",
   slots = c(ny = "numeric", nm = "numeric", na = "numeric", nl = "numeric", nr = "numeric", ns = "numeric",
             lbin = "numeric", lmid = "numeric",
-            Fmax = "numeric", nitF = "numeric", dist_type = "character", y_phi = "numeric",
-            scale_s = "numeric", nyinit = "numeric")
+            Fmax = "numeric", nitF = "numeric",
+            y_phi = "numeric", scale_s = "numeric", nyinit = "numeric")
 )
 
 #' Dstock S4 object
@@ -31,9 +31,10 @@ setClass(
 #' @export
 setClass(
   "Dstock",
-  slots = c(len_ymas = "array", sdlen_ymas = "array",
-            LAK_ymals = "array", matd_yas = "array", fec_yas = "array",
-            swt_ymas = "array", Md_yas = "array", m_spawn = "numeric", m_rec = "numeric", SRR_s = "character",
+  slots = c(m_spawn = "numeric", m_rec = "numeric",
+            len_ymas = "array", sdlen_ymas = "array",
+            LAK_ymals = "array", matd_yas = "array", swt_ymas = "array", fec_yas = "array",
+            Md_yas = "array", SRR_s = "character",
             delta_s = "numeric", natal_rs = "matrix")
 )
 
@@ -139,6 +140,6 @@ setMethod("initialize", "MARSassess", function(.Object, ...) init_fn(.Object, li
 if(getRversion() >= "2.15.1") {
   utils::globalVariables(
     c(slotNames("Dmodel"), slotNames("Dstock"), slotNames("Dfishery"),
-      slotNames("Dsurvey"), slotNames("DCKMR"), slotNames("Dtag"))
+      slotNames("Dsurvey"), slotNames("DCKMR"), slotNames("Dtag"), slotNames("MARSdata"), slotNames("MARSassess"))
   )
 }

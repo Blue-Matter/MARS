@@ -1,18 +1,18 @@
 #' @section Slots inherited from Dstock:
 #' \describe{
+#' \item{`m_spawn`}{Integer, season of spawning. Defaults to 1.}
+#' \item{`m_rec`}{Integer, season of recruitment. Defaults to 1.}
 #' \item{`len_ymas`}{Length-at-age. Only needed if `Dmodel@nl > 0`.}
 #' \item{`sdlen_ymas`}{Standard deviation in length-at-age}
 #' \item{`LAK_ymals`}{Length-at-age probability array. If empty, values will be calculated by [check_data()] with [calc_LAK()].}
 #' \item{`matd_yas`}{Proportion mature by age class. Ignored if maturity ogive is estimated, e.g., when fitting to close-kin genetic data.}
-#' \item{`fec_yas`}{Fecundity, i.e., spawning output, of mature animals}
 #' \item{`swt_ymas`}{Stock weight-at-age}
+#' \item{`fec_yas`}{Fecundity, i.e., spawning output, of mature animals. Default uses stock weight at age.}
 #' \item{`Md_yas`}{Natural morality. Ignored if M is estimated.}
-#' \item{`m_spawn`}{Integer, season of spawning}
-#' \item{`m_rec`}{Integer, season of recruitment}
 #' \item{`SRR_s`}{Character vector of stock-recruit relationship by stock. See `SRR` argument in [calc_recruitment()] for options.}
 #' \item{`delta_s`}{Fraction of season that elapses when spawning occurs, e.g., midseason spawning occurs when `delta_s = 0.5`. Default is zero.}
 #' \item{`natal_rs`}{Boolean matrix (0 = FALSE, 1 = TRUE) that indicates whether stock `s` spawns when in region `r` at time of spawning, see example.
-#' Default sets TRUE for all regions and stocks.}
+#' Default of 1 for all regions and stocks.}
 #' }
 #' @examples
 #' # Set natal_rs matrix so that the spawning output of stock 1 is

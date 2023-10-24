@@ -12,7 +12,7 @@
 #' \item{`IAAtheta_i`}{Index age composition dispersion parameter if using the Dirichlet-multinomial likelihood}
 #' \item{`IALtheta_i`}{Index length composition dispersion parameter if using the Dirichlet-multinomial likelihood}
 #' \item{`samp_irs`}{Boolean array that specifies the regions and stocks sampled by the index. `samp[i, r, s]` indicates whether index `i` operates in region `r` and catches stock `s`.}
-#' \item{`sel_i`}{Character matrix of functional forms for selectivity}
+#' \item{`sel_i`}{Character matrix of functional forms for selectivity. See `"type"` argument in `[conv_selpar()]` for options.}
 #' \item{`delta_i`}{The elapsed fraction of time in the seasonal time step when the index samples the population.}
 #' }
 

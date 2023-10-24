@@ -53,12 +53,8 @@ check_Dmodel <- function(Dmodel, silent = FALSE) {
     Dmodel@Fmax <- 3
   }
   if (!length(nitF)) {
-    if (!silent) message("Setting ", ch, "@nitF to 5 (per season)")
+    if (!silent) message("Setting ", ch, "@nitF to 5")
     Dmodel@nitF <- 5
-  }
-  if (nr > 0 && !length(dist_type)) {
-    if (!silent) message("Setting ", ch, "@dist_type to \"dist\"")
-    Dmodel@dist_type <- "dist"
   }
   if (!length(y_phi)) {
     if (!silent) message("Setting ", ch, "@y_phi to year 1")
@@ -88,6 +84,19 @@ check_Dstock <- function(Dstock, Dmodel, silent = FALSE) {
   ch <- as.character(substitute(Dstock))
   if (length(ch) > 1) ch <- "Dstock"
 
+  if (!length(m_spawn) || nm == 1L) {
+    if (!silent) message("Setting m_spawn to 1")
+    Dstock@m_spawn <- m_spawn <- 1L
+  } else if (m_spawn > nm) {
+    stop("m_spawn cannot be greater than nm")
+  }
+  if (!length(m_rec) || nm == 1L) {
+    if (!silent) message("Setting m_rec to 1")
+    Dstock@m_rec <- m_rec <- 1L
+  } else if (m_rec > nm) {
+    stop("m_rec cannot be greater than nm")
+  }
+
   if (nl > 0) {
     if (length(LAK_ymals)) {
       dim_LAK <- dim(LAK_ymals) == c(ny, nm, na, nl, ns)
@@ -114,26 +123,20 @@ check_Dstock <- function(Dstock, Dmodel, silent = FALSE) {
     if (!all(dim_mat)) stop("dim(matd_yas) needs to be: ", c(ny, na, ns) %>% paste(collapse = ", "))
   }
 
-  dim_fec <- dim(fec_yas) == c(ny, na, ns)
-  if (!all(dim_fec)) stop("dim(fec_yas) needs to be: ", c(ny, na, ns) %>% paste(collapse = ", "))
-
   dim_swt <- dim(swt_ymas) == c(ny, nm, na, ns)
   if (!all(dim_swt)) stop("dim(swt_ymas) needs to be: ", c(ny, nm, na, ns) %>% paste(collapse = ", "))
+
+  if (!length(fec_yas)) {
+    if (!silent) message("Setting fecundity to stock weight at age at season of spawning")
+    Dstock@fec_yas <- fec_yas <- array(swt_ymas[, m_spawn, , ], c(ny, na, ns))
+  } else {
+    dim_fec <- dim(fec_yas) == c(ny, na, ns)
+    if (!all(dim_fec)) stop("dim(fec_yas) needs to be: ", c(ny, na, ns) %>% paste(collapse = ", "))
+  }
 
   if (!length(Md_yas)) {
     dim_M <- dim(Md_yas) == c(ny, na, ns)
     if (!all(dim_M)) stop("dim(Md_yas) needs to be: ", c(ny, na, ns) %>% paste(collapse = ", "))
-  }
-
-  if (!length(m_spawn) || nm == 1L) {
-    if (!silent) message("m_spawn set to 1")
-  } else if (m_spawn > nm) {
-    stop("m_spawn cannot be greater than nm")
-  }
-  if (!length(m_rec) || nm == 1L) {
-    if (!silent) message("m_rec set to 1")
-  } else if (m_rec > nm) {
-    stop("m_rec cannot be greater than nm")
   }
 
   if (length(SRR_s) != ns) stop("SRR_s needs to be length ", ns)
@@ -164,7 +167,7 @@ check_Dfishery <- function(Dfishery, Dstock, Dmodel, silent = FALSE) {
   if (!length(fwt_ymafs)) {
     if (!silent) message("Setting fishery weight at age to stock weight at age")
     Dfishery@fwt_ymafs <- sapply2(1:ns, function(s) {
-      sapply2(1:nf, function(f) Dstock@swt_ymas[, , , s])
+      sapply2(1:nf, function(f) array(Dstock@swt_ymas[, , , s], c(ny, nm, na)))
     })
   } else {
     dim_fwt <- dim(fwt_ymafs) == c(ny, nm, na, nf, ns)
@@ -246,7 +249,7 @@ check_Dfishery <- function(Dfishery, Dstock, Dmodel, silent = FALSE) {
     if (!all(dim_Cinit)) stop("dim(Cinit_mfr) needs to be: ", c(nm, nf, nr) %>% paste(collapse = ", "))
   }
 
-  if (!length(SC_ymafrs)) {
+  if (length(SC_ymafrs)) {
     dim_SC <- dim(SC_ymafrs)
     if (length(dim_SC) != 6) stop("SC_ymafrs should be a six dimensional array")
 
@@ -323,7 +326,7 @@ check_Dsurvey <- function(Dsurvey, Dmodel, silent = FALSE) {
     if (!all(dim_Iobs)) stop("dim(Iobs_ymi) needs to be: ", c(ny, nm, ni) %>% paste(collapse = ", "))
 
     if (!length(unit_i)) {
-      if (!silent) message("unit_i set to biomass for all indices")
+      if (!silent) message("Setting unit_i to biomass for all indices")
       Dsurvey@unit_i <- rep("B", ni)
     }
 
@@ -387,7 +390,7 @@ check_Dsurvey <- function(Dsurvey, Dmodel, silent = FALSE) {
     }
 
     if (!length(samp_irs)) {
-      if (!silent) message("Setting samp_irs such that all indices operate in all regions and sample all stocks")
+      if (!silent) message("Setting samp_irs = 1. All indices operate in all regions and sample all stocks")
       Dsurvey@samp_irs <- array(1, c(ni, nr, ns))
     } else {
       dim_samp <- dim(samp_irs) == c(ni, nr, ns)
@@ -416,7 +419,7 @@ check_Dsurvey <- function(Dsurvey, Dmodel, silent = FALSE) {
 check_DCKMR <- function(DCKMR, Dmodel, silent = FALSE) {
   getAllS4(DCKMR, Dmodel)
 
-  if (!length(POP_s)) {
+  if (length(POP_s)) {
     vars_POP <- c("a", "t", "y", "n", "m")
     check_POP <- sapply(1:ns, function(s) {
       if (nrow(POP_s[[s]])) {
@@ -430,7 +433,7 @@ check_DCKMR <- function(DCKMR, Dmodel, silent = FALSE) {
     }
   }
 
-  if (!length(HSP_s)) {
+  if (length(HSP_s)) {
     vars_HSP <- c("yi", "yj", "n", "m")
     check_HSP <- sapply(1:ns, function(s) {
       if (nrow(HSP_s[[s]])) {
@@ -444,7 +447,7 @@ check_DCKMR <- function(DCKMR, Dmodel, silent = FALSE) {
     }
   }
 
-  if (!length(POP_s) || !length(HSP_s)) {
+  if (length(POP_s) || length(HSP_s)) {
     if (!length(CKMR_like)) {
       if (!silent) message("Setting close-kin likelihood to \"binomial\"")
       DCKMR@CKMR_like <- "binomial"
