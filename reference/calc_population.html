@@ -178,7 +178,7 @@ time of spawning. See example in <a href="Dstock-class.html">Dstock</a>.</p></dd
 
 
 <dt>q_fs</dt>
-<dd><p>Relative catchability of stock <code>s</code> for fleet <code>f</code>. Matrix <code>[f, s]</code></p></dd>
+<dd><p>Relative catchability of stock <code>s</code> for fleet <code>f</code>. Defaults to 1 if missing. Matrix <code>[f, s]</code></p></dd>
 
 
 <dt>sel_ymafs</dt>
@@ -209,10 +209,7 @@ time of spawning. See example in <a href="Dstock-class.html">Dstock</a>.</p></dd
     <h2 id="value">Value<a class="anchor" aria-label="anchor" href="#value"></a></h2>
     
 
-<p>A named list containing:</p>
-
-
-<ul><li><p><code>N_ymars</code> Stock abundance</p></li>
+<p>A named list containing:</p><ul><li><p><code>N_ymars</code> Stock abundance</p></li>
 <li><p><code>F_ymars</code> Fishing mortality (summed across fleets)</p></li>
 <li><p><code>Z_ymars</code> Total mortality</p></li>
 <li><p><code>F_ymafrs</code> Fishing mortality (disaggregated by fleet)</p></li>

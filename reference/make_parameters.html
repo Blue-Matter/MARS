@@ -66,7 +66,7 @@ checks whether custom made parameter lists are of the correct dimension.</p>
 
     <div class="section level2">
     <h2 id="ref-usage">Usage<a class="anchor" aria-label="anchor" href="#ref-usage"></a></h2>
-    <div class="sourceCode"><pre class="sourceCode r"><code><span><span class="fu">make_parameters</span><span class="op">(</span><span class="va">MARSdata</span>, start <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/list.html" class="external-link">list</a></span><span class="op">(</span><span class="op">)</span>, <span class="va">...</span><span class="op">)</span></span>
+    <div class="sourceCode"><pre class="sourceCode r"><code><span><span class="fu">make_parameters</span><span class="op">(</span><span class="va">MARSdata</span>, start <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/list.html" class="external-link">list</a></span><span class="op">(</span><span class="op">)</span>, silent <span class="op">=</span> <span class="cn">FALSE</span>, <span class="va">...</span><span class="op">)</span></span>
 <span></span>
 <span><span class="fu">make_map</span><span class="op">(</span></span>
 <span>  <span class="va">p</span>,</span>
@@ -80,7 +80,7 @@ checks whether custom made parameter lists are of the correct dimension.</p>
 <span>  silent <span class="op">=</span> <span class="cn">FALSE</span></span>
 <span><span class="op">)</span></span>
 <span></span>
-<span><span class="fu">check_parameters</span><span class="op">(</span>p <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/list.html" class="external-link">list</a></span><span class="op">(</span><span class="op">)</span>, <span class="va">MARSdata</span><span class="op">)</span></span></code></pre></div>
+<span><span class="fu">check_parameters</span><span class="op">(</span>p <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/list.html" class="external-link">list</a></span><span class="op">(</span><span class="op">)</span>, <span class="va">map</span>, <span class="va">MARSdata</span>, silent <span class="op">=</span> <span class="cn">FALSE</span><span class="op">)</span></span></code></pre></div>
     </div>
 
     <div class="section level2">
@@ -92,6 +92,10 @@ checks whether custom made parameter lists are of the correct dimension.</p>
 <dt>start</dt>
 <dd><p>An optional list of parameters. Named list of parameters with the associated dimensions and transformations below.
 Overrides default values created by <code>make_parameters()</code>.</p></dd>
+
+
+<dt>silent</dt>
+<dd><p>Logical, whether to report messages to the console</p></dd>
 
 
 <dt>...</dt>
@@ -126,8 +130,8 @@ Overrides default values created by <code>make_parameters()</code>.</p></dd>
 <dd><p>Logical, estimate relative catchability of stocks by each fleet? Fix <code>log_q_fs</code> for the first stock if <code>TRUE</code></p></dd>
 
 
-<dt>silent</dt>
-<dd><p>Logical, whether to report messages to the console</p></dd>
+<dt>map</dt>
+<dd><p>List of mapped parameters. Used by <code>check_parameters()</code> only to count parameters.</p></dd>
 
 </dl></div>
     <div class="section level2">
@@ -188,8 +192,8 @@ Equal values imply equal catchability of all stocks. See equations in <code><a h
 <dt><code>sel_pi</code></dt>
 <dd><p>Matrix <code>[3, i]</code>. Index selectivity parameters in logit or log space. See equations <code><a href="conv_selpar.html">conv_selpar()</a></code>, where <code>sel_pi</code> is the <code>x</code> matrix.</p></dd>
 
-<dt><code>mov_x_ymarrs</code></dt>
-<dd><p>Array <code>[y, m, a, r, r, s]</code>. Base movement matrix. Set to -1000 to effectively exclude movements from region pairs.
+<dt><code>mov_x_marrs</code></dt>
+<dd><p>Array <code>[m, a, r, r, s]</code>. Base movement matrix. Set to -1000 to effectively exclude movements from region pairs.
 See equations in <code><a href="conv_mov.html">conv_mov()</a></code></p></dd>
 
 <dt><code>mov_g_ymars</code></dt>
@@ -201,7 +205,7 @@ this matrix specifies the distribution of total stock abundance into the various
 
 <dt><code>log_sdg_rs</code></dt>
 <dd><p>Array <code>[r, s]</code>. Marginal log standard deviation in the stock distribution (<code>mov_g_ymars</code>) among regions for stock <code>s</code>.
-Only used when <code>est_mov = dist_random</code>. Default SD of 0.1.</p></dd>
+Only used when <code>est_mov = "dist_random"</code>. Default SD of 0.1.</p></dd>
 
 <dt><code>t_corg_ps</code></dt>
 <dd><p>Array <code>[sum(1:(nr - 1)), s]</code>. Lower triangle of the correlation matrix for <code>mov_g_ymars</code>, to be obtained with the
@@ -216,13 +220,20 @@ Cholesky factorization. Only used when <code>est_mov = dist_random</code>. Defau
 
 </dl></div>
     <div class="section level2">
+    <h2 id="start-list">Start list<a class="anchor" aria-label="anchor" href="#start-list"></a></h2>
+    
+
+<p>Users can provide <code>R0_s</code> and <code>h_s</code> in the start list. <code>make_parameters()</code> will make the appropriate transformation for the starting values
+of <code>t_R0_s</code> and <code>t_h_s</code>, respectively.</p>
+    </div>
+    <div class="section level2">
     <h2 id="movement-setup-for-make-map-">Movement setup for <code>make_map()</code><a class="anchor" aria-label="anchor" href="#movement-setup-for-make-map-"></a></h2>
     
 
 <p>If a single region model or <code>est_mov = "none"</code>: no movement parameters are estimated.</p>
-<p>If <code>est_mov = "dist_random"</code>: fix all values for <code>mov_x_ymarrs</code> and <code>mov_v_ymas</code>. Fix <code>mov_g_ymars</code> for the first region for each year,
+<p>If <code>est_mov = "dist_random"</code>: fix all values for <code>mov_x_marrs</code> and <code>mov_v_ymas</code>. Fix <code>mov_g_ymars</code> for the first region for each year,
 season, age, and stock. <code>mov_g_ymars</code> are random effects.</p>
-<p>If <code>est_mov = "gravity_fixed"</code>: fix all values for <code>mov_x_ymarrs</code>. Fix <code>mov_g_ymars</code> for the first region for each year,
+<p>If <code>est_mov = "gravity_fixed"</code>: fix all values for <code>mov_x_marrs</code>. Fix <code>mov_g_ymars</code> for the first region for each year,
 season, age, and stock. Estimate all <code>mov_v_ymas</code>. Both <code>mov_g_ymars</code> and <code>mov_v_ymas</code> are fixed effects.</p>
     </div>
     <div class="section level2">

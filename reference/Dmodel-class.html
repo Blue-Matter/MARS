@@ -107,6 +107,18 @@ observed catch with the dimension following the underscore, following this templ
 <dt><code>nyinit</code></dt>
 <dd><p>Integer, number of years of spool-up to calculate equilibrium unfished and starting conditions for the population model to account for seasonal and spatial dynamics. The numerical spool-up is not needed when both <code>nm = 1</code> and <code>nr = 1</code>, i.e., <code>nyinit = 1</code>. Otherwise, set to <code>1.5 * na</code> by default.</p></dd>
 
+<dt><code>condition</code></dt>
+<dd><p>Character, either to specify the model estimates fishing mortality as a parameter (<code>"F"</code>, default) or equal to the catch (<code>"catch"</code>).</p></dd>
+
+<dt><code>y_Fmult_f</code></dt>
+<dd><p>Integer vector by fleet, the year in which to directly estimate F. Choose a year/season/region combination when the catch is average relative to the time series. Only used if <code>condition = "catch"</code>.</p></dd>
+
+<dt><code>m_Fmult_f</code></dt>
+<dd><p>Integer vector by fleet, the season in which to directly estimate F. Choose a year/season/region combination when the catch is average relative to the time series. Only used if <code>condition = "catch"</code>.</p></dd>
+
+<dt><code>r_Fmult_f</code></dt>
+<dd><p>Integer vector by fleet, the region in which to directly estimate F. Choose a year/season/region combination when the catch is average relative to the time series. Only used if <code>condition = "catch"</code>.</p></dd>
+
 
 </dl></div>
     <div class="section level2">
