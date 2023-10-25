@@ -27,6 +27,7 @@ observed catch with the dimension following the underscore, following this templ
 \describe{
 \item{\code{nf}}{Integer, number of fleets}
 \item{\code{Cobs_ymfr}}{Total fishery catch}
+\item{\code{Csd_ymfr}}{Lognormal standard deviation of the fishery catch. Only used if \code{Dmodel@condition = "F"}. Default of 0.01.}
 \item{\code{fwt_yamfs}}{Fishery weight at age. Set to 1 when fleet catch is in units of abundance. Set to stock weight at age by default.}
 \item{\code{CAAobs_ymafr}}{Fishery catch at age composition}
 \item{\code{CALobs_ymlfr}}{Fishery catch at length composition}

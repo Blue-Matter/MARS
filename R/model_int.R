@@ -113,8 +113,8 @@ calc_F <- function(Cobs, N, sel, wt, M, q_fs, delta = 1,
         F_loop <- exp(x_loop[[i]])
       } else {  # Last iteration just calculates f and g
         F_loop <- CondExpGt(x_loop[[i]], ln_Fmax, Fmax, exp(x_loop[[i]]))
-        F_loop <- CondExpLe(Cobs, 1e-8, 0, F_loop)
-        penalty <- penalty + sum(posfun(ln_Fmax, x_loop[[i]]))
+        F_loop <- CondExpLt(Cobs, 1e-8, 0, F_loop)
+        penalty <- penalty + sum(posfun(Fmax, F_loop))
       }
     } else {
       F_loop <- Fmax * plogis(x_loop[[i]])

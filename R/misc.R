@@ -146,8 +146,9 @@ check_det <- function(h, abs_val = 0.1, is_null = TRUE) {
 #' @param silent Logical, whether to report progress to console. See details.
 #' @param ... Other arguments to [TMB::sdreport()] besides `par.fixed, hessian.fixed, getReportCovariance`
 #' @details
-#' Various steps are utilized to obtain a positive-definite covariance matrix, in the following order:
-#' 1. Invert hessian returned by `h <- obj@he(obj$env.last.par.best)`
+#' In marginal cases where the determinant of the Hessian matrix is less than 0.1, several steps are utilized to
+#' obtain a positive-definite covariance matrix, in the following order:
+#' 1. Invert hessian returned by `h <- obj@he(obj$env.last.par.best)` (skipped in models with random effects)
 #' 2. Invert hessian returned by `h <- stats::optimHess(obj$env.last.par.best, obj$fn, obj$gr)`
 #' 3. Invert hessian returned by `h <- numDeriv::jacobian(obj$gr, obj$env.last.par.best)`
 #' 4. Calculate covariance matrix from `chol2inv(chol(h))`
@@ -170,7 +171,6 @@ get_sdreport <- function(obj, getReportCovariance = FALSE, silent = FALSE, ...) 
       if (!silent) message_info("Calculating standard errors with hessian from obj$he()..")
       res <- sdreport(obj, par.fixed = par.fixed, hessian.fixed = h,
                       getReportCovariance = getReportCovariance, ...)
-      if (!res$pdHess) h <- NULL
     }
   } else {
     par.fixed <- par.fixed[-obj$env$random]
@@ -178,7 +178,7 @@ get_sdreport <- function(obj, getReportCovariance = FALSE, silent = FALSE, ...) 
     h <- NULL
   }
 
-  if (check_det(h)) {  # If hessian doesn't exist or marginal positive-definite cases, with -0.1 < det(h) <= 0
+  if (is.null(h) || check_det(h)) {  # If hessian doesn't exist or marginal positive-definite cases, with -0.1 < det(h) <= 0
     if (!silent) message_info("Calculating standard errors with hessian from stats::optimHess()..")
     h <- optimHess(par.fixed, obj$fn, obj$gr)
     res <- sdreport(obj, par.fixed = par.fixed, hessian.fixed = h,
@@ -198,12 +198,7 @@ get_sdreport <- function(obj, getReportCovariance = FALSE, silent = FALSE, ...) 
     if (!is.character(ch)) res$cov.fixed <- chol2inv(ch)
   }
 
-  #func <- attr(obj$env$data, "func")
-  #obj2 <- MakeADFun(func, obj$env$parameters, type = "ADFun", ADreport = TRUE, silent = obj$env$silent)
-  #gr <- obj2$gr(par.fixed)
-
-  res$env$corr.fixed <- cov2cor(res$cov.fixed) %>%
-    round(3) %>%
+  res$env$corr.fixed <- cov2cor(res$cov.fixed) %>% round(3) %>%
     structure(dimnames = list(names(res$par.fixed), names(res$par.fixed)))
 
   if (!silent && !res$pdHess) message_oops("Check convergence. Covariance matrix is not positive-definite.")

@@ -52,6 +52,10 @@
 #' \item{`log_initrdev_as`}{Array `[a, s]`. Recruitment deviations for the initial abundance-at-age vector.}
 #' }
 #'
+#' @section Start list:
+#' Users can provide `R0_s` and `h_s` in the start list. [make_parameters()] will make the appropriate transformation for the starting values
+#' of `t_R0_s` and `t_h_s`, respectively.
+#'
 #' @param MARSdata S4 data object
 #' @param start An optional list of parameters. Named list of parameters with the associated dimensions and transformations below.
 #' Overrides default values created by [make_parameters()].
@@ -67,16 +71,23 @@ make_parameters <- function(MARSdata, start = list(), silent = FALSE, ...) {
   p <- start
 
   # Stock parameters ----
-  if (is.null(p$t_R0_s)) p$t_R0_s <- rep(3, ns)
-  if (is.null(p$t_h_s)) {
-    p$t_h_s <- local({
-      h <- 0.8
-      ifelse(MARSdata@Dstock@SRR_s == "BH", qlogis((h - 0.2)/0.8), log(h - 0.2))
-    })
+  if (!is.null(start$R0_s)) {
+    p$t_R0_s <- log(start$R0_s/MARSdata@Dmodel@scale_s)
+    p$R0_s <- NULL
+  } else if (is.null(start$t_R0_s)) {
+    p$t_R0_s <- rep(3, ns)
   }
+
+  if (is.null(start$h_s)) {
+    start$h_s <- rep(0.8, ns)
+  } else {
+    p$h_s <- NULL
+  }
+  p$t_h_s <- ifelse(MARSdata@Dstock@SRR_s == "BH", qlogis((start$h_s - 0.2)/0.8), log(start$h_s - 0.2))
+
   if (is.null(p$mat_ps)) {
     p$mat_ps <- sapply(1:ns, function(s) {
-      a50 <- 0.5 * na
+      a50 <- 0.5*na
       a95 <- a50 + 1
       logit_a50 <- qlogis(a50/na)
       log_diff <- log(a95 - a50)
@@ -84,9 +95,9 @@ make_parameters <- function(MARSdata, start = list(), silent = FALSE, ...) {
     })
   }
 
-  if (is.null(p$log_M_s)) p$log_M_s <- rep(-log(0.05)/na, ns)
+  if (is.null(p$log_M_s)) p$log_M_s <- rep(log(-log(0.05)/na), ns)
   if (is.null(p$log_rdev_ys)) p$log_rdev_ys <- matrix(0, ny, ns)
-  if (is.null(p$log_sdr_s)) p$log_sdr_s <- rep(0.4, ns)
+  if (is.null(p$log_sdr_s)) p$log_sdr_s <- rep(log(0.4), ns)
 
   if (is.null(p$mov_x_marrs)) p$mov_x_marrs <- array(0, c(nm, na, nr, nr, ns))
   if (is.null(p$mov_g_ymars)) p$mov_g_ymars <- array(0, c(ny, nm, na, nr, ns))
@@ -96,6 +107,30 @@ make_parameters <- function(MARSdata, start = list(), silent = FALSE, ...) {
 
   # Fleet parameters ----
   if (is.null(p$log_q_fs)) p$log_q_fs <- matrix(0, nf, ns)
+  if (is.null(p$log_Fdev_ymfr)) {
+    if (condition == "F") {
+      p$log_Fdev_ymfr <- sapply2(1:nr, function(r) {
+        sapply2(1:nf, function(f) {
+          sapply(1:nm, function(m) {
+            sapply(1:ny, function(y) {
+              Fmult_y <- y == y_Fmult_f[f]
+              Fmult_m <- m == m_Fmult_f[f]
+              Fmult_r <- r == r_Fmult_f[f]
+              if (Fmult_y && Fmult_m && Fmult_r) {
+                log(-log(0.05)/na)
+              } else {
+                0
+              }
+            })
+          })
+        })
+      })
+      p$log_Fdev_ymfr[MARSdata@Dfishery@Cobs_ymfr < 1e-8] <- -1000
+    } else {
+      p$log_Fdev_ymfr <- array(0, c(ny, nm, nf, nr))
+    }
+  }
+
   if (is.null(p$sel_pf)) {
     p$sel_pf <- local({
       sel <- matrix(NA, 3, max(MARSdata@Dfishery@sel_block_yf))
@@ -265,6 +300,15 @@ make_map <- function(p, MARSdata,
       m[, -1] <- 1:np
       factor(m)
     })
+  }
+  if (condition == "F" && any(Dfishery@Cobs_ymfr < 1e-8)) {
+    map$log_Fdev_ymfr <- local({
+      m <- ifelse(Dfishery@Cobs_ymfr < 1e-8, NA, TRUE)
+      m[!is.na(m)] <- 1:sum(m, na.rm = TRUE)
+      factor(m)
+    })
+  } else if (condition == "catch") {
+    map$log_Fdev_ymfr <- factor(NA, c(ny, nm, nf, nr))
   }
 
   ## Fix dome parameter if selectivity is logistic or all parameters if mirrored to maturity

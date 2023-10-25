@@ -107,6 +107,12 @@ Cholesky factorization. Only used when \code{est_mov = dist_random}. Default val
 }
 }
 
+\section{Start list}{
+
+Users can provide \code{R0_s} and \code{h_s} in the start list. \code{\link[=make_parameters]{make_parameters()}} will make the appropriate transformation for the starting values
+of \code{t_R0_s} and \code{t_h_s}, respectively.
+}
+
 \section{Movement setup for \code{make_map()}}{
 
 If a single region model or \code{est_mov = "none"}: no movement parameters are estimated.

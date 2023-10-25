@@ -183,6 +183,8 @@ calc_population <- function(ny = 10, nm = 4, na = 20, nf = 1, nr = 4, ns = 2,
     }
   }
 
+  if (condition == "F") penalty <- penalty + sum(posfun(Fmax, F_ymfr))
+
   out <- list(
     N_ymars = N_ymars,
     F_ymars = F_ymars,

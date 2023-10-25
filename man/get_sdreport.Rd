@@ -23,9 +23,10 @@ A wrapper function to return standard errors. Various numerical techniques are e
 a positive-definite covariance matrix.
 }
 \details{
-Various steps are utilized to obtain a positive-definite covariance matrix, in the following order:
+In marginal cases where the determinant of the Hessian matrix is less than 0.1, several steps are utilized to
+obtain a positive-definite covariance matrix, in the following order:
 \enumerate{
-\item Invert hessian returned by \code{h <- obj@he(obj$env.last.par.best)}
+\item Invert hessian returned by \code{h <- obj@he(obj$env.last.par.best)} (skipped in models with random effects)
 \item Invert hessian returned by \code{h <- stats::optimHess(obj$env.last.par.best, obj$fn, obj$gr)}
 \item Invert hessian returned by \code{h <- numDeriv::jacobian(obj$gr, obj$env.last.par.best)}
 \item Calculate covariance matrix from \code{chol2inv(chol(h))}

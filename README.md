@@ -11,11 +11,13 @@
 <!-- badges: end -->
 
 MARS (**Multi-stock Assessment with Regional Spatiotemporal dynamics**)
-is a multi-stock, spatially-explicit age-structured model. As a
-multi-stock model, it is intended for use in fisheries where stock
-composition can not be readily identified in fishery data, e.g., catch
-and age/length composition. Seasonal stock availability and movement can
-also be explicitly modeled with a multi-spatial area configuration.
+is a multi-stock, spatially-explicit age-structured model.
+
+With explicit seasonal stock availability and movement, MARS is intended
+for use in mixed fisheries where stock composition can not be readily
+identified in fishery data alone, i.e., from catch and age/length
+composition. Models can also be fitted to genetic data, e.g., stock
+composition of catches and close-kin pairs.
 
 Funding for development of MARS is provided by the NOAA Fisheries
 Bluefin Tuna Research Program

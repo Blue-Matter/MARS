@@ -74,6 +74,24 @@ check_Dmodel <- function(Dmodel, silent = FALSE) {
     }
     if (!silent) message("Setting ", ch, "@nyinit = ", nyinit)
   }
+  if (!length(condition)) {
+    Dmodel@condition <- condition <- "F"
+    if (!silent) message("Setting ", ch, "@condition = F")
+  }
+  if (condition == "F") {
+    if (!length(y_Fmult_f)) {
+      Dmodel@y_Fmult_f <- rep(round(0.5 * ny), nf)
+      if (!silent) message("Setting ", ch, "@y_Fmult_f = ", Dmodel@y_Fmult_f)
+    }
+    if (!length(m_Fmult_f)) {
+      Dmodel@m_Fmult_f <- rep(1L, nf)
+      if (!silent && nm > 1) message("Setting ", ch, "@m_Fmult_f = ", Dmodel@m_Fmult_f)
+    }
+    if (!length(r_Fmult_f)) {
+      Dmodel@r_Fmult_f <- rep(1L, nf)
+      if (!silent && nr > 1) message("Setting ", ch, "@r_Fmult_f = ", Dmodel@r_Fmult_f)
+    }
+  }
 
   return(Dmodel)
 }
@@ -155,7 +173,7 @@ check_Dstock <- function(Dstock, Dmodel, silent = FALSE) {
 }
 
 check_Dfishery <- function(Dfishery, Dstock, Dmodel, silent = FALSE) {
-  getAllS4(Dfishery)
+  getAllS4(Dfishery, Dmodel)
   ch <- as.character(substitute(Dfishery))
   if (length(ch) > 1) ch <- "Dfishery"
 
@@ -163,6 +181,15 @@ check_Dfishery <- function(Dfishery, Dstock, Dmodel, silent = FALSE) {
 
   dim_Cobs <- dim(Cobs_ymfr) == c(ny, nm, nf, nr)
   if (!all(dim_Cobs)) stop("dim(Cobs_ymfr) needs to be: ", c(ny, nm, nf, nr) %>% paste(collapse = ", "))
+
+  if (condition == "F") {
+    if (!length(Csd_ymfr)) {
+      Dfishery@Csd_ymfr <- matrix(0.01, c(ny, nm, nf, nr))
+    } else {
+      dim_Csd <- dim(Csd_ymfr) == c(ny, nm, nf, nr)
+      if (!all(dim_Cobs)) stop("dim(Cobs_ymfr) needs to be: ", c(ny, nm, nf, nr) %>% paste(collapse = ", "))
+    }
+  }
 
   if (!length(fwt_ymafs)) {
     if (!silent) message("Setting fishery weight at age to stock weight at age")

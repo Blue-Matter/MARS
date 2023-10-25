@@ -105,6 +105,8 @@ update_report <- function(r, MARSdata) {
   # Fishery arrays ----
   sel_ymafs <- array(NA_real_, c(ny, nm, na, nf, ns))
 
+  F_ymfr <-
+    log_F_ymfr <- array(NA_real_, c(ny, nm, nf, nr))
   F_ymafrs <-
     CN_ymafrs <- array(NA_real_, c(ny, nm, na, nf, nr, ns))
   if (any(CALobs_ymlfr > 0, na.rm = TRUE)) CN_ymlfrs <- array(NA_real_, c(ny, nm, nl, nf, nr, ns))
@@ -121,8 +123,10 @@ update_report <- function(r, MARSdata) {
 
   # Transform parameters ----
   ## Maturity at age ogive ----
+  if (is.null(map$mat_ps)) map$mat_ps <- matrix(TRUE, 2, ns)
+  map$mat_ps <- matrix(map$mat_ps, 2, ns)
   mat_yas <- sapply2(1:ns, function(s) {
-    if (!is.null(map$mat_ps) && all(is.na(map$mat_ps[, s]))) {
+    if (all(is.na(map$mat_ps[, s]))) {
       matd_yas[, , s]
     } else {
       a50 <- na * plogis(p$mat_ps[1, s])
@@ -147,6 +151,28 @@ update_report <- function(r, MARSdata) {
   q_fs <- exp(p$log_q_fs)
   selconv_pf <- conv_selpar(p$sel_pf, type = sel_f, maxage = na, maxL = 0.95 * max(lmid))
   sel_lf <- calc_sel_len(selconv_pf, lmid, type = sel_f)
+
+  ## Fishing mortality ----
+  if (condition == "F") {
+    log_Fmult_f <- sapply(1:nf, function(f) p$log_Fdev_ymfr[y_Fmult_f[f], m_Fmult_f[f], f, r_Fmult_f[f]])
+    log_F_ymfr[] <- sapply2(1:nr, function(r) {
+      sapply2(1:nf, function(f) {
+        sapply(1:nm, function(m) {
+          sapply(1:ny, function(y) {
+            Fmult_y <- y == y_Fmult_f[f]
+            Fmult_m <- m == m_Fmult_f[f]
+            Fmult_r <- r == r_Fmult_f[f]
+            if (Fmult_y && Fmult_m && Fmult_r) {
+              log_Fmult_f[f]
+            } else {
+              log_Fmult_f[f] + p$log_Fdev_ymfr[y, m, f, r]
+            }
+          })
+        })
+      })
+    })
+    F_ymfr[] <- exp(log_F_ymfr)
+  }
 
   ## Index selectivity ----
   if (ni > 0) {
@@ -248,7 +274,7 @@ update_report <- function(r, MARSdata) {
     ny, nm, na, nf, nr, ns, initN_ars, mov_ymarrs, M_yas, SRR_s, sralpha_s, srbeta_s,
     mat_yas, fec_yas, Rdev_ys, m_rec, m_spawn, delta_s, natal_rs,
     fwt_ymafs, q_fs, sel_ymafs,
-    condition = "catch", Cobs_ymfr = Cobs_ymfr, Fmax = Fmax, nitF = nitF
+    condition = condition, F_ymfr = F_ymfr, Cobs_ymfr = Cobs_ymfr, Fmax = Fmax, nitF = nitF
   )
 
   # Assign population arrays ----
@@ -285,10 +311,25 @@ update_report <- function(r, MARSdata) {
     loglike_Cinit_mfr <- 0
   }
 
+  ## Catch ----
+  if (condition == "F") {
+    CB_ymfr <- apply(CB_ymfrs, 1:4, sum)
+
+    Cobs_ymfr <- OBS(Cobs_ymfr)
+    loglike_Cobs_ymfr <- ifelse(
+      Cobs_ymfr >= 1e-8,
+      dnorm(log(Cobs_ymfr/CB_ymfr), 0, Csd_ymfr, log = TRUE),
+      0
+    )
+  } else {
+    loglike_Cobs_ymfr <- 0
+  }
+
   ## Marginal fishery age composition ----
   if (any(CAAobs_ymafr > 0, na.rm = TRUE)) {
     CN_ymafr <- apply(CN_ymafrs, 1:5, sum)
 
+    CAAobs_ymafr <- OBS(CAAobs_ymafr)
     loglike_CAA_ymfr <- sapply2(1:nr, function(r) {
       sapply2(1:nf, function(f) {
         sapply(1:nm, function(m) {
@@ -318,6 +359,7 @@ update_report <- function(r, MARSdata) {
     }
     CN_ymlfr <- apply(CN_ymlfrs, 1:5, sum)
 
+    CALobs_ymlfr <- OBS(CALobs_ymlfr)
     loglike_CAL_ymfr <- sapply2(1:nr, function(r) {
       sapply2(1:nf, function(f) {
         sapply(1:nm, function(m) {
@@ -353,6 +395,8 @@ update_report <- function(r, MARSdata) {
     }
     q_i <- sapply(1:ni, function(i) calc_q(Iobs_ymi[, , i], B = VI_ymi[, , i]))
     I_ymi[] <- sapply2(1:ni, function(i) q_i[i] * VI_ymi[, , i])
+
+    Iobs_ymi <- OBS(Iobs_ymi)
     loglike_I_ymi <- ifelse(is.na(Iobs_ymi), 0, dnorm(log(Iobs_ymi/I_ymi), 0, Isd_ymi, log = TRUE))
   } else {
     loglike_I_ymi <- 0
@@ -361,6 +405,7 @@ update_report <- function(r, MARSdata) {
   if (ni > 0 && any(IAAobs_ymai > 0, na.rm = TRUE)) {
     IN_ymai <- apply(IN_ymais, 1:4, sum)
 
+    IAAobs_ymai <- OBS(IAAobs_ymai)
     loglike_IAA_ymi <- sapply2(1:ni, function(i) {
       sapply(1:nm, function(m) {
         sapply(1:ny, function(y) {
@@ -385,6 +430,7 @@ update_report <- function(r, MARSdata) {
     }
     IN_ymli <- apply(IN_ymlis, 1:4, sum)
 
+    IALobs_ymli <- OBS(IALobs_ymli)
     loglike_IAL_ymi <- sapply2(1:ni, function(i) {
       sapply(1:nm, function(m) {
         sapply(1:ny, function(y) {
@@ -401,7 +447,7 @@ update_report <- function(r, MARSdata) {
 
   ## Stock composition ----
   if (ns > 1 && length(SC_ymafrs)) {
-
+    SC_ymafrs <- OBS(SC_ymafrs)
     loglike_SC_ymafr <- sapply2(1:nr, function(r) {
       sapply2(1:nrow(SC_ff), function(ff) { # Aggregate over fleets SC_ff
         sapply2(1:nrow(SC_aa), function(aa) { # Aggregate over age classes SC_aa
@@ -416,7 +462,6 @@ update_report <- function(r, MARSdata) {
         })
       })
     })
-
   } else {
     loglike_SC_ymafr <- 0
   }
@@ -427,7 +472,9 @@ update_report <- function(r, MARSdata) {
       calc_POP(t = POP_s[[s]]$t, a = POP_s[[s]]$a, y = POP_s[[s]]$y,
                N = apply(Nsp_yars[, , , s], 1:2, sum), fec = fec_yas[, , s])
     })
-    loglike_POP_s <- lapply(1:ns, function(s) like_CKMR(n = POP_s[[s]]$n, m = POP_s[[s]]$m, p = pPOP_s[[s]], type = CKMR_like))
+    loglike_POP_s <- lapply(1:ns, function(s) {
+      like_CKMR(n = POP_s[[s]]$n, m = POP_s[[s]]$m, p = pPOP_s[[s]], type = CKMR_like)
+    })
   } else {
     loglike_POP_s <- 0
   }
@@ -447,14 +494,17 @@ update_report <- function(r, MARSdata) {
       calc_HSP(yi = HSP_s[[s]]$yi, yj = HSP_s[[s]]$yj,
                N = apply(Nsp_yars[, , , s], 1:2, sum), fec = fec_yas[, , s], Z = Z_yas[, , s])
     })
-    loglike_HSP_s <- lapply(1:ns, function(s) like_CKMR(n = HSP_s[[s]]$n, m = HSP_s[[s]]$m, p = pHSP_s[[s]], type = CKMR_like))
+    loglike_HSP_s <- lapply(1:ns, function(s) {
+      like_CKMR(n = HSP_s[[s]]$n, m = HSP_s[[s]]$m, p = pHSP_s[[s]], type = CKMR_like)
+    })
   } else {
     loglike_HSP_s <- 0
   }
 
   loglike_tag <- 0
 
-  loglike <- sum(loglike_Cinit_mfr) + sum(loglike_CAA_ymfr) + sum(loglike_CAL_ymfr) +
+  loglike <- sum(loglike_Cinit_mfr) +
+    sum(loglike_Cobs_ymfr) + sum(loglike_CAA_ymfr) + sum(loglike_CAL_ymfr) +
     sum(loglike_I_ymi) + sum(loglike_IAA_ymi) + sum(loglike_IAL_ymi) +
     sum(loglike_SC_ymafr) +
     Reduce(sum, loglike_POP_s) + Reduce(sum, loglike_HSP_s) +
@@ -523,6 +573,8 @@ update_report <- function(r, MARSdata) {
     ADREPORT(q_i)
   }
 
+  if (condition == "F") REPORT(F_ymfr)
+
   REPORT(M_yas)
   REPORT(mat_yas)
 
@@ -582,6 +634,7 @@ update_report <- function(r, MARSdata) {
   REPORT(fn)
 
   if (any(Cinit_mfr >= 1e-8)) REPORT(loglike_Cinit_mfr)
+  if (condition == "F") REPORT(loglike_Cobs_ymfr)
   if (any(CAAobs_ymafr > 0, na.rm = TRUE)) REPORT(loglike_CAA_ymfr)
   if (any(CALobs_ymlfr > 0, na.rm = TRUE)) REPORT(loglike_CAL_ymfr)
 
