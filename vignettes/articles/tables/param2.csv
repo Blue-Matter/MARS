@@ -1,0 +1,7 @@
+Description,Equation
+Selectivity at length,"$s_{\ell,f} = \begin{cases} 2^{-\left(\dfrac{L_\ell - \mu_f}{\sigma^{\textrm{asc}}_f}\right)^2} &, L_\ell < \mu_f \\ 2^{-\left(\dfrac{L_\ell - \mu_f}{\sigma^{\textrm{dsc}}_f}\right)^2} &, L_\ell \ge \mu_f \end{cases}$"
+Selectivity at age,"$s_{y,m,a,f,s} = \sum_\ell \textrm{Pr}(\ell \mid a )_{y,m,s} \times s_{\ell,f}$"
+Maturity (if estimated),"$m_{a,s} = \left[1 + \exp\left(-\log(19)\frac{a-a^{50}_s}{a^{95}_s - a^{50}_s}\right)\right]^{-1}$"
+Movement from $r$ to $r'$,"$\textrm{mov}_{y,m,a,r,r',s} = \dfrac{\exp(x^b_{m,a,r,r',s} + x^g_{y,m,a,r,s} + x^v_{y,m,a,s})}{\sum_{r'} \exp(x^b_{m,a,r,r',s} + x^g_{y,m,a,r,s} + x^v_{y,m,a,s})}$"
+Beverton-Holt stock recruit parameters,"$\begin{align} \alpha_s &= \dfrac{4h_s}{(1-h_s)\phi_{0,s}}\\ \beta_s &= \dfrac{5h_s-1}{(1-h_s)R_{0,s}\phi_{0,s}}\end{align}$"
+Ricker stock recruit parameters,"$\begin{align} \alpha_s &= \dfrac{5h^{1.25}}{\phi_{0,s}}\\ \beta_s &= \dfrac{\log([5h_s]^{1.25})}{R_{0,s}\phi_{0,s}}\end{align}$"

@@ -1,0 +1,3 @@
+Description,Distribution,Equation
+Deviations from the equilibrium age structure,Lognormal,"$x^{\textrm{Req}}_{a,s} \sim N(-0.5 (\sigma^R_s)^2, \sigma^R_s)$"
+Recruitment deviates,Lognormal,"$x^R_{y,s} \sim N(-0.5 (\sigma^R_s)^2, \sigma^R_s)$"

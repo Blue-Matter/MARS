@@ -1,0 +1,147 @@
+---
+title: "Model equations"
+date: "`r Sys.Date()`"
+output: rmarkdown::html_vignette
+vignette: >
+  %\VignetteIndexEntry{Model equations}
+  %\VignetteEngine{knitr::rmarkdown}
+  %\VignetteEncoding{UTF-8}
+---
+
+```{r, include = FALSE}
+knitr::opts_chunk$set(
+  collapse = TRUE,
+  comment = "#>"
+)
+library(dplyr)
+```
+
+
+# Variable definitions
+
+## Equation subscripts
+
+The following letters are used for subscripts to identify the dimension and indexing for model variables.
+
+```{r vars, echo = FALSE}
+vars <- read.csv("tables/subscript.csv") %>%
+  mutate(Number = paste0("1.", 1:n()))
+knitr::kable(vars)
+```
+
+## Fixed parameters
+
+The parameters here are set up as fixed inputs prior to fitting the model.
+
+```{r dyn-input, echo = FALSE}
+dyn_input <- read.csv("tables/data_var.csv") %>%
+  mutate(Number = paste0("3.", 1:n()))
+knitr::kable(dyn_input)
+```
+
+## Estimated parameters
+
+The parameters here are set up to be either estimated or fixed in the model. 
+Such parameters are identified as $x$ which is estimated over all real numbers and transformed to the appropriate model parameter described below.
+
+- Unfished recruitment is scaled by an additional user parameter $r_s$ which is intended to aid convergence. For multi-stock models, $r_s$ should be proportional to the expected stock size, i.e., large values for large stocks.
+- Maturity and natural mortality can either be estimated or defined by the user as above.
+- Fishing mortality is fixed to zero when the corresponding catch is less than $10^{-8}$.
+
+```{r param, echo = FALSE}
+param <- read.csv("tables/param.csv") %>%
+  mutate(Number = paste0("3.", 1:n()))
+knitr::kable(param)
+```
+
+## Derived variables
+
+This section defines additional variables derived from data or estimated parameters described in the previous sections.
+
+- Selectivity is reported here in terms of length. The corresponding age-based selectivity by stock is obtained from the length-at-age probability key and is seasonally-varying based on the growth pattern.
+- Movement is parameterized with three arrays and several configurations are possible.
+- Stock-recruit functions use the steepness parameterization, along with the unfished recruitment and the unfished spawning output per recruit ($\phi_0$). In seasonal and multi-region models, the population dynamics model is used to numerically obtain $\phi_0$ by setting $F_{y,m,f,r} = 0$, recruitment to 1, and all other parameters to constant seasonal values. $\phi_0$ is the equilibrium spawning output at the end of this numerical spool-up.
+
+```{r param2, echo = FALSE}
+param2 <- read.csv("tables/param2.csv") %>%
+  mutate(Number = paste0("3.", 1:n()))
+knitr::kable(param2)
+```
+
+# Population dynamics
+
+The following equations project the population forward in time.
+
+- To obtain the initial abundance $N_{y=1,m=1,a,r,s}$ array in seasonal and multi-region models, a numerical spool-up is performed with the seasonal fishing mortality equal to $F^{\textrm{eq}}_{m,f,r}$, recruitment to 1, and all other parameters set to constant seasonal values from the first year of the model. From this initialization, the equilibrium spawners per recruit $\phi_{eq}$ is the final spawning output, and the seasonal numbers per recruit $\textrm{NPR}^{\textrm{eq}}_{m,a,r,s}$ is obtained from the abundance array. The initial abundance is the product of the equilibrium recruitment and numbers per recruit.
+- It is possible that some proportion of the mature population do not contribute to the annual spawning based on the natal spawning parameter specifying the spatial spawning pattern. Thus, there is a distinction between potential spawners and realized spawners. The unfished replacement line of the stock-recruit relationship ($R_s = 1/\phi_0$) is based on the realized spawning in equilibrium.
+
+```{r pop-dyn, echo = FALSE}
+pop_dyn <- read.csv("tables/pop_dyn.csv") %>%
+  mutate(Number = paste0("3.", 1:n()))
+knitr::kable(pop_dyn)
+```
+
+# Report variables
+
+Here, we calculate additional variables that are not needed for the population dynamics model, but are of interest for fitting the model or for reporting.
+
+- In a multi-region and/or seasonal model, we may want a summary fishing mortality (per year) across all regions and fleets ($F_{y,a,s}$) which calculated from the Baranov equation with natural mortality $M_{y,a,s}$, total stock abundance at the beginning of the year $N_{y,a,s}$, and total catch $C^N_{y,a,s}$. The summary total mortality (per year) is then $Z_{y,a,s} = F_{y,a,s} + M_{y,a,s}$.
+- Vulnerable biomass is the availability of the stock to individual fleets.
+- When fitting to close-kin genetic data, we can calculate the probability of parent-offspring pairs (POP) with the cohort year of the offspring is $y$, the parental age at capture is $a'$, and the capture year of the parent $t$.
+- The half-offspring pair probability is calculated from the parental probability in years $i$ and $j$, the cohort year of the older and younger sibling, respectively, and the parental survival from year $i$ to year $j$. 
+The parental age is not observed, so we calculate the probability across all potential ages and follow each cohort from $i$ to $j$.
+
+```{r report-var, echo = FALSE}
+report_var <- read.csv("tables/report_var.csv") %>%
+  mutate(Number = paste0("3.", 1:n()))
+knitr::kable(report_var)
+```
+
+# Objective function
+
+The objective function is the sum of the negative log-likelihoods, negative log-priors, and penalty function.
+
+## Likelihoods
+
+The statistical distributions used for the likelihoods of the data are described. The dimensions of the data are given below as well as the corresponding model variable for the predicted value, which is typically summed across stocks, (except for stock composition). 
+Composition data are presented as proportions $p$ and a separate table provides the mean and variance of the various likelihood options.
+
+The close-kin likelihood uses the ratio of matches (for either parent-offspring or sibling matches) and the number of pairwise comparisons ($N$).
+
+```{r like, echo = FALSE}
+like <- read.csv("tables/likelihood.csv") %>%
+  mutate(Number = paste0("3.", 1:n()))
+knitr::kable(like)
+```
+
+Potential distributions for the likelihoods of composition data, which are presented as proportions, and the predicted mean and variance. 
+$N$ is the sample size for each composition vector and $\theta$ is a tuning parameter for the Dirichlet-multinomial distribution, both provided as user inputs. 
+$N$ is unique to each vector observation, e.g., age composition by season, fleet, and region while $\theta$ is unique to fleet or survey.
+
+```{r like-comp, echo = FALSE}
+like_comp <- read.csv("tables/like_comp.csv") %>%
+  mutate(Number = paste0("3.", 1:n()))
+knitr::kable(like_comp)
+```
+
+## Priors
+
+Prior distributions for various parameters are described here.
+
+```{r priors, echo = FALSE}
+pr <- read.csv("tables/prior.csv") %>%
+  mutate(Number = paste0("3.", 1:n()))
+knitr::kable(pr)
+```
+
+## Penalty function
+
+A quadratic penalty to the objective function when any $F_{y,m,f,r}$ exceeds the specified maximum.
+
+$$
+\textrm{Penalty} = \sum_y\sum_m\sum_f\sum_r
+\begin{cases}
+0.1 (F_{max} - F_{y,m,f,r})^2 & F_{y,m,f,r} \ge F_{max}\\
+0 & \textrm{otherwise}
+\end{cases}
+$$

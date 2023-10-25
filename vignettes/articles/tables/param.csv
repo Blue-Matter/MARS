@@ -1,0 +1,20 @@
+Description,Symbol
+Estimated parameter (all real numbers),$x$
+Unfished recruitment,"$R_{0,s} = r_s \exp(x^{R0}_s)$"
+Beverton-Holt stock-recruit steepness,$h_s = 0.8 \times \textrm{logit}^{-1}(x^h_s) + 0.2$
+Ricker stock-recruit steepness,$h_s = \exp(x^h_s) + 0.2$
+Age of 50\% maturity ($A$ is the maximum age),$a^{50}_s=A\times\textrm{logit}^{-1}(x^{a50}_s)$
+Age of 95\% maturity,$a^{95}_s = a^{50}_s + \exp(x^{a95}_s)$
+Natural mortality,$M_s = \exp(x^M_s)$
+Recruitment deviates,"$x^R_{y,s}$"
+Standard deviation of recruitment deviates,$\sigma^R_s=\exp(x^{\sigma_R}_s)$
+Fleet catchability by stock,"$q^F_{f,s}= \exp(x^{qF}_{f,s})$"
+Fishing mortality,"$F_{y,m,f,r} = \begin{cases}  \exp(x^{\textrm{Fmult}}_f) \quad & y = y_{\textrm{ref}}, m = m_{\textrm{ref}}, r = r_{\textrm{ref}}\\ \exp(x^{\textrm{Fmult}}_f + x^{\textrm{Fdev}}_{y,m,r}) \quad & \textrm{otherwise} \end{cases}$"
+Selectivity - length of full selectivity ($f$ and $i$ subscripts are interchangeable),$\mu_f = L_{\textrm{max}} \times \textrm{logit}^{-1}(x^{\mu}_f)$
+Selectivity - width of ascending limb,$\sigma^{\textrm{asc}}_f = \exp(x^{\textrm{asc}}_f)$ 
+Selectivity - width of descending limb,$\sigma^{\textrm{dsc}}_f = \exp(x^{\textrm{dsc}}_f)$ 
+Base movement parameters from origin $r$ to destination $r'$,"$x^b_{m,a,r,r',s}$"
+Attractivity term - movement,"$x^g_{y,m,a,r',s}$"
+Viscosity term - movement,"$x^v_{y,m,a,s}$"
+Initial equilibrium fishing mortality,"$F^{\textrm{eq}}_{m,f,r}=\exp(x^{\textrm{Feq}}_{m,f,r})$"
+Deviations from the equilibrium age structure,"$x^{\textrm{Req}}_{a,s}$"

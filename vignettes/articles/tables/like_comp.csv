@@ -1,0 +1,5 @@
+Distribution,Mean,Variance
+Multinomial,$N\hat{p}$,$N\hat{p}(1-\hat{p})$
+Dirichlet-multinomial (Type 1),$N\hat{p}$,$N\hat{p}(1-\hat{p})\dfrac{N+\theta N}{1+\theta N}$
+Dirichlet-multinomial (Type 2),$N\hat{p}$,$N\hat{p}(1-\hat{p})\dfrac{N+\theta}{1+\theta}$
+Lognormal (summed across positive bins),$\log(\hat{p})$,$\hat{p}^{-1}$

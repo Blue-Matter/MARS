@@ -1,0 +1,12 @@
+Data,Symbol,Predicted,Distribution,Variance
+Equilibrium catch (biomass),"$C^{Beq}_{m,f,r}$","$\sum_s \hat{C}^{Beq}_{m,f,r,s}$",Lognormal,$\sigma = 0.01$
+Catch (biomass),"$C^B_{y,m,f,r}$","$\sum_s \hat{C}^B_{y,m,f,r,s}$",Lognormal,"$\sigma^C_{y,m,f,r}$"
+Catch at age,"$p^{CN}_{y,m,a,f,r}$","$\sum_s \hat{C}^N_{y,m,a,f,r,s}/\sum_a\sum_s \hat{C}^N_{y,m,a,f,r,s}$",Composition,See next table
+Catch at length,"$p^{CN}_{y,m,l,f,r}$","$\sum_s \hat{C}^N_{y,m,\ell,f,r,s}/\sum_\ell\sum_s \hat{C}^N_{y,m,\ell,f,r,s}$",Composition,See next table
+Total indices,"$I_{y,m,i}$","$\hat{I}_{y,m,i}$",Lognormal,"$\sigma^I_{y,m,i}$"
+Index at age,"$p^{IN}_{y,m,a,i}$","$\sum_s \hat{I}^N_{y,m,a,i,s}/\sum_a\sum_s \hat{I}^N_{y,m,a,i,s}$",Composition,See next table
+Index at length,"$p^{IN}_{y,m,\ell,i}$","$\sum_s \hat{I}^N_{y,m,\ell,i,s}/\sum_\ell\sum_s \hat{I}^N_{y,m,\ell,i,s}$",Composition,See next table
+Stock composition,"$p^{SC}_{y,m,a,f,r,s}$","$\hat{C}^N_{y,m,a,f,r,s}/\sum_s \hat{C}^N_{y,m,a,f,r,s}$",Composition,See next table
+Parent-offspring pairs,"$p^{POP}_{y,t,a,s}$","$\hat{p}^{POP}_{y,t,a,s}$",Binomial,$N\hat{p}^{POP}(1 - \hat{p}^{POP})$
+Half-sibling pairs,"$p^{HSP}_{i,j,s}$","$\hat{p}^{HSP}_{i,j,s}$",Binomial,$N\hat{p}^{HSP}(1 - \hat{p}^{HSP})$
+Tag,TBD,,,

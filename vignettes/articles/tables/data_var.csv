@@ -1,0 +1,16 @@
+Description,Symbol
+Stock weight at age,"$w_{y,m,a,s}$"
+Fishery weight at age,"$w^F_{y,m,a,f,s}$"
+Maturity ogive,"$m_{y,a,s}$"
+Fecundity,"$f_{y,a,s}$"
+Natural mortality (instantaneous per year),"$M_{y,a,s}$"
+Length-at-age probability,"$\textrm{Pr}(\ell \mid a )_{y,m,s}$"
+Fractional parameter (between 0 - 1),$\Delta$
+Season length (relative to year),$\Delta_m$
+Spawn timing (within season),$\Delta_{sp}$
+Season of spawning (subscript),$m_\textrm{sp}$
+Season of recruitment (subscript),$m_\textrm{rec}$
+Natal spawning (proportion of mature individuals that spawn),"$n_{r,s}$"
+Stock scaling parameter,$r_s$
+Survey timing,$\Delta_i$
+Survey sampling coverage,"$\delta_{i,r,s}$"
