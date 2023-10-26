@@ -37,7 +37,7 @@ observed catch with the dimension following the underscore, following this templ
 \item{\code{IAAtheta_i}}{Index age composition dispersion parameter if using the Dirichlet-multinomial likelihood}
 \item{\code{IALtheta_i}}{Index length composition dispersion parameter if using the Dirichlet-multinomial likelihood}
 \item{\code{samp_irs}}{Boolean array that specifies the regions and stocks sampled by the index. \code{samp[i, r, s]} indicates whether index \code{i} operates in region \code{r} and catches stock \code{s}.}
-\item{\code{sel_i}}{Character matrix of functional forms for selectivity. See \code{"type"} argument in \verb{[conv_selpar()]} for options.}
+\item{\code{sel_i}}{Character matrix of functional forms for selectivity. See \code{"type"} argument in \code{\link[=conv_selpar]{conv_selpar()}} for options.}
 \item{\code{delta_i}}{The elapsed fraction of time in the seasonal time step when the index samples the population.}
 }
 }

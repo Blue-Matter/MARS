@@ -20,10 +20,10 @@ init_fn <- function(.Object, dots = list()) {
 setClass(
   "Dmodel",
   slots = c(ny = "numeric", nm = "numeric", na = "numeric", nl = "numeric", nr = "numeric", ns = "numeric",
-            lbin = "numeric", lmid = "numeric",
-            Fmax = "numeric", nitF = "numeric",
+            lbin = "numeric", lmid = "numeric", Fmax = "numeric",
             y_phi = "numeric", scale_s = "numeric", nyinit = "numeric",
-            condition = "character", y_Fmult_f = "numeric", m_Fmult_f = "numeric", r_Fmult_f = "numeric")
+            condition = "character", nitF = "numeric",
+            y_Fmult_f = "numeric", m_Fmult_f = "numeric", r_Fmult_f = "numeric")
 )
 
 #' Dstock S4 object
@@ -61,7 +61,7 @@ setClass(
   slots = c(ni = "numeric", Iobs_ymi = "array", Isd_ymi = "array", unit_i = "character",
             IAAobs_ymai = "array", IALobs_ymli = "array",
             icomp_like = "character", IAAN_ymi = "array", IALN_ymi = "array", IAAtheta_i = "numeric", IALtheta_i = "numeric",
-            samp_irs = "array", sel_i = "character", delta_i = "numeric")
+            samp_irs = "array", sel_i = "vector", delta_i = "numeric")
 )
 
 #' DCKMR S4 object
@@ -83,6 +83,19 @@ setClass(
   slots = c(tag_ymrr = "array", tag_ymr = "array", tag_like = "character")
 )
 
+#' Dlabel S4 object
+#'
+#' Vectors for labeling plots.
+#'
+#' @template Dlabel-slot
+#' @export
+setClass(
+  "Dlabel",
+  slots = c(year = "vector", season = "vector", age = "vector", region = "vector",
+            stock = "vector", fleet = "vector", index = "vector")
+)
+
+
 #' MARSdata S4 object
 #' @keywords MARSdata
 #' @template MARSdata-template
@@ -92,6 +105,7 @@ setClass(
 #' @slot Dsurvey Class [Dsurvey-class] containing survey data (indices of abundance)
 #' @slot DCKMR Class [DCKMR-class] containing genetic close-kin data
 #' @slot Dtag Class [Dtag-class] containing tagging data
+#' @slot Dlabel Class [Dlabel-class] containing names for various dimensions. Used for plotting.
 #' @slot Misc List for miscellaneous inputs as needed
 #' @template Dmodel-slot
 #' @template Dstock-slot
@@ -99,11 +113,12 @@ setClass(
 #' @template Dsurvey-slot
 #' @template DCKMR-slot
 #' @template Dtag-slot
+#' @template Dlabel-slot
 #' @export
 setClass(
   "MARSdata",
   slots = c(Dmodel = "Dmodel", Dstock = "Dstock", Dfishery = "Dfishery", Dsurvey = "Dsurvey",
-            DCKMR = "DCKMR", Dtag = "Dtag", Misc = "list")
+            DCKMR = "DCKMR", Dtag = "Dtag", Dlabel = "Dlabel", Misc = "list")
 )
 setMethod("initialize", "MARSdata", function(.Object, ...) init_fn(.Object, list(...)))
 setMethod("initialize", "Dmodel", function(.Object, ...) init_fn(.Object, list(...)))
@@ -112,6 +127,7 @@ setMethod("initialize", "Dfishery", function(.Object, ...) init_fn(.Object, list
 setMethod("initialize", "Dsurvey", function(.Object, ...) init_fn(.Object, list(...)))
 setMethod("initialize", "DCKMR", function(.Object, ...) init_fn(.Object, list(...)))
 setMethod("initialize", "Dtag", function(.Object, ...) init_fn(.Object, list(...)))
+setMethod("initialize", "Dlabel", function(.Object, ...) init_fn(.Object, list(...)))
 
 
 
@@ -144,3 +160,15 @@ if(getRversion() >= "2.15.1") {
       slotNames("Dsurvey"), slotNames("DCKMR"), slotNames("Dtag"), slotNames("MARSdata"), slotNames("MARSassess"))
   )
 }
+
+
+#' Report generic
+#'
+#' Used to render rmarkdown reports.
+#'
+#' @param object An object from MARS.
+#' @param ... Additional arguments to render reports.
+#'
+#' @export
+report <- function(object, ...) UseMethod("report")
+

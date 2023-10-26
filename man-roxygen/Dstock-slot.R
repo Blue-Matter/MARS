@@ -11,8 +11,8 @@
 #' \item{`Md_yas`}{Natural morality. Ignored if M is estimated.}
 #' \item{`SRR_s`}{Character vector of stock-recruit relationship by stock. See `SRR` argument in [calc_recruitment()] for options.}
 #' \item{`delta_s`}{Fraction of season that elapses when spawning occurs, e.g., midseason spawning occurs when `delta_s = 0.5`. Default is zero.}
-#' \item{`natal_rs`}{Boolean matrix (0 = FALSE, 1 = TRUE) that indicates whether stock `s` spawns when in region `r` at time of spawning, see example.
-#' Default of 1 for all regions and stocks.}
+#' \item{`natal_rs`}{The fraction of the mature stock `s` in region `r` that spawns at
+#' time of spawning. See example. Default is 1 for all stocks and regions.}
 #' }
 #' @examples
 #' # Set natal_rs matrix so that the spawning output of stock 1 is

@@ -39,7 +39,7 @@ like_comp <- function(obs, pred, type = c("multinomial", "dirmult1", "dirmult2",
 
   if (all(is.na(obs)) || !sum(obs)) {
 
-    v <- 0
+    v <- if (inherits(pred, "advector")) advector(0) else 0
 
   } else if (type == "multinomial") {
 

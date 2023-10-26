@@ -67,6 +67,7 @@
 make_parameters <- function(MARSdata, start = list(), silent = FALSE, ...) {
 
   getAllS4(MARSdata@Dmodel)
+  nf <- MARSdata@Dfishery@nf
 
   p <- start
 
@@ -117,7 +118,7 @@ make_parameters <- function(MARSdata, start = list(), silent = FALSE, ...) {
               Fmult_m <- m == m_Fmult_f[f]
               Fmult_r <- r == r_Fmult_f[f]
               if (Fmult_y && Fmult_m && Fmult_r) {
-                log(-log(0.05)/na)
+                log(-log(0.05)/na/nm)
               } else {
                 0
               }
@@ -135,8 +136,8 @@ make_parameters <- function(MARSdata, start = list(), silent = FALSE, ...) {
     p$sel_pf <- local({
       sel <- matrix(NA, 3, max(MARSdata@Dfishery@sel_block_yf))
       sel[1, ] <- 0 # Apical sel between 0 and max age/length
-      sel[2, ] <- log(0.01) # Knife edge ascending selectivity
-      sel[3, ] <- log(0.1) # More sloping descending limb of selectivity
+      sel[2, ] <- log(0.5) # Knife edge ascending selectivity
+      sel[3, ] <- log(2) # More sloping descending limb of selectivity
       sel
     })
   }
@@ -146,8 +147,8 @@ make_parameters <- function(MARSdata, start = list(), silent = FALSE, ...) {
     p$sel_pi <- local({
       sel <- matrix(NA, 3, MARSdata@Dsurvey@ni)
       sel[1, ] <- 0 # Apical sel between 0 and max age/length
-      sel[2, ] <- log(0.01) # Knife edge ascending selectivity
-      sel[3, ] <- log(0.1) # More sloping descending limb of selectivity
+      sel[2, ] <- log(0.5) # Knife edge ascending selectivity
+      sel[3, ] <- log(2) # More sloping descending limb of selectivity
       sel
     })
   }
@@ -197,6 +198,8 @@ make_map <- function(p, MARSdata,
   est_mov <- match.arg(est_mov)
   getAllS4(MARSdata)
   getAllS4(MARSdata@Dmodel)
+
+  nf <- MARSdata@Dfishery@nf
 
   random <- NULL
   map <- list()
@@ -308,7 +311,7 @@ make_map <- function(p, MARSdata,
       factor(m)
     })
   } else if (condition == "catch") {
-    map$log_Fdev_ymfr <- factor(NA, c(ny, nm, nf, nr))
+    map$log_Fdev_ymfr <- factor(array(NA, c(ny, nm, nf, nr)))
   }
 
   ## Fix dome parameter if selectivity is logistic or all parameters if mirrored to maturity

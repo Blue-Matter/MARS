@@ -61,7 +61,7 @@ calculate yield per recruit.}
 
 \item{delta_s}{Numeric vector by \code{s}. Fraction of season that elapses when spawning occurs, e.g., midseason spawning when \code{delta_s = 0.5}.}
 
-\item{natal_rs}{Boolean matrix (0 = FALSE, 1 = TRUE) that indicates whether stock \code{s} spawns when in region \code{r} at
+\item{natal_rs}{Matrix \verb{[r, s]}. The fraction of the mature stock \code{s} in region \code{r} that spawns at
 time of spawning. See example in \linkS4class{Dstock}.}
 }
 \value{

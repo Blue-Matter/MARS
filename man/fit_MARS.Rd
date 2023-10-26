@@ -45,3 +45,6 @@ A \linkS4class{MARSassess} object.
 \description{
 Wrapper function that calls RTMB to create the model and perform the numerical optimization
 }
+\seealso{
+\code{\link[=report]{report()}} \code{\link[=retrospective]{retrospective()}}
+}

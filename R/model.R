@@ -17,6 +17,7 @@
 #' @param ... Other arguments to [TMB::MakeADFun()].
 #' @returns A [MARSassess-class] object.
 #' @importFrom methods new
+#' @seealso [report()] [retrospective()]
 #' @export
 fit_MARS <- function(MARSdata, parameters, map = list(), random = NULL,
                      run_model = TRUE, do_sd = TRUE, report = TRUE, silent = FALSE,
@@ -56,13 +57,17 @@ update_report <- function(r, MARSdata) {
 
   if (is.null(r$F_yas)) {
     nr <- MARSdata@Dmodel@nr
-    nf <- MARSdata@Dfishery@nf
+    nm <- MARSdata@Dmodel@nm
 
-    if (nf > 1 || nr > 1) {
-      ny <- MARSdata@Dmodel@ny
-      na <- MARSdata@Dmodel@na
-      ns <- MARSdata@Dmodel@ns
+    ny <- MARSdata@Dmodel@ny
+    na <- MARSdata@Dmodel@na
+    ns <- MARSdata@Dmodel@ns
+
+    if (nr == 1 && nm == 1) {
+      r$F_yas <- array(r$F_ymars[, 1, , 1, ], c(ny, na, ns))
+    } else {
       Fmax <- MARSdata@Dmodel@Fmax
+      nf <- MARSdata@Dfishery@nf
 
       r$F_yas <- sapply2(1:ns, function(s) {
         sapply(1:na, function(a) {
@@ -72,8 +77,9 @@ update_report <- function(r, MARSdata) {
           })
         })
       })
-      r$Z_yas <- r$F_yas + r$M_yas
+
     }
+    r$Z_yas <- r$F_yas + r$M_yas
   }
   return(r)
 }
@@ -127,7 +133,7 @@ update_report <- function(r, MARSdata) {
   map$mat_ps <- matrix(map$mat_ps, 2, ns)
   mat_yas <- sapply2(1:ns, function(s) {
     if (all(is.na(map$mat_ps[, s]))) {
-      matd_yas[, , s]
+      matd_yas[1:ny, , s]
     } else {
       a50 <- na * plogis(p$mat_ps[1, s])
       a95 <- a50 + exp(p$mat_ps[2, s])
@@ -141,7 +147,7 @@ update_report <- function(r, MARSdata) {
   ## Natural mortality ----
   M_yas <- sapply2(1:ns, function(s) {
     if (!is.null(map$log_M_s) && is.na(map$log_M_s[s])) {
-      Md_yas[, , s]
+      Md_yas[1:ny, , s]
     } else {
       matrix(exp(p$log_M_s[s]), ny, na)
     }
@@ -207,14 +213,14 @@ update_report <- function(r, MARSdata) {
 
   if (nr == 1 && nm == 1) {
     nyinit <- 1L
-    initNPR0_yars <- sapply(1:ns, function(s) calc_NPR(M_yas[y_phi, , s]) %>% array(c(nyinit, na, nr)))
+    initNPR0_yars <- sapply2(1:ns, function(s) calc_NPR(M_yas[y_phi, , s]) %>% array(c(nyinit, na, nr)))
     phi_s <- sapply(1:ns, function(s) {
       calc_phi_simple(M_yas[y_phi, , s], mat_a = mat_yas[y_phi, , s], fec_a = fec_yas[y_phi, , s],
                       delta = delta_s[s])
     })
   } else {
     NPR_unfished <- calc_phi_project(
-      nyinit, nm, na, nf = 1, nr, ns, M_as = M_yas[y_phi, , ], mov_marrs = mov_ymarrs[y_phi, , , , ],
+      nyinit, nm, na, nf = 1, nr, ns, M_as = M_yas[y_phi, , ], mov_marrs = mov_ymarrs[y_phi, , , , , ],
       mat_as = mat_yas[y_phi, , ], fec_as = fec_yas[y_phi, , ], m_spawn = m_spawn, m_rec = m_rec,
       delta_s = delta_s, natal_rs = natal_rs
     )
@@ -247,6 +253,7 @@ update_report <- function(r, MARSdata) {
   if (all(Cinit_mfr < 1e-8)) {
     initNPR_yars[] <- initNPR0_yars
     initphi_s <- phi_s
+    initR_s <- R0_s
   } else {
 
     NPR_init <- calc_phi_project( #nyinit = 1 if nm == 1 && nr == 1
@@ -262,12 +269,13 @@ update_report <- function(r, MARSdata) {
 
     initCN_mafrs[] <- NPR_init[["CN_ymafrs"]][nyinit, , , , , ]
     initCB_mfrs[] <- NPR_init[["CB_ymfrs"]][nyinit, , , , ]
+
+    initR_s <- sapply(1:ns, function(s) {
+      calc_recruitment(initphi_s[s], SRR_s[s], eq = TRUE, a = sralpha_s[s], b = srbeta_s[s])
+    })
   }
 
-  initR_s <- sapply(1:ns, function(s) {
-    calc_recruitment(initphi_s[s], SRR_s[s], eq = TRUE, a = sralpha_s[s], b = srbeta_s[s])
-  })
-  initN_ars <- sapply2(1:ns, function(s) initR_s[s] * initRdev_as[, s] * initNPR_yars[nyinit, , , s])
+  initN_ars[] <- sapply2(1:ns, function(s) initR_s[s] * initRdev_as[, s] * initNPR_yars[nyinit, , , s])
 
   # Run population model ----
   pop <- calc_population(
@@ -281,6 +289,7 @@ update_report <- function(r, MARSdata) {
   N_ymars[] <- pop$N_ymars
   F_ymars[] <- pop$F_ymars
   Z_ymars[] <- pop$Z_ymars
+  F_ymafrs[] <- pop$F_ymafrs
   CN_ymafrs[] <- pop$CN_ymafrs
   CB_ymfrs[] <- pop$CB_ymfrs
   VB_ymfrs[] <- pop$VB_ymfrs
@@ -335,7 +344,8 @@ update_report <- function(r, MARSdata) {
         sapply(1:nm, function(m) {
           sapply(1:ny, function(y) {
             pred <- CN_ymafr[y, m, , f, r]
-            like_comp(obs = CAAobs_ymafr[y, m, , f, r], pred = pred, type = fcomp_like,
+            like_comp(obs = (Cobs_ymfr[y, m, f, r] >= 1e-8) * CAAobs_ymafr[y, m, , f, r],
+                      pred = pred, type = fcomp_like,
                       N = CAAN_ymfr[y, m, f, r], theta = CAAtheta_f[f],
                       stdev = sqrt(sum(pred)/pred))
           })
@@ -365,7 +375,8 @@ update_report <- function(r, MARSdata) {
         sapply(1:nm, function(m) {
           sapply(1:ny, function(y) {
             pred <- CN_ymlfr[y, m, , f, r]
-            like_comp(obs = CALobs_ymlfr[y, m, , f, r], pred = pred, type = fcomp_like,
+            like_comp(obs = (Cobs_ymfr[y, m, f, r] >= 1e-8) * CALobs_ymlfr[y, m, , f, r],
+                      pred = pred, type = fcomp_like,
                       N = CALN_ymfr[y, m, f, r], theta = CALtheta_f[f],
                       stdev = sqrt(sum(pred)/pred))
           })
@@ -381,8 +392,8 @@ update_report <- function(r, MARSdata) {
     for(y in 1:ny) {
       for(m in 1:nm) {
         IN_ymais[y, m, , , ] <- calc_index(
-          N = N_ymars[y, m, , , ], Z = Z_ymars[y, m, , , ], sel = sel_ymais[y, m, , , ], samp = samp_irs,
-          delta = delta_i, na = na, ns = ns, ni = ni
+          N = N_ymars[y, m, , , ], Z = Z_ymars[y, m, , , ], sel = sel_ymais[y, m, , , ],
+          na = na, nr = nr, ns = ns, ni = ni, samp = samp_irs, delta = delta_i
         )
         VI_ymi[y, m, ] <- sapply(1:ni, function(i) {
           I_s <- sapply(1:ns, function(s) {
@@ -453,8 +464,10 @@ update_report <- function(r, MARSdata) {
         sapply2(1:nrow(SC_aa), function(aa) { # Aggregate over age classes SC_aa
           sapply(1:nm, function(m) {
             sapply(1:ny, function(y) {
+              Cobs_test <- sum(Cobs_ymfr[y, m, SC_aa[aa, ], SC_ff[ff, ]] >= 1e-8)
               pred <- apply(CN_ymafrs[y, m, SC_aa[aa, ], SC_ff[ff, ], r, , drop = FALSE], 6, sum)
-              like_comp(obs = SC_ymafrs[y, m, aa, ff, r, ], pred = pred, type = SC_like,
+              like_comp(obs = Cobs_test * SC_ymafrs[y, m, aa, ff, r, ],
+                        pred = pred, type = SC_like,
                         N = SCN_ymafr[y, m, aa, ff, r], theta = SCtheta_f[ff],
                         stdev = SCstdev_f[ff])
             })
@@ -607,7 +620,7 @@ update_report <- function(r, MARSdata) {
   REPORT(CN_ymafrs)
   if (any(CALobs_ymlfr > 0, na.rm = TRUE)) REPORT(CN_ymlfrs)
   REPORT(CB_ymfrs)
-  #REPORT(VB_ymfrs)
+  REPORT(VB_ymfrs)
 
   ## Index of abundance arrays ----
   if (ni > 0) {

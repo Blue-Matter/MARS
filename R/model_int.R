@@ -96,7 +96,8 @@ calc_F <- function(Cobs, N, sel, wt, M, q_fs, delta = 1,
     })
   })
   VB_fr <- apply(VB_afrs, c(2, 3), sum)
-  F_init <- Cobs/(Cobs + VB_fr)
+  Cobs_loop <- ifelse(Cobs < 1e-8, 1e-9, Cobs)
+  F_init <- Cobs_loop/(Cobs_loop + VB_fr)
 
   if (trans == "log") {
     x_loop[[1]] <- log(F_init)
@@ -137,8 +138,10 @@ calc_F <- function(Cobs, N, sel, wt, M, q_fs, delta = 1,
         sapply(1:nf, function(f) calc_Baranov(F_afrs[, f, r, s], Z_ars[, r, s], N[, r, s]))
       })
     })
-    CB_afsr <- sapply2(1:nr, function(r) CN_afrs[, , r, ] * wt) %>% array(c(na, nf, ns, nr))
-    CB_fr <- apply(CB_afsr, c(2, 4), sum)
+    CB_afrs <- sapply2(1:ns, function(s) {
+      sapply2(1:nr, function(r) CN_afrs[, , r, s] * wt[, , s])
+    }) %>% array(c(na, nf, nr, ns))
+    CB_fr <- apply(CB_afrs, 2:3, sum)
 
     fn[[i]] <- CB_fr - Cobs
 
@@ -170,17 +173,16 @@ calc_F <- function(Cobs, N, sel, wt, M, q_fs, delta = 1,
     deriv3_afrs <- sapply2(1:ns, function(s) {
       sapply2(1:nr, function(r) {
         sapply(1:nf, function(f) deriv2_arsf[, r, s, f] -  .gamma_ars[, r, s] * F_loop[f, r] * deriv_Z_fars[f, , r, s])
-        #deriv2_arsf[, r, s, ] -  outer(.gamma_ars[, r, s], F_loop[, r]) * t(deriv_Z_fars[, , r, s])
       })
-    }) #%>% array(c(na, nf, nr, ns))
+    })
     deriv4_arsf <- sapply2(1:nf, function(f) deriv3_afrs[, f, , ]/Z_ars/Z_ars) %>% array(c(na, nr, ns, nf))
 
     gr[[i]] <- apply(constants_afrs * aperm(deriv4_arsf, c(1, 4, 2, 3)), c(2, 3), sum)
 
     if (i <= nitF) x_loop[[i+1]] <- x_loop[[i]] - fn[[i]]/gr[[i]]
   }
-
-  CB_frs <- apply(CB_afsr, c(2, 4, 3), sum)
+  #browser(expr = any(Cobs >= 1e-8))
+  CB_frs <- apply(CB_afrs, 2:4, sum)
   list(F_afrs = F_afrs, F_ars = F_ars, F_index = F_loop, Z_ars = Z_ars,
        CB_frs = CB_frs, CN_afrs = CN_afrs, VB_afrs = VB_afrs,
        penalty = penalty, fn = fn[[nitF + 1]], gr = gr[[nitF + 1]])
@@ -356,8 +358,9 @@ calc_nextN <- function(N, surv, na = dim(N)[1], nr = dim(N)[2], ns = dim(N)[3],
 #' @param Z Instantaneous total mortality. Array `[a, r, s]`
 #' @param sel Index selectivity. Array `[a, i, s]`
 #' @param na Integer, number of age classes
-#' @param ni Integer, number of indices
+#' @param nr Integer, number of regions
 #' @param ns Integer, number of stocks
+#' @param ni Integer, number of indices
 #' @param samp Boolean indicates which regions and stocks are sampled by the index. Array `[i, r, s]`
 #' @param delta Fraction of time step when the index samples the population. Vector by `i`
 #' @return Index at age. Array `[a, i, s]`
@@ -371,7 +374,7 @@ calc_nextN <- function(N, surv, na = dim(N)[1], nr = dim(N)[2], ns = dim(N)[3],
 #' \eqn{R_2 = 1} denotes that the second index of abundance only samples region 1. These are informed by array `samp` where
 #' `samp[i, r, s] = 1` indicates that stock `s` in region `r` is sampled by index `i`.
 #' @export
-calc_index <- function(N, Z, sel, na = dim(N)[1], ni = dim(sel)[2], ns = dim(N)[3],
+calc_index <- function(N, Z, sel, na = dim(N)[1], nr = dim(N)[2], ns = dim(N)[3], ni = dim(sel)[2],
                        samp = array(1, c(ni, na, ns)), delta = rep(0, ni)) {
 
   N <- array(N, c(na, nr, ns))

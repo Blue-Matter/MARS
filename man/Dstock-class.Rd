@@ -36,8 +36,8 @@ observed catch with the dimension following the underscore, following this templ
 \item{\code{Md_yas}}{Natural morality. Ignored if M is estimated.}
 \item{\code{SRR_s}}{Character vector of stock-recruit relationship by stock. See \code{SRR} argument in \code{\link[=calc_recruitment]{calc_recruitment()}} for options.}
 \item{\code{delta_s}}{Fraction of season that elapses when spawning occurs, e.g., midseason spawning occurs when \code{delta_s = 0.5}. Default is zero.}
-\item{\code{natal_rs}}{Boolean matrix (0 = FALSE, 1 = TRUE) that indicates whether stock \code{s} spawns when in region \code{r} at time of spawning, see example.
-Default of 1 for all regions and stocks.}
+\item{\code{natal_rs}}{The fraction of the mature stock \code{s} in region \code{r} that spawns at
+time of spawning. See example. Default is 1 for all stocks and regions.}
 }
 }
 

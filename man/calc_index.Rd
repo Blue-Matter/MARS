@@ -9,8 +9,9 @@ calc_index(
   Z,
   sel,
   na = dim(N)[1],
-  ni = dim(sel)[2],
+  nr = dim(N)[2],
   ns = dim(N)[3],
+  ni = dim(sel)[2],
   samp = array(1, c(ni, na, ns)),
   delta = rep(0, ni)
 )
@@ -24,9 +25,11 @@ calc_index(
 
 \item{na}{Integer, number of age classes}
 
-\item{ni}{Integer, number of indices}
+\item{nr}{Integer, number of regions}
 
 \item{ns}{Integer, number of stocks}
+
+\item{ni}{Integer, number of indices}
 
 \item{samp}{Boolean indicates which regions and stocks are sampled by the index. Array \verb{[i, r, s]}}
 

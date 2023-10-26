@@ -9,18 +9,19 @@
 #' @seealso [MARSdata-class]
 #' @export
 check_data <- function(MARSdata, silent = FALSE) {
-  MARSdata@Dmodel <- check_Dmodel(MARSdata@Dmodel, silent)
+  MARSdata@Dmodel <- check_Dmodel(MARSdata@Dmodel, MARSdata@Dfishery@nf, silent)
   MARSdata@Dstock <- check_Dstock(MARSdata@Dstock, MARSdata@Dmodel, silent)
   MARSdata@Dfishery <- check_Dfishery(MARSdata@Dfishery, MARSdata@Dstock, MARSdata@Dmodel, silent)
-  MARSdata@Dsurvey <- check_Dsurvey(MARSdata@Dsurvey, MARSdata@Dstock, silent)
+  MARSdata@Dsurvey <- check_Dsurvey(MARSdata@Dsurvey, MARSdata@Dmodel, silent)
 
   MARSdata@DCKMR <- check_DCKMR(MARSdata@DCKMR, MARSdata@Dmodel, silent)
   MARSdata@Dtag <- check_Dtag(MARSdata@Dtag, MARSdata@Dmodel, silent)
+  MARSdata@Dlabel <- check_Dlabel(MARSdata@Dlabel, MARSdata@Dmodel, MARSdata@Dfishery, MARSdata@Dsurvey, silent)
   return(MARSdata)
 }
 
 
-check_Dmodel <- function(Dmodel, silent = FALSE) {
+check_Dmodel <- function(Dmodel, nf, silent = FALSE) {
   getAllS4(Dmodel)
 
   ch <- as.character(substitute(Dmodel))
@@ -52,10 +53,6 @@ check_Dmodel <- function(Dmodel, silent = FALSE) {
     if (!silent) message("Setting ", ch, "@Fmax to 3 (per season)")
     Dmodel@Fmax <- 3
   }
-  if (!length(nitF)) {
-    if (!silent) message("Setting ", ch, "@nitF to 5")
-    Dmodel@nitF <- 5
-  }
   if (!length(y_phi)) {
     if (!silent) message("Setting ", ch, "@y_phi to year 1")
     Dmodel@y_phi <- 1L
@@ -71,25 +68,29 @@ check_Dmodel <- function(Dmodel, silent = FALSE) {
       Dmodel@nyinit <- nyinit <- 1
     } else {
       Dmodel@nyinit <- nyinit <- ceiling(1.5 * na)
+      if (!silent) message("Setting ", ch, "@nyinit = ", nyinit)
     }
-    if (!silent) message("Setting ", ch, "@nyinit = ", nyinit)
   }
   if (!length(condition)) {
     Dmodel@condition <- condition <- "F"
     if (!silent) message("Setting ", ch, "@condition = F")
   }
+  if (condition == "catch" && !length(nitF)) {
+    if (!silent) message("Setting ", ch, "@nitF to 5")
+    Dmodel@nitF <- 5
+  }
   if (condition == "F") {
     if (!length(y_Fmult_f)) {
       Dmodel@y_Fmult_f <- rep(round(0.5 * ny), nf)
-      if (!silent) message("Setting ", ch, "@y_Fmult_f = ", Dmodel@y_Fmult_f)
+      if (!silent) message("Setting ", ch, "@y_Fmult_f = ", paste(Dmodel@y_Fmult_f, collapse = ", "))
     }
     if (!length(m_Fmult_f)) {
       Dmodel@m_Fmult_f <- rep(1L, nf)
-      if (!silent && nm > 1) message("Setting ", ch, "@m_Fmult_f = ", Dmodel@m_Fmult_f)
+      if (!silent && nm > 1) message("Setting ", ch, "@m_Fmult_f = ", paste(Dmodel@m_Fmult_f, collapse = ", "))
     }
     if (!length(r_Fmult_f)) {
       Dmodel@r_Fmult_f <- rep(1L, nf)
-      if (!silent && nr > 1) message("Setting ", ch, "@r_Fmult_f = ", Dmodel@r_Fmult_f)
+      if (!silent && nr > 1) message("Setting ", ch, "@r_Fmult_f = ", paste(Dmodel@r_Fmult_f, collapse = ", "))
     }
   }
 
@@ -206,7 +207,7 @@ check_Dfishery <- function(Dfishery, Dstock, Dmodel, silent = FALSE) {
       fcomp_like <- match.arg(fcomp_like, choices = eval(formals(like_comp)$type))
     } else {
       if (!silent) message("Setting ", ch, "@fcomp_like = \"multinomial\"")
-      Dfishery@fcomp_like <- "multinomial"
+      Dfishery@fcomp_like <- fcomp_like <- "multinomial"
     }
   }
 
@@ -344,6 +345,7 @@ check_Dsurvey <- function(Dsurvey, Dmodel, silent = FALSE) {
     if (length(Iobs_ymi) || length(IAAobs_ymai) || length(IALobs_ymli)) {
       stop("Need ", ch, "@ni")
     } else {
+      if (!silent) message("Setting ", ch, "@ni to zero")
       Dsurvey@ni <- ni <- 0
     }
   }
@@ -417,7 +419,9 @@ check_Dsurvey <- function(Dsurvey, Dmodel, silent = FALSE) {
     }
 
     if (!length(samp_irs)) {
-      if (!silent) message("Setting samp_irs = 1. All indices operate in all regions and sample all stocks")
+      if (nr > 1 || ns > 1) {
+        if (!silent) message("Setting samp_irs = 1. All indices operate in all regions and sample all stocks")
+      }
       Dsurvey@samp_irs <- array(1, c(ni, nr, ns))
     } else {
       dim_samp <- dim(samp_irs) == c(ni, nr, ns)
@@ -507,4 +511,59 @@ check_Dtag <- function(Dtag, Dmodel, silent = FALSE) {
   }
 
   return(Dtag)
+}
+
+check_Dlabel <- function(Dlabel, Dmodel, Dfishery, Dsurvey, silent = FALSE) {
+  getAllS4(Dmodel)
+  nf <- Dfishery@nf
+  ni <- Dsurvey@ni
+
+  ch <- as.character(substitute(Dlabel))
+  if (length(ch) > 1) ch <- "Dlabel"
+
+  if (!length(Dlabel@year)) {
+    Dlabel@year <- 1:ny
+  } else if (length(Dlabel@year) != ny) {
+    stop("length(", ch, "@year) needs to be ", ny)
+  }
+  if (nm > 1) {
+    if (!length(Dlabel@season) && nm > 1) {
+      Dlabel@season <- paste("Season", 1:nm)
+    } else if (length(Dlabel@season) != nm) {
+      stop("length(", ch, "@season) needs to be ", nm)
+    }
+  }
+  if (!length(Dlabel@age)) {
+    Dlabel@age <- 1:na
+  } else if (length(Dlabel@age) != na) {
+    stop("length(", ch, "@age) needs to be ", na)
+  }
+  if (nr > 1) {
+    if (!length(Dlabel@region) && nr > 1) {
+      Dlabel@region <- paste("Region", 1:nr)
+    } else if (length(Dlabel@region) != nr) {
+      stop("length(", ch, "@region) needs to be ", nr)
+    }
+  }
+  if (ns > 1) {
+    if (!length(Dlabel@stock) && ns > 1) {
+      Dlabel@stock <- paste("Stock", 1:ns)
+    } else if (length(Dlabel@stock) != ns) {
+      stop("length(", ch, "@stock) needs to be ", ns)
+    }
+  }
+  if (!length(Dlabel@fleet)) {
+    Dlabel@fleet <- paste("Fleet", 1:nf)
+  } else if (length(Dlabel@fleet) != nf) {
+    stop("length(", ch, "@fleet) needs to be ", nf)
+  }
+  if (Dsurvey@ni > 0) {
+    if (!length(Dlabel@index)) {
+      Dlabel@index <- paste("Index", 1:ni)
+    } else if (length(Dlabel@index) != ni) {
+      stop("length(", ch, "@index) needs to be ", ni)
+    }
+  }
+
+  return(Dlabel)
 }

@@ -232,6 +232,12 @@ sdreport_int <- function(object, select = c("all", "fixed", "random", "report"),
 }
 
 
+get_MARSdata <- function(MARSassess) {
+  func <- attr(MARSassess@obj$env$data, "func")
+  MARSdata <- get("MARSdata", envir = environment(func), inherits = FALSE)
+  return(MARSdata)
+}
+
 make_unique_names <- function(par_names) {
   unique_names <- unique(par_names)
 
@@ -245,6 +251,25 @@ make_unique_names <- function(par_names) {
 }
 
 
+make_yearseason <- function(year, nm = 4) {
+  if (nm <= 1) return(year)
+  year_long <- lapply(year, function(y) y + (1:nm - 1)/nm)
+  do.call(c, year_long)
+}
+
+# x must be a three dimensional array due to rbind()
+collapse_yearseason <- function(x, MARGIN = c(1, 2)) {
+  ny <- dim(x)[MARGIN[1]]
+  nm <- dim(x)[MARGIN[2]]
+
+  xout <- lapply(1:ny, function(y) {
+    out <- array(NA_real_, c(nm, dim(x)[-MARGIN]))
+    comma <- rep(", ", length(dim(x)) - 1) %>% paste0(collapse = "")
+    eval(parse(text = paste0("out[] <- x[y", comma, "]")))
+    return(out)
+  })
+  do.call(rbind, xout)
+}
 
 message <- function(...) {
   if (requireNamespace("usethis", quietly = TRUE)) {

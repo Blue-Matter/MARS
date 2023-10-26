@@ -4,16 +4,21 @@ template:
   bootswatch: spacelab
 
 reference:
-- title: Data
-  desc: S4 objects for data structures.
+
+- title: internal
   contents:
-  - MARSdata-class
   - Dmodel-class
   - Dstock-class
   - Dfishery-class
   - Dsurvey-class
   - DCKMR-class
   - Dtag-class
+  - Dlabel-class
+
+- title: Data
+  desc: S4 objects for data setup.
+  contents:
+  - MARSdata-class
 
 - title: Model setup
   desc: Prepare the data and parameters, then run the model.
@@ -22,6 +27,12 @@ reference:
   - make_parameters
   - fit_MARS
   - MARSassess-class
+
+- title: Model evaluation
+  desc: Evaluate model fit and run diagnostics.
+  contents:
+  - report
+  - retrospective
 
 - title: Population dynamics
   desc: Functions used in the population model.

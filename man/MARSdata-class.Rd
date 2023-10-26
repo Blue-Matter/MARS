@@ -37,6 +37,8 @@ observed catch with the dimension following the underscore, following this templ
 
 \item{\code{Dtag}}{Class \linkS4class{Dtag} containing tagging data}
 
+\item{\code{Dlabel}}{Class \linkS4class{Dlabel} containing names for various dimensions. Used for plotting.}
+
 \item{\code{Misc}}{List for miscellaneous inputs as needed}
 }}
 
@@ -52,11 +54,11 @@ observed catch with the dimension following the underscore, following this templ
 \item{\code{lbin}}{Vector of lower boundary of length bins. Length \code{nl + 1}}
 \item{\code{lmid}}{Vector of midpoint of length bins. Length \code{nl}}
 \item{\code{Fmax}}{Numeric, maximum allowable instantaneous fishing mortality rate (units of per season). Defaults to 3.}
-\item{\code{nitF}}{Integer, number of iterations to solve Baranov catch equation from observed catch. Defaults to 5.}
 \item{\code{y_phi}}{Integer, the year from which to obtain values of natural mortality and fecundity for the unfished stock-recruit replacement line (\code{phi}). Relevant if natural mortality or fecundity are time-varying. Defaults to 1.}
 \item{\code{scale_s}}{Vector, length \code{ns}. Multiplicative scaling factor that informs relative stock size to aid parameter estimation. Larger values implies larger stocks. Default set to 1. See \code{\link[=make_parameters]{make_parameters()}}.}
 \item{\code{nyinit}}{Integer, number of years of spool-up to calculate equilibrium unfished and starting conditions for the population model to account for seasonal and spatial dynamics. The numerical spool-up is not needed when both \code{nm = 1} and \code{nr = 1}, i.e., \code{nyinit = 1}. Otherwise, set to \code{1.5 * na} by default.}
 \item{\code{condition}}{Character, either to specify the model estimates fishing mortality as a parameter (\code{"F"}, default) or equal to the catch (\code{"catch"}).}
+\item{\code{nitF}}{Integer, number of iterations to solve Baranov catch equation from observed catch if \code{condition = "F"}. Defaults to 5.}
 \item{\code{y_Fmult_f}}{Integer vector by fleet, the year in which to directly estimate F. Choose a year/season/region combination when the catch is average relative to the time series. Only used if \code{condition = "catch"}.}
 \item{\code{m_Fmult_f}}{Integer vector by fleet, the season in which to directly estimate F. Choose a year/season/region combination when the catch is average relative to the time series. Only used if \code{condition = "catch"}.}
 \item{\code{r_Fmult_f}}{Integer vector by fleet, the region in which to directly estimate F. Choose a year/season/region combination when the catch is average relative to the time series. Only used if \code{condition = "catch"}.}
@@ -77,8 +79,8 @@ observed catch with the dimension following the underscore, following this templ
 \item{\code{Md_yas}}{Natural morality. Ignored if M is estimated.}
 \item{\code{SRR_s}}{Character vector of stock-recruit relationship by stock. See \code{SRR} argument in \code{\link[=calc_recruitment]{calc_recruitment()}} for options.}
 \item{\code{delta_s}}{Fraction of season that elapses when spawning occurs, e.g., midseason spawning occurs when \code{delta_s = 0.5}. Default is zero.}
-\item{\code{natal_rs}}{Boolean matrix (0 = FALSE, 1 = TRUE) that indicates whether stock \code{s} spawns when in region \code{r} at time of spawning, see example.
-Default of 1 for all regions and stocks.}
+\item{\code{natal_rs}}{The fraction of the mature stock \code{s} in region \code{r} that spawns at
+time of spawning. See example. Default is 1 for all stocks and regions.}
 }
 }
 
@@ -125,7 +127,7 @@ in the model. Default of zero.}
 \item{\code{IAAtheta_i}}{Index age composition dispersion parameter if using the Dirichlet-multinomial likelihood}
 \item{\code{IALtheta_i}}{Index length composition dispersion parameter if using the Dirichlet-multinomial likelihood}
 \item{\code{samp_irs}}{Boolean array that specifies the regions and stocks sampled by the index. \code{samp[i, r, s]} indicates whether index \code{i} operates in region \code{r} and catches stock \code{s}.}
-\item{\code{sel_i}}{Character matrix of functional forms for selectivity. See \code{"type"} argument in \verb{[conv_selpar()]} for options.}
+\item{\code{sel_i}}{Character matrix of functional forms for selectivity. See \code{"type"} argument in \code{\link[=conv_selpar]{conv_selpar()}} for options.}
 \item{\code{delta_i}}{The elapsed fraction of time in the seasonal time step when the index samples the population.}
 }
 }
@@ -161,6 +163,19 @@ in the model. Default of zero.}
 \item{\code{tag_ymr}}{Array. Number of tags among regions. Used to inform stock distribution within time step.}
 \item{\code{tag_like}}{Character. Likelihood for the tagging data, either the vector of proportions by region of origin for \code{tag_ymrr}, or
 by region of stock presence for \code{tag_ymr}. See \code{type} argument of \code{\link[=like_comp]{like_comp()}} for options}
+}
+}
+
+\section{Slots inherited from Dlabel}{
+
+\describe{
+\item{\code{year}}{Vector of years. Length \code{Dmodel@ny}}
+\item{\code{season}}{Vector of season names. Length \code{Dmodel@nm}}
+\item{\code{age}}{Vector of ages. Length \code{Dmodel@na}}
+\item{\code{region}}{Vector of region names. Length \code{Dmodel@nr}}
+\item{\code{stock}}{Vector of stock names. Length \code{Dmodel@ns}}
+\item{\code{fleet}}{Vector of fleet names. Length \code{Dfishery@nf}}
+\item{\code{index}}{Vector of index of abundance names. Length \code{Dsurvey@ni}}
 }
 }
 

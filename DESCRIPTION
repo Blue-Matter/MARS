@@ -11,16 +11,17 @@ License: GPL (>= 3)
 Depends: R (>= 3.5.0)
 Imports: 
     dplyr, 
+    gplots,
     graphics,
     methods,
     rlang,
+    rmarkdown,
     stats,
     RTMB, 
     TMB,
     utils
 Suggests: 
     numDeriv,
-    rmarkdown,
     usethis
 LazyData: yes
 LazyLoad: yes

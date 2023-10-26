@@ -19,7 +19,7 @@
 #' @param m_spawn Integer, season of spawning
 #' @param m_rec Integer, season of recruitment
 #' @param delta_s Numeric vector by `s`. Fraction of season that elapses when spawning occurs, e.g., midseason spawning when `delta_s = 0.5`.
-#' @param natal_rs Boolean matrix (0 = FALSE, 1 = TRUE) that indicates whether stock `s` spawns when in region `r` at
+#' @param natal_rs Matrix `[r, s]`. The fraction of the mature stock `s` in region `r` that spawns at
 #' time of spawning. See example in [Dstock-class].
 #' @param fwt_ymafs Fishery weight at age. Array `[y, m, a, f, s]`
 #' @param sel_ymafs Fishery selectivity. Array `[y, m, a, f, s]`
@@ -138,7 +138,7 @@ calc_population <- function(ny = 10, nm = 4, na = 20, nf = 1, nr = 4, ns = 2,
         })
         VB_ymfrs[y, m, , , ] <- sapply2(1:ns, function(s) {
           sapply2(1:nr, function(r) {
-            sapply(1:nf, function(f) sum(sel_ymafs[y, m, , f, s] * N_ymars[y, m, , r, s]))
+            sapply(1:nf, function(f) sum(sel_ymafs[y, m, , f, s] * fwt_ymafs[y, m, , f, s] * N_ymars[y, m, , r, s]))
           })
         })
       }
@@ -240,7 +240,7 @@ calc_phi_project <- function(ny, nm, na, nf = 1, nr, ns = 1,
     mov_ymarrs <- diag(nr) %>% array(c(nr, nr, ny, nm, na, ns)) %>% aperm(c(3:5, 1:2, 6))
   } else {
     mov_marrs <- array(mov_marrs, c(nm, na, nr, nr, ns))
-    mov_ymarrs <- replicate(ny, mov_marrs) %>% aperm(c(6, 1:5))
+    mov_ymarrs <- array(mov_marrs, c(nm, na, nr, nr, ns, ny)) %>% aperm(c(6, 1:5))
   }
   M_yas <- array(M_as, c(na, ns, ny)) %>% aperm(c(3, 1, 2))
 

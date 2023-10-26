@@ -1,0 +1,48 @@
+
+---
+title: "MARS assessment"
+subtitle: Tables and Figures
+date: "`r Sys.Date()`"
+output:
+  html_document:
+    highlight: rstudio
+    df_print: paged
+---
+
+<style type="text/css">
+h1 { /* Header 1 */
+  font-size: 24px;
+}
+</style>
+
+```{r setup, include = FALSE, echo = FALSE}
+library(dplyr)
+knitr::opts_chunk$set(
+  collapse = TRUE, echo = FALSE, message = FALSE,
+  fig.width = 6, fig.height = 4.5, out.width = "650px", comment = "#>"
+)
+```
+
+# Retrospective analysis {.tabset}
+
+## By fleet {.tabset}
+
+```{r}
+summary(object, by = "fleet") %>% as.data.frame()
+```
+
+<!-- *ADD FLEET RMD* -->
+
+## By stock {.tabset}
+
+```{r}
+summary(object, by = "stock") %>% as.data.frame()
+```
+
+<!-- *ADD STOCK RMD* -->
+
+## About
+
+This report was generated on: `r Sys.time()`<br />
+MARS version `r packageVersion("MARS")`<br />
+`r R.version.string`
