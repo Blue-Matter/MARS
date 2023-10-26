@@ -184,7 +184,7 @@ check_Dfishery <- function(Dfishery, Dstock, Dmodel, silent = FALSE) {
 
   if (condition == "F") {
     if (!length(Csd_ymfr)) {
-      Dfishery@Csd_ymfr <- matrix(0.01, c(ny, nm, nf, nr))
+      Dfishery@Csd_ymfr <- array(0.01, c(ny, nm, nf, nr))
     } else {
       dim_Csd <- dim(Csd_ymfr) == c(ny, nm, nf, nr)
       if (!all(dim_Cobs)) stop("dim(Cobs_ymfr) needs to be: ", c(ny, nm, nf, nr) %>% paste(collapse = ", "))
