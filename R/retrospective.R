@@ -65,7 +65,7 @@ retrospective <- function(MARSassess, yret = 1:5) {
   data_new@Dfishery@Cobs_ymfr <- MARSdata@Dfishery@Cobs_ymfr[1:nyret, , , , drop = FALSE]
   if (condition == "F") {
     data_new@Dfishery@Csd_ymfr <- MARSdata@Dfishery@Csd_ymfr[1:nyret, , , , drop = FALSE]
-    if (y_Fmult_f > nyret) stop("Reduce y_Fmult_f")
+    if (any(y_Fmult_f > nyret)) stop("Reduce y_Fmult_f")
   }
   data_new@Dsurvey@Iobs_ymi <- MARSdata@Dsurvey@Iobs_ymi[1:nyret, , , drop = FALSE]
   data_new@Dsurvey@Isd_ymi <- MARSdata@Dsurvey@Isd_ymi[1:nyret, , , drop = FALSE]

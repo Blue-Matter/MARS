@@ -37,7 +37,6 @@ reference:
 - title: Population dynamics
   desc: Functions used in the population model.
   contents:
-  - calc_LAK
   - calc_F
   - calc_POP
   - calc_index
@@ -58,6 +57,8 @@ reference:
 - title: Miscellaneous
   desc: Other useful functions.
   contents:
+  - calc_LAK
+  - calc_growth
   - CondExpLt
   - conv_Sigma
   - get_sdreport

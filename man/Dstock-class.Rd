@@ -27,11 +27,11 @@ observed catch with the dimension following the underscore, following this templ
 \describe{
 \item{\code{m_spawn}}{Integer, season of spawning. Defaults to 1.}
 \item{\code{m_rec}}{Integer, season of recruitment. Defaults to 1.}
-\item{\code{len_ymas}}{Length-at-age. Only needed if \code{Dmodel@nl > 0}.}
+\item{\code{len_ymas}}{Length-at-age. Only needed if \code{Dmodel@nl > 0}. \code{\link[=calc_growth]{calc_growth()}} may be a helpful function.}
 \item{\code{sdlen_ymas}}{Standard deviation in length-at-age}
 \item{\code{LAK_ymals}}{Length-at-age probability array. If empty, values will be calculated by \code{\link[=check_data]{check_data()}} with \code{\link[=calc_LAK]{calc_LAK()}}.}
 \item{\code{matd_yas}}{Proportion mature by age class. Ignored if maturity ogive is estimated, e.g., when fitting to close-kin genetic data.}
-\item{\code{swt_ymas}}{Stock weight-at-age}
+\item{\code{swt_ymas}}{Stock weight-at-age. See \code{\link[=calc_growth]{calc_growth()}} example.}
 \item{\code{fec_yas}}{Fecundity, i.e., spawning output, of mature animals. Default uses stock weight at age.}
 \item{\code{Md_yas}}{Natural morality. Ignored if M is estimated.}
 \item{\code{SRR_s}}{Character vector of stock-recruit relationship by stock. See \code{SRR} argument in \code{\link[=calc_recruitment]{calc_recruitment()}} for options.}

@@ -2,11 +2,11 @@
 #' \describe{
 #' \item{`m_spawn`}{Integer, season of spawning. Defaults to 1.}
 #' \item{`m_rec`}{Integer, season of recruitment. Defaults to 1.}
-#' \item{`len_ymas`}{Length-at-age. Only needed if `Dmodel@nl > 0`.}
+#' \item{`len_ymas`}{Length-at-age. Only needed if `Dmodel@nl > 0`. [calc_growth()] may be a helpful function.}
 #' \item{`sdlen_ymas`}{Standard deviation in length-at-age}
 #' \item{`LAK_ymals`}{Length-at-age probability array. If empty, values will be calculated by [check_data()] with [calc_LAK()].}
 #' \item{`matd_yas`}{Proportion mature by age class. Ignored if maturity ogive is estimated, e.g., when fitting to close-kin genetic data.}
-#' \item{`swt_ymas`}{Stock weight-at-age}
+#' \item{`swt_ymas`}{Stock weight-at-age. See [calc_growth()] example.}
 #' \item{`fec_yas`}{Fecundity, i.e., spawning output, of mature animals. Default uses stock weight at age.}
 #' \item{`Md_yas`}{Natural morality. Ignored if M is estimated.}
 #' \item{`SRR_s`}{Character vector of stock-recruit relationship by stock. See `SRR` argument in [calc_recruitment()] for options.}

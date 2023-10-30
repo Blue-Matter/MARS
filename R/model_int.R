@@ -303,6 +303,44 @@ calc_LAK <- function(len_a, sd_la, lbin, nl = length(lbin) - 1) {
   return(lak_al)
 }
 
+#' Calculate von Bertalanffy length-at-age
+#'
+#' Returns an array of length-at-age with seasonal dimension.
+#' Useful for [MARSdata-class] inputs.
+#'
+#' @param Linf_s Vector by stock `s` of asymptotic length
+#' @param K_s Vector by stock `s` of the growth coefficient
+#' @param t0_s Vector by `s` of the age at length zero.
+#' @param ns Integer, number of stocks
+#' @param nm Integer, number of seasons
+#' @param ny Integer, number of years
+#' @param a Integer vector of ages
+#' @return Array `[y, m, a, s]`
+#' @examples
+#' len_ymas <- calc_growth(c(30, 40), c(0.4, 0.2), c(-1, -1))
+#'
+#' # Calculate stock weight at age
+#' a_s <- rep(1e-6, 2)
+#' b_s <- c(3, 3.1)
+#'
+#' ns <- length(a_s)
+#' swt_ymas <- sapply(1:ns, function(s) {
+#'   a_s[s]*len_ymas[, , , s]^b_s[s]
+#' }, simplify = "array")
+#' @export
+calc_growth <- function(Linf_s, K_s, t0_s, ns = length(Linf_s), nm = 4, ny = 20, a = seq(1, 10)) {
+  len_ymas <- sapply2(1:ns, function(s) {
+    sapply2(a, function(aa) {
+      sapply(1:nm, function(m) {
+        tt <- aa + (m - 1)/nm
+        len_y <- Linf_s[s] * (1 - exp(-K_s[s] * (tt - t0_s[s])))
+        rep(len_y, ny)
+      })
+    })
+  })
+  return(len_ymas)
+}
+
 
 #' Project stock abundance to the next time step
 #'
