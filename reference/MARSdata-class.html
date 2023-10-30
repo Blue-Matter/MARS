@@ -92,6 +92,10 @@ observed catch with the dimension following the underscore, following this templ
 <dd><p>Class <a href="Dtag-class.html">Dtag</a> containing tagging data</p></dd>
 
 
+<dt><code>Dlabel</code></dt>
+<dd><p>Class <a href="Dlabel-class.html">Dlabel</a> containing names for various dimensions. Used for plotting.</p></dd>
+
+
 <dt><code>Misc</code></dt>
 <dd><p>List for miscellaneous inputs as needed</p></dd>
 
@@ -128,9 +132,6 @@ observed catch with the dimension following the underscore, following this templ
 <dt><code>Fmax</code></dt>
 <dd><p>Numeric, maximum allowable instantaneous fishing mortality rate (units of per season). Defaults to 3.</p></dd>
 
-<dt><code>nitF</code></dt>
-<dd><p>Integer, number of iterations to solve Baranov catch equation from observed catch. Defaults to 5.</p></dd>
-
 <dt><code>y_phi</code></dt>
 <dd><p>Integer, the year from which to obtain values of natural mortality and fecundity for the unfished stock-recruit replacement line (<code>phi</code>). Relevant if natural mortality or fecundity are time-varying. Defaults to 1.</p></dd>
 
@@ -142,6 +143,9 @@ observed catch with the dimension following the underscore, following this templ
 
 <dt><code>condition</code></dt>
 <dd><p>Character, either to specify the model estimates fishing mortality as a parameter (<code>"F"</code>, default) or equal to the catch (<code>"catch"</code>).</p></dd>
+
+<dt><code>nitF</code></dt>
+<dd><p>Integer, number of iterations to solve Baranov catch equation from observed catch if <code>condition = "F"</code>. Defaults to 5.</p></dd>
 
 <dt><code>y_Fmult_f</code></dt>
 <dd><p>Integer vector by fleet, the year in which to directly estimate F. Choose a year/season/region combination when the catch is average relative to the time series. Only used if <code>condition = "catch"</code>.</p></dd>
@@ -192,8 +196,8 @@ observed catch with the dimension following the underscore, following this templ
 <dd><p>Fraction of season that elapses when spawning occurs, e.g., midseason spawning occurs when <code>delta_s = 0.5</code>. Default is zero.</p></dd>
 
 <dt><code>natal_rs</code></dt>
-<dd><p>Boolean matrix (0 = FALSE, 1 = TRUE) that indicates whether stock <code>s</code> spawns when in region <code>r</code> at time of spawning, see example.
-Default of 1 for all regions and stocks.</p></dd>
+<dd><p>The fraction of the mature stock <code>s</code> in region <code>r</code> that spawns at
+time of spawning. See example. Default is 1 for all stocks and regions.</p></dd>
 
 
 </dl></div>
@@ -308,7 +312,7 @@ in the model. Default of zero.</p></dd>
 <dd><p>Boolean array that specifies the regions and stocks sampled by the index. <code>samp[i, r, s]</code> indicates whether index <code>i</code> operates in region <code>r</code> and catches stock <code>s</code>.</p></dd>
 
 <dt><code>sel_i</code></dt>
-<dd><p>Character matrix of functional forms for selectivity. See <code>"type"</code> argument in <code>[conv_selpar()]</code> for options.</p></dd>
+<dd><p>Character matrix of functional forms for selectivity. See <code>"type"</code> argument in <code><a href="conv_selpar.html">conv_selpar()</a></code> for options.</p></dd>
 
 <dt><code>delta_i</code></dt>
 <dd><p>The elapsed fraction of time in the seasonal time step when the index samples the population.</p></dd>
@@ -343,6 +347,33 @@ in the model. Default of zero.</p></dd>
 <dt><code>tag_like</code></dt>
 <dd><p>Character. Likelihood for the tagging data, either the vector of proportions by region of origin for <code>tag_ymrr</code>, or
 by region of stock presence for <code>tag_ymr</code>. See <code>type</code> argument of <code><a href="like_comp.html">like_comp()</a></code> for options</p></dd>
+
+
+</dl></div>
+    <div class="section level2">
+    <h2 id="slots-inherited-from-dlabel">Slots inherited from Dlabel<a class="anchor" aria-label="anchor" href="#slots-inherited-from-dlabel"></a></h2>
+    
+
+<dl><dt><code>year</code></dt>
+<dd><p>Vector of years. Length <code>Dmodel@ny</code></p></dd>
+
+<dt><code>season</code></dt>
+<dd><p>Vector of season names. Length <code>Dmodel@nm</code></p></dd>
+
+<dt><code>age</code></dt>
+<dd><p>Vector of ages. Length <code>Dmodel@na</code></p></dd>
+
+<dt><code>region</code></dt>
+<dd><p>Vector of region names. Length <code>Dmodel@nr</code></p></dd>
+
+<dt><code>stock</code></dt>
+<dd><p>Vector of stock names. Length <code>Dmodel@ns</code></p></dd>
+
+<dt><code>fleet</code></dt>
+<dd><p>Vector of fleet names. Length <code>Dfishery@nf</code></p></dd>
+
+<dt><code>index</code></dt>
+<dd><p>Vector of index of abundance names. Length <code>Dsurvey@ni</code></p></dd>
 
 
 </dl></div>

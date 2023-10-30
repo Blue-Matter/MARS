@@ -95,9 +95,6 @@ observed catch with the dimension following the underscore, following this templ
 <dt><code>Fmax</code></dt>
 <dd><p>Numeric, maximum allowable instantaneous fishing mortality rate (units of per season). Defaults to 3.</p></dd>
 
-<dt><code>nitF</code></dt>
-<dd><p>Integer, number of iterations to solve Baranov catch equation from observed catch. Defaults to 5.</p></dd>
-
 <dt><code>y_phi</code></dt>
 <dd><p>Integer, the year from which to obtain values of natural mortality and fecundity for the unfished stock-recruit replacement line (<code>phi</code>). Relevant if natural mortality or fecundity are time-varying. Defaults to 1.</p></dd>
 
@@ -109,6 +106,9 @@ observed catch with the dimension following the underscore, following this templ
 
 <dt><code>condition</code></dt>
 <dd><p>Character, either to specify the model estimates fishing mortality as a parameter (<code>"F"</code>, default) or equal to the catch (<code>"catch"</code>).</p></dd>
+
+<dt><code>nitF</code></dt>
+<dd><p>Integer, number of iterations to solve Baranov catch equation from observed catch if <code>condition = "F"</code>. Defaults to 5.</p></dd>
 
 <dt><code>y_Fmult_f</code></dt>
 <dd><p>Integer vector by fleet, the year in which to directly estimate F. Choose a year/season/region combination when the catch is average relative to the time series. Only used if <code>condition = "catch"</code>.</p></dd>
