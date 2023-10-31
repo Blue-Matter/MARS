@@ -41,7 +41,7 @@ softmax <- function(eta, log = FALSE) {
   }
 }
 
-logspace.add <- function(lx, ly) pmax(lx, ly) + log1p(exp(-abs(lx - ly)))
+logspace.add <- function(lx, ly) CondExpGt(lx, ly, lx, ly) + log1p(exp(-abs(lx - ly)))
 
 #' Calculate covariance matrix
 #'
