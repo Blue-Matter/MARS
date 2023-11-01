@@ -309,13 +309,13 @@ update_report <- function(r, MARSdata) {
 
   # Likelihoods ----
   ## Initial catch ----
-  if (any(Cinit_mfr >= 1e-8)) {
+  any_Cinit <- any(Cinit_mfr >= 1e-8)
+  if (any_Cinit) {
     initCB_mfr <- apply(initCB_mfrs, 1:3, sum)
-    loglike_Cinit_mfr <- ifelse(
-      Cinit_mfr >= 1e-8,
-      dnorm(log(Cinit_mfr/initCB_mfr), 0, 0.01, log = TRUE),
-      0
-    )
+
+    Cinit_mfr <- OBS(Cinit_mfr)
+    loglike_Cinit_mfr <- dnorm(log(Cinit_mfr/initCB_mfr), 0, 0.01, log = TRUE)
+    loglike_Cinit_mfr[Cinit_mfr < 1e-8] < 0
   } else {
     loglike_Cinit_mfr <- 0
   }
@@ -325,17 +325,15 @@ update_report <- function(r, MARSdata) {
     CB_ymfr <- apply(CB_ymfrs, 1:4, sum)
 
     Cobs_ymfr <- OBS(Cobs_ymfr)
-    loglike_Cobs_ymfr <- ifelse(
-      Cobs_ymfr >= 1e-8,
-      dnorm(log(Cobs_ymfr/CB_ymfr), 0, Csd_ymfr, log = TRUE),
-      0
-    )
+    loglike_Cobs_ymfr <- dnorm(log(Cobs_ymfr/CB_ymfr), 0, Csd_ymfr, log = TRUE)
+    loglike_Cobs_ymfr[Cobs_ymfr < 1e-8] <- 0
   } else {
     loglike_Cobs_ymfr <- 0
   }
 
   ## Marginal fishery age composition ----
-  if (any(CAAobs_ymafr > 0, na.rm = TRUE)) {
+  any_CAA <- any(CAAN_ymfr > 0, na.rm = TRUE)
+  if (any_CAA) {
     CN_ymafr <- apply(CN_ymafrs, 1:5, sum)
 
     CAAobs_ymafr <- OBS(CAAobs_ymafr)
@@ -357,7 +355,8 @@ update_report <- function(r, MARSdata) {
   }
 
   ## Marginal fishery length composition ----
-  if (any(CALobs_ymlfr > 0, na.rm = TRUE)) {
+  any_CAL <- any(CALobs_ymlfr > 0, na.rm = TRUE)
+  if (any_CAL) {
     for(y in 1:ny) {
       for(m in 1:nm) {
         CN_ymlfrs[y, m, , , , ] <- sapply2(1:ns, function(s) {
@@ -408,12 +407,14 @@ update_report <- function(r, MARSdata) {
     I_ymi[] <- sapply2(1:ni, function(i) q_i[i] * VI_ymi[, , i])
 
     Iobs_ymi <- OBS(Iobs_ymi)
-    loglike_I_ymi <- ifelse(is.na(Iobs_ymi), 0, dnorm(log(Iobs_ymi/I_ymi), 0, Isd_ymi, log = TRUE))
+    loglike_I_ymi <- dnorm(log(Iobs_ymi/I_ymi), 0, Isd_ymi, log = TRUE)
+    loglike_I_ymi[is.na(Iobs_ymi)] <- 0
   } else {
     loglike_I_ymi <- 0
   }
 
-  if (ni > 0 && any(IAAobs_ymai > 0, na.rm = TRUE)) {
+  any_IAA <- ni > 0 && any(IAAobs_ymai > 0, na.rm = TRUE)
+  if (any_IAA) {
     IN_ymai <- apply(IN_ymais, 1:4, sum)
 
     IAAobs_ymai <- OBS(IAAobs_ymai)
@@ -431,10 +432,11 @@ update_report <- function(r, MARSdata) {
     loglike_IAA_ymi <- 0
   }
 
-  if (ni > 0 && any(IALobs_ymli > 0, na.rm = TRUE)) {
+  any_IAL <- ni > 0 && any(IALobs_ymli > 0, na.rm = TRUE)
+  if (any_IAL) {
     for(y in 1:ny) {
       for(m in 1:nm) {
-        IN_ymlis <- sapply2(1:ns, function(s) {
+        IN_ymlis[y, m, , , ] <- sapply2(1:ns, function(s) {
           sapply(1:ni, function(i) IN_ymais[y, m, , i, s] %*% LAK_ymals[y, m, , , s])
         })
       }
@@ -457,7 +459,8 @@ update_report <- function(r, MARSdata) {
   }
 
   ## Stock composition ----
-  if (ns > 1 && length(SC_ymafrs)) {
+  any_SC <- ns > 1 && length(SC_ymafrs)
+  if (any_SC) {
     SC_ymafrs <- OBS(SC_ymafrs)
     loglike_SC_ymafr <- sapply2(1:nr, function(r) {
       sapply2(1:nrow(SC_ff), function(ff) { # Aggregate over fleets SC_ff
@@ -594,7 +597,7 @@ update_report <- function(r, MARSdata) {
   ## Initial (first year, first season) calculations ----
   REPORT(initNPR0_yars)
   REPORT(initRdev_as)
-  if (any(Cinit_mfr > 1e-8)) {
+  if (any_Cinit) {
     REPORT(initF_mfr)
     REPORT(initZ_mars)
     REPORT(initNPR_yars)
@@ -618,7 +621,7 @@ update_report <- function(r, MARSdata) {
   REPORT(sel_ymafs)
   REPORT(F_ymafrs)
   REPORT(CN_ymafrs)
-  if (any(CALobs_ymlfr > 0, na.rm = TRUE)) REPORT(CN_ymlfrs)
+  if (any_CAL) REPORT(CN_ymlfrs)
   REPORT(CB_ymfrs)
   REPORT(VB_ymfrs)
 
@@ -626,8 +629,8 @@ update_report <- function(r, MARSdata) {
   if (ni > 0) {
     REPORT(sel_ymais)
     REPORT(I_ymi)
-    if (any(IAAobs_ymai > 0, na.rm = TRUE)) REPORT(IN_ymais)
-    if (any(IALobs_ymli > 0, na.rm = TRUE)) REPORT(IN_ymlis)
+    if (any_IAA) REPORT(IN_ymais)
+    if (any_IAL) REPORT(IN_ymlis)
     REPORT(q_i)
   }
 
@@ -646,18 +649,18 @@ update_report <- function(r, MARSdata) {
   REPORT(penalty)
   REPORT(fn)
 
-  if (any(Cinit_mfr >= 1e-8)) REPORT(loglike_Cinit_mfr)
+  if (any_Cinit) REPORT(loglike_Cinit_mfr)
   if (condition == "F") REPORT(loglike_Cobs_ymfr)
-  if (any(CAAobs_ymafr > 0, na.rm = TRUE)) REPORT(loglike_CAA_ymfr)
-  if (any(CALobs_ymlfr > 0, na.rm = TRUE)) REPORT(loglike_CAL_ymfr)
+  if (any_CAA) REPORT(loglike_CAA_ymfr)
+  if (any_CAL) REPORT(loglike_CAL_ymfr)
 
   if (ni > 0) {
     REPORT(loglike_I_ymi)
-    if (any(IAAobs_ymai > 0, na.rm = TRUE)) REPORT(loglike_IAA_ymi)
-    if (any(IALobs_ymli > 0, na.rm = TRUE)) REPORT(loglike_IAL_ymi)
+    if (any_IAA) REPORT(loglike_IAA_ymi)
+    if (any_IAL) REPORT(loglike_IAL_ymi)
   }
 
-  if (ns > 1 && length(SC_ymafrs)) REPORT(loglike_SC_ymafr)
+  if (any_SC) REPORT(loglike_SC_ymafr)
 
   if (length(POP_s)) REPORT(loglike_POP_s)
   if (length(HSP_s)) REPORT(loglike_HSP_s)

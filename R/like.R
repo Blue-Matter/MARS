@@ -37,14 +37,23 @@ like_comp <- function(obs, pred, type = c("multinomial", "dirmult1", "dirmult2",
   stopifnot(length(obs) == length(pred))
   type <- match.arg(type)
 
-  if (all(is.na(obs)) || !sum(obs)) {
+  if (!inherits(obs, "simref") && (all(is.na(obs)) || !sum(obs))) { # estimation or report mode
 
     v <- if (inherits(pred, "advector")) advector(0) else 0
 
   } else if (type == "multinomial") {
 
-    pobs <- obs/sum(obs)
-    v <- dmultinom(x = N * pobs, prob = pred, log = TRUE)
+    if (inherits(obs, "simref")) {
+      if (!sum(pred)) {
+        pred[] <- 1
+        N <- 0
+      }
+      if (is.na(N)) N <- 100
+      v <- dmultinom(obs, size = N, prob = pred, log = TRUE) # selectMethod("dmultinom", "simref")
+    } else {
+      pobs <- obs/sum(obs)
+      v <- dmultinom(N * pobs, prob = pred, log = TRUE)
+    }
 
   } else if (type == "dirmult1") {
 

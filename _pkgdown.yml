@@ -33,6 +33,7 @@ reference:
   contents:
   - report
   - retrospective
+  - simulate
 
 - title: Population dynamics
   desc: Functions used in the population model.
