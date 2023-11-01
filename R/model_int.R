@@ -164,20 +164,20 @@ calc_F <- function(Cobs, N, sel, wt, M, q_fs, delta = 1,
       })
     })
 
-    deriv1_fars <- sapply(1:ns, function(s) {
+    deriv_afrs <- sapply2(1:ns, function(s) {
       sapply2(1:nr, function(r) {
-        outer(deriv_F[, r], .gamma_ars[, r, s]) + F_loop[, r] * t(deriv_gamma_afrs[, , r, s])
+        sapply(1:nf, function(f) {
+          deriv1_a <- deriv_F[f, r] * .gamma_ars[, r, s] + F_loop[f, r] * deriv_gamma_afrs[, f, r, s]
+          deriv2_a <- deriv1_a * Z_ars[, r, s]
+          deriv3_a <- deriv2_a - .gamma_ars[, r, s] * F_loop[f, r] * deriv_Z_fars[f, , r, s]
+          deriv4_a <- deriv3_a/Z_ars[, r, s]/Z_ars[, r, s]
+          return(deriv4_a)
+        })
       })
-    }) %>% array(c(nf, na, nr, ns))
-    deriv2_arsf <- sapply2(1:nf, function(f) deriv1_fars[f, , , ] * Z_ars) %>% array(c(na, nr, ns, nf))
-    deriv3_afrs <- sapply2(1:ns, function(s) {
-      sapply2(1:nr, function(r) {
-        sapply(1:nf, function(f) deriv2_arsf[, r, s, f] -  .gamma_ars[, r, s] * F_loop[f, r] * deriv_Z_fars[f, , r, s])
-      })
-    })
-    deriv4_arsf <- sapply2(1:nf, function(f) deriv3_afrs[, f, , ]/Z_ars/Z_ars) %>% array(c(na, nr, ns, nf))
+    }) %>%
+      array(c(na, nf, nr, ns))
 
-    gr[[i]] <- apply(constants_afrs * aperm(deriv4_arsf, c(1, 4, 2, 3)), c(2, 3), sum)
+    gr[[i]] <- apply(constants_afrs * deriv_afrs, c(2, 3), sum)
 
     if (i <= nitF) x_loop[[i+1]] <- x_loop[[i]] - fn[[i]]/gr[[i]]
   }
@@ -379,10 +379,15 @@ calc_nextN <- function(N, surv, na = dim(N)[1], nr = dim(N)[2], ns = dim(N)[3],
   }
 
   # Distribute stock ----
-  Nnext_ars <- sapply2(1:ns, function(s) {
-    sapply(1:na, function(a) Nsurv_ars[a, , s] %*% mov[a, , , s]) %>% matrix(nr, na)
-  }) %>%
-    aperm(c(2, 1, 3))
+  if (nr > 1) {
+    Nnext_ars <- sapply2(1:ns, function(s) {
+      sapply(1:na, function(a) colSums(Nsurv_ars[a, , s] * mov[a, , , s])) %>% matrix(nr, na)
+    }) %>%
+      aperm(c(2, 1, 3))
+  } else {
+    Nnext_ars <- Nsurv_ars
+  }
+
 
   return(Nnext_ars)
 }
@@ -491,8 +496,6 @@ calc_q <- function(Iobs, B) {
 #' @return Movement array `[a, r, r]`
 #' @export
 conv_mov <- function(x, g, v, na = dim(x)[1], nr = dim(x)[2], aref = ceiling(0.5 * na)) {
-  stopifnot(length(g) == na)
-  stopifnot(length(g) == length(v))
   x <- array(x, c(na, nr, nr))
   g <- matrix(g, na, nr)
 
