@@ -213,7 +213,7 @@ update_report <- function(r, MARSdata) {
 
   if (nr == 1 && nm == 1) {
     nyinit <- 1L
-    initNPR0_yars <- sapply2(1:ns, function(s) calc_NPR(M_yas[y_phi, , s]) %>% array(c(nyinit, na, nr)))
+    initNPR0_yars <- sapply2(1:ns, function(s) calc_NPR(M_yas[y_phi, , s])) %>% array(c(nyinit, na, nr, ns))
     phi_s <- sapply(1:ns, function(s) {
       calc_phi_simple(M_yas[y_phi, , s], mat_a = mat_yas[y_phi, , s], fec_a = fec_yas[y_phi, , s],
                       delta = delta_s[s])
@@ -224,7 +224,7 @@ update_report <- function(r, MARSdata) {
       mat_as = mat_yas[y_phi, , ], fec_as = fec_yas[y_phi, , ], m_spawn = m_spawn, m_rec = m_rec,
       delta_s = delta_s, natal_rs = natal_rs
     )
-    initNPR0_yars <- NPR_unfished[["N_ymars"]][1:nyinit, 1, , , ]
+    initNPR0_yars <- array(NPR_unfished[["N_ymars"]][1:nyinit, 1, , , ], c(nyinit, na, nr ,ns))
     phi_s <- sapply(1:ns, function(s) sum(NPR_unfished[["S_yrs"]][nyinit, , s]))
   }
 

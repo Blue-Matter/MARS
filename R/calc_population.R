@@ -159,13 +159,6 @@ calc_population <- function(ny = 10, nm = 4, na = 20, nf = 1, nr = 4, ns = 2,
         R_ys[y, ] <- Rdev_ys[y, ] * sapply(1:ns, function(s) {
           calc_recruitment(sum(S_yrs[y, , s]), SRR = SRR_s[s], a = sralpha_s[s], b = srbeta_s[s])
         })
-        y_rec <- ifelse(m_rec > m_spawn, y, y+1) # When nm = 1, this only works if recruitment is age 1
-        if (y_rec <= ny) {
-          # Distribution of recruits is proportional to regional abundance of spawners
-          mov_ymarrs[y_rec, m_rec, 1, , , ] <- sapply2(1:ns, function(s) {
-            matrix(S_yrs[y, , s]/sum(S_yrs[y, , s]), nr, nr, byrow = TRUE)
-          })
-        }
       }
 
       ## Next season's abundance and total biomass ----
@@ -173,11 +166,21 @@ calc_population <- function(ny = 10, nm = 4, na = 20, nf = 1, nr = 4, ns = 2,
       ynext <- ifelse(m == nm, y+1, y)
       mnext <- ifelse(m == nm, 1, m+1)
       ylast <- min(ynext, ny)
+
+      y_spawn <- ifelse(m_rec > m_spawn, ynext, ynext-1) # If m_rec <= m_spawn in year 1, multiseason?
+
+      if (nr > 1 && mnext == m_rec) {
+        # Distribution of recruits is proportional to regional abundance of spawners
+        mov_ymarrs[ylast, mnext, 1, , , ] <- sapply2(1:ns, function(s) {
+          matrix(S_yrs[y_spawn, , s]/sum(S_yrs[y_spawn, , s]), nr, nr, byrow = TRUE)
+        })
+      }
+
       N_ymars[ynext, mnext, , , ] <- calc_nextN(
         N = N_ymars[y, m, , , ], surv = exp(-Z_ymars[y, m, , , ]),
         na = na, nr = nr, ns = ns,
         advance_age = mnext == m_rec,
-        R = R_ys[y, ],
+        R = R_ys[y_spawn, ],
         mov = mov_ymarrs[ylast, mnext, , , , ]
       )
     }
@@ -253,10 +256,10 @@ calc_phi_project <- function(ny, nm, na, nf = 1, nr, ns = 1,
   fwt_ymafs <- array(fwt_mafs, c(nm, na, nf, ns, ny)) %>% aperm(c(5, 1:4))
   F_ymfr <- array(F_mfr, c(nm, nf, nr, ny)) %>% aperm(c(4, 1:3))
 
-  initNPR_ars <- sapply(1:ns, function(s) {
+  initNPR_ars <- sapply2(1:ns, function(s) {
     NPR_ar <- sapply(1:nr, function(r) {
       F_af <- lapply(1:nf, function(f) sel_ymafs[1, 1, , f, s] * q_fs[f, s] * F_ymfr[1, 1, f, r])
-      Z_a <- delta_m * M_yas[1, , s] + Reduce("+", F_af)
+      Z_a <- M_yas[1, , s] + Reduce("+", F_af)
       calc_NPR(Z_a)
     })
     return(NPR_ar/nr)
