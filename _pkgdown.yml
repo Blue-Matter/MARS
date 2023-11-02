@@ -31,6 +31,7 @@ reference:
 - title: Model evaluation
   desc: Evaluate model fit and run diagnostics.
   contents:
+  - profile
   - report
   - retrospective
   - simulate
