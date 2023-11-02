@@ -64,6 +64,9 @@
     <loc>https://blue-matter.github.io/MARS/reference/calc_POP.html</loc>
   </url>
   <url>
+    <loc>https://blue-matter.github.io/MARS/reference/calc_growth.html</loc>
+  </url>
+  <url>
     <loc>https://blue-matter.github.io/MARS/reference/calc_index.html</loc>
   </url>
   <url>
@@ -118,10 +121,16 @@
     <loc>https://blue-matter.github.io/MARS/reference/posfun.html</loc>
   </url>
   <url>
+    <loc>https://blue-matter.github.io/MARS/reference/profile.html</loc>
+  </url>
+  <url>
     <loc>https://blue-matter.github.io/MARS/reference/report.html</loc>
   </url>
   <url>
     <loc>https://blue-matter.github.io/MARS/reference/retrospective.html</loc>
+  </url>
+  <url>
+    <loc>https://blue-matter.github.io/MARS/reference/simulate.html</loc>
   </url>
   <url>
     <loc>https://blue-matter.github.io/MARS/reference/softmax.html</loc>
