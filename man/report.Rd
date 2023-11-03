@@ -2,15 +2,40 @@
 % Please edit documentation in R/define-s4-class.R
 \name{report}
 \alias{report}
-\title{Report generic}
+\alias{report.MARSassess}
+\title{Generate markdown reports}
 \usage{
 report(object, ...)
+
+\method{report}{MARSassess}(
+  object,
+  name,
+  filename = "MARS",
+  dir = tempdir(),
+  open_file = TRUE,
+  render_args = list(),
+  ...
+)
 }
 \arguments{
 \item{object}{An object from MARS.}
 
 \item{...}{Additional arguments to render reports.}
+
+\item{name}{Optional character string for the model name to include in the report, e.g., model run number. Default
+uses \code{substitute(object)}}
+
+\item{filename}{Character string for the name of the markdown and HTML files.}
+
+\item{dir}{The directory in which the markdown and HTML files will be saved.}
+
+\item{open_file}{Logical, whether the HTML document is opened after it is rendered.}
+
+\item{render_args}{List of arguments to pass to \code{\link[rmarkdown:render]{rmarkdown::render()}}.}
+}
+\value{
+\code{report.MARSassess} returns a HTML markdown report.
 }
 \description{
-Used to render rmarkdown reports.
+Generate a markdown report of model fits and estimates.
 }

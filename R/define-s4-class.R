@@ -152,6 +152,14 @@ setClass(
 )
 setMethod("initialize", "MARSassess", function(.Object, ...) init_fn(.Object, list(...)))
 
+summary.MARSassess <- function(object, ...) {
+  if (length(object@SD) > 1) {
+    sdreport_int(object@SD)
+  } else {
+    stop("No SD object found.")
+  }
+}
+
 
 #' @importFrom utils globalVariables
 if(getRversion() >= "2.15.1") {
@@ -162,13 +170,93 @@ if(getRversion() >= "2.15.1") {
 }
 
 
-#' Report generic
+#' Generate markdown reports
 #'
-#' Used to render rmarkdown reports.
+#' Generate a markdown report of model fits and estimates.
 #'
 #' @param object An object from MARS.
 #' @param ... Additional arguments to render reports.
 #'
 #' @export
 report <- function(object, ...) UseMethod("report")
+
+
+#' @inheritParams report.MARSretro
+#' @param name Optional character string for the model name to include in the report, e.g., model run number. Default
+#' uses `substitute(object)`
+#' @return
+#' `report.MARSassess` returns a HTML markdown report.
+#' @rdname report
+#' @export
+report.MARSassess <- function(object, name, filename = "MARS", dir = tempdir(), open_file = TRUE, render_args = list(), ...) {
+
+  if (missing(name)) name <- substitute(object) %>% as.character()
+
+  dots <- list(...)
+  x <- object # Needed for markdown file
+
+  dat <- get_MARSdata(object)
+
+  nm <- dat@Dmodel@nm
+  nr <- dat@Dmodel@nr
+  ns <- dat@Dmodel@ns
+
+  sname <- dat@Dlabel@stock
+  if (!length(sname)) sname <- "Stock 1"
+  fname <- dat@Dlabel@fleet
+
+  nf <- dat@Dfishery@nf
+
+  rmd <- system.file("include", "MARSreport.Rmd", package = "MARS") %>% readLines()
+  rmd_split <- split(rmd, 1:length(rmd))
+
+  name_ind <- grep("NAME", rmd)
+  rmd_split[[name_ind]] <- paste("#", name, "{.tabset}")
+
+  fishery_ind <- grep("*ADD FISHERY RMD*", rmd)
+  rmd_split[[fishery_ind]] <- mapply(make_rmd_fishery, f = 1:nf, fname = fname, MoreArgs = list(nm = nm)) %>% as.character()
+
+  srr_ind <- grep("*ADD SRR RMD*", rmd)
+  rmd_split[[srr_ind]] <- mapply(make_rmd_srr, s = 1:ns, sname = sname) %>% as.character()
+
+  stock_ind <- grep("*ADD STOCK REGION RMD*", rmd)
+  mov_ind <- grep("*ADD MOVEMENT RMD*", rmd)
+  if (nr > 1) {
+    year <- dat@Dlabel@year
+    rmd_split[[stock_ind]] <- mapply(make_rmd_stock_region, s = 1:ns, sname = sname) %>% as.character()
+
+    if (is.null(dots$ymov)) dots$ymov <- dat@Dmodel@ny
+    if (is.null(dots$amov)) dots$amov <- 2
+
+    mov <- expand.grid(a = dots$amov, y = dots$ymov, s = 1:ns)
+    rmd_split[[mov_ind]] <- lapply(1:nrow(mov), function(i) {
+      make_rmd_mov(s = mov$s[i], y = mov$y[i], a = mov$a[i], yname = dat@Dlabel@year[mov$y[i]],
+                   sname = sname[mov$s[i]], header = i == 1)
+    }) %>% as.character()
+
+  } else {
+    rmd_split[[stock_ind]] <- rmd_split[[mov_ind]] <- ""
+  }
+
+  ####### Function arguments for rmarkdown::render
+  filename_rmd <- paste0(filename, ".Rmd")
+
+  render_args$input <- file.path(dir, filename_rmd)
+  if (is.null(render_args$quiet)) render_args$quiet <- TRUE
+
+  # Generate markdown report
+  if (!dir.exists(dir)) {
+    message_info("Creating directory: ", dir)
+    dir.create(dir)
+  }
+  write(unlist(rmd_split), file = file.path(dir, filename_rmd))
+
+  # Rendering markdown file
+  message_info("Rendering markdown file: ", file.path(dir, filename_rmd))
+  output_filename <- do.call(rmarkdown::render, render_args)
+  message("Rendered file: ", output_filename)
+
+  if (open_file) browseURL(output_filename)
+  invisible(output_filename)
+}
 

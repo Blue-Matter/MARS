@@ -193,8 +193,8 @@ get_sdreport <- function(obj, getReportCovariance = FALSE, silent = FALSE, ...) 
   }
 
   if (all(is.na(res$cov.fixed)) && res$pdHess) {
-    if (!silent) message_info("Calculating standard errors with hessian from chol2inv()..")
-    ch <- try(chol(h), silent = TRUE)
+    if (!silent) message_info("Calculating standard errors from chol2inv(chol(h))..")
+    ch <- try(chol(h), silent = TRUE) # Not needed, this is the test for convergence in sdreport
     if (!is.character(ch)) res$cov.fixed <- chol2inv(ch)
   }
 

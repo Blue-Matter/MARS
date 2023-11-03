@@ -143,7 +143,7 @@ plot.MARSprof <- function(x, component = "objective", rel = TRUE, xlab, ylab, ma
     }
     if (rel) zplot <- zplot - min(zplot)
     if (missing(ylab)) ylab <- p2
-    if (missing(main)) main <- paste("Change in", response)
+    if (missing(main)) main <- paste("Change in", component)
 
     contour(x = as.numeric(rownames(zplot)), y = as.numeric(colnames(zplot)),
             z = zplot, xlab = xlab, ylab = ylab, main = main, ...)
