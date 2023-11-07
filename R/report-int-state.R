@@ -331,6 +331,62 @@ plot_self <- function(fit, f = 1) {
 }
 
 #' @rdname plot-MARS-state
+#' @aliases plot_seli
+#' @param i Integer for the corresponding survey
+#' @details
+#' - `plot_seli` plots index selectivity
+#' @export
+plot_seli <- function(fit, i = 1) {
+  dat <- get_MARSdata(fit)
+  sel_i <- dat@Dsurvey@sel_i[i]
+  mirror_f <- suppressWarnings(as.numeric(sel_i))
+
+  iname <- dat@Dlabel@index[i]
+
+  if (!is.na(mirror_f)) {
+    plot_self(fit, f = mirror_f)
+  } else if (grepl("length", sel_i)) {
+    lmid <- dat@Dstock@lmid
+    x <- fit@report$sel_li[, i]
+
+    plot(lmid, x, xlab = "Length", ylab = paste(iname, "selectivity"),
+         typ = "o", col = color, pch = 16,
+         ylim = c(0, 1), lty = 1, zero_line = TRUE)
+  } else {
+
+    m <- 1
+    s <- 1
+
+    x <- fit@report$sel_ymais[, m, , i, s]
+    xx <- apply(x, 2, diff)
+
+    if (any(xx != 0)) {
+      year <- dat@Dlabel@year
+      ybreak <- c(1, which(rowSums(xx) > 0) + 1)
+      name <- sapply(1:length(ybreak), function(i) {
+        if (i == length(ybreak)) {
+          y <- c(year[ybreak[i]], year[length(year)])
+        } else {
+          y <- year[c(ybreak[i], ybreak[i+1] - 1)]
+        }
+        paste(range(y), collapse = "-")
+      })
+      x <- x[ybreak, , drop = FALSE]
+
+    } else {
+      x <- x[1, , drop = FALSE]
+    }
+    age <- dat@Dlabel@age
+
+    matplot(age, t(x), xlab = "Age", ylab = paste(iname, "selectivity"),
+            typ = "o", col = color, pch = 16,
+            ylim = c(0, 1), lty = 1, zero_line = TRUE)
+    if (nrow(x) > 1) legend("topright", legend = name, col = color, lwd = 1, pch = 16)
+  }
+  invisible()
+}
+
+#' @rdname plot-MARS-state
 #' @aliases plot_V
 #' @details
 #' - `plot_V` plots vulnerable biomass, availability to the fishery

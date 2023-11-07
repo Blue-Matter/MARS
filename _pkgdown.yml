@@ -15,6 +15,7 @@ reference:
   - Dtag-class
   - Dlabel-class
   - plot-MARS-state
+  - plot-MARS-data
 
 - title: Data
   desc: S4 objects for data setup.

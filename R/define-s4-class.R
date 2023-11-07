@@ -198,14 +198,14 @@ report.MARSassess <- function(object, name, filename = "MARS", dir = tempdir(), 
   dat <- get_MARSdata(object)
 
   nm <- dat@Dmodel@nm
-  nr <- dat@Dmodel@nr
-  ns <- dat@Dmodel@ns
 
+  nr <- dat@Dmodel@nr
+  rname <- dat@Dlabel@region
+  if (!length(rname)) rname <- "Region 1"
+
+  ns <- dat@Dmodel@ns
   sname <- dat@Dlabel@stock
   if (!length(sname)) sname <- "Stock 1"
-  fname <- dat@Dlabel@fleet
-
-  nf <- dat@Dfishery@nf
 
   rmd <- system.file("include", "MARSreport.Rmd", package = "MARS") %>% readLines()
   rmd_split <- split(rmd, 1:length(rmd))
@@ -213,8 +213,22 @@ report.MARSassess <- function(object, name, filename = "MARS", dir = tempdir(), 
   name_ind <- grep("NAME", rmd)
   rmd_split[[name_ind]] <- paste("#", name, "{.tabset}")
 
+  fname <- dat@Dlabel@fleet
+  nf <- dat@Dfishery@nf
   fishery_ind <- grep("*ADD FISHERY RMD*", rmd)
-  rmd_split[[fishery_ind]] <- mapply(make_rmd_fishery, f = 1:nf, fname = fname, MoreArgs = list(nm = nm)) %>% as.character()
+  rmd_split[[fishery_ind]] <- mapply(make_rmd_fishery, f = 1:nf, fname = fname,
+                                     MoreArgs = list(nm = nm, rname = rname)) %>%
+    as.character()
+
+  ni <- dat@Dsurvey@ni
+  iname <- dat@Dlabel@index
+  survey_ind <- grep("*ADD SURVEY RMD*", rmd)
+  if (ni > 0) {
+    rmd_split[[survey_ind]] <- mapply(make_rmd_survey, i = 1:ni, iname = iname) %>%
+      as.character()
+  } else {
+    rmd_split[[survey_ind]] <- ""
+  }
 
   srr_ind <- grep("*ADD SRR RMD*", rmd)
   rmd_split[[srr_ind]] <- mapply(make_rmd_srr, s = 1:ns, sname = sname) %>% as.character()
@@ -229,7 +243,7 @@ report.MARSassess <- function(object, name, filename = "MARS", dir = tempdir(), 
     if (is.null(dots$amov)) dots$amov <- 2
 
     mov <- expand.grid(a = dots$amov, y = dots$ymov, s = 1:ns)
-    rmd_split[[mov_ind]] <- lapply(1:nrow(mov), function(i) {
+    rmd_split[[mov_ind]] <- sapply(1:nrow(mov), function(i) {
       make_rmd_mov(s = mov$s[i], y = mov$y[i], a = mov$a[i], yname = dat@Dlabel@year[mov$y[i]],
                    sname = sname[mov$s[i]], header = i == 1)
     }) %>% as.character()

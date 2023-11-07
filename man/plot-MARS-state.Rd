@@ -9,6 +9,7 @@
 \alias{plot_Rdev}
 \alias{plot_Fstock}
 \alias{plot_self}
+\alias{plot_seli}
 \alias{plot_V}
 \alias{plot_Ffleet}
 \alias{plot_mov}
@@ -27,6 +28,8 @@ plot_Rdev(fit, s = 1, log = TRUE)
 plot_Fstock(fit, s)
 
 plot_self(fit, f = 1)
+
+plot_seli(fit, i = 1)
 
 plot_V(fit, f = 1, by = c("stock", "region"), prop = FALSE)
 
@@ -48,6 +51,8 @@ plot_mov(fit, s = 1, y, a)
 \item{log}{Logical, whether to plot the natural logarithm of the response variable}
 
 \item{f}{Integer for the corresponding fleet}
+
+\item{i}{Integer for the corresponding survey}
 
 \item{y}{Integer, year for plotting the movement matrix}
 
@@ -86,6 +91,10 @@ A set of functions to plot state variables (biomass, recruitment time series, et
 
 \itemize{
 \item \code{plot_self} plots fishery selectivity
+}
+
+\itemize{
+\item \code{plot_seli} plots index selectivity
 }
 
 \itemize{
