@@ -29,7 +29,7 @@
 #' Default steepness value of 0.8}
 #' \item{`mat_ps`}{Matrix `[2, s]`. Maturity parameters (can be estimated or specified in data object). Logistic functional form. The
 #' parameter in the first row is the age of 50 percent maturity in logit space: `a50_s <- plogis(mat_ps[1, ] * na)`.
-#' In the second row is the age of 95 percent maturity as a logarithmic offset: `a95_s <- exp(a50_s + mat_ps[2, ])`.
+#' In the second row is the age of 95 percent maturity as a logarithmic offset: `a95_s <- a50_s + exp(mat_ps[2, ])`.
 #' Default `a50_s <- 0.5 * na` and `a95_s <- a50_s + 1`}
 #' \item{`log_M_s`}{Vector by `s`. Natural logarithm of natural mortality (can be estimated or specified in data object).
 #' Default parameter value for all stocks: `M <- -log(0.05)/MARSdata@Dmodel@na`}
@@ -37,6 +37,15 @@
 #' \item{`log_sdr_s`}{Vector by `s`. log-Standard deviation of the log recruitment deviations. Default SD = 0.4}
 #' \item{`log_q_fs`}{Matrix `[f, s]`. The natural logarithm of `q_fs`, the relative fishing efficiency of `f` for stock `s`.
 #' Equal values imply equal catchability of all stocks. See equations in [calc_F()]. Default sets all values to zero.}
+#' \item{`log_Fdev_ymfr`}{Array `[y, m, f, r]`. Fishing mortality parameters. For each fleet, the log of F is estimated directly for the
+#' reference year, season, region. For other strata, F is an offset from this value:
+#' \deqn{
+#' F_{y,m,f,r} = \begin{cases}
+#' \exp(x^{\textrm{Fmult}}_f) \quad & y = y_{\textrm{ref}}, m = m_{\textrm{ref}}, r = r_{\textrm{ref}}\\
+#' \exp(x^{\textrm{Fmult}}_f + x^{\textrm{Fdev}}_{y,m,r}) \quad & \textrm{otherwise}
+#' \end{cases}
+#' }
+#' }
 #' \item{`sel_pf`}{Matrix `[3, f]`. Fishery selectivity parameters in logit or log space. See equations [conv_selpar()], where `sel_pf` is the `x` matrix.}
 #' \item{`sel_pi`}{Matrix `[3, i]`. Index selectivity parameters in logit or log space. See equations [conv_selpar()], where `sel_pi` is the `x` matrix.}
 #' \item{`mov_x_marrs`}{Array `[m, a, r, r, s]`. Base movement matrix. Set to -1000 to effectively exclude movements from region pairs.

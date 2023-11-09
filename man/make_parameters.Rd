@@ -83,7 +83,7 @@ is represented as: \code{R0_s <- exp(t_R0_s) * MARSdata@Dmodel@scale_s}. By defa
 Default steepness value of 0.8}
 \item{\code{mat_ps}}{Matrix \verb{[2, s]}. Maturity parameters (can be estimated or specified in data object). Logistic functional form. The
 parameter in the first row is the age of 50 percent maturity in logit space: \code{a50_s <- plogis(mat_ps[1, ] * na)}.
-In the second row is the age of 95 percent maturity as a logarithmic offset: \code{a95_s <- exp(a50_s + mat_ps[2, ])}.
+In the second row is the age of 95 percent maturity as a logarithmic offset: \code{a95_s <- a50_s + exp(mat_ps[2, ])}.
 Default \code{a50_s <- 0.5 * na} and \code{a95_s <- a50_s + 1}}
 \item{\code{log_M_s}}{Vector by \code{s}. Natural logarithm of natural mortality (can be estimated or specified in data object).
 Default parameter value for all stocks: \code{M <- -log(0.05)/MARSdata@Dmodel@na}}
@@ -91,6 +91,15 @@ Default parameter value for all stocks: \code{M <- -log(0.05)/MARSdata@Dmodel@na
 \item{\code{log_sdr_s}}{Vector by \code{s}. log-Standard deviation of the log recruitment deviations. Default SD = 0.4}
 \item{\code{log_q_fs}}{Matrix \verb{[f, s]}. The natural logarithm of \code{q_fs}, the relative fishing efficiency of \code{f} for stock \code{s}.
 Equal values imply equal catchability of all stocks. See equations in \code{\link[=calc_F]{calc_F()}}. Default sets all values to zero.}
+\item{\code{log_Fdev_ymfr}}{Array \verb{[y, m, f, r]}. Fishing mortality parameters. For each fleet, the log of F is estimated directly for the
+reference year, season, region. For other strata, F is an offset from this value:
+\deqn{
+F_{y,m,f,r} = \begin{cases}
+\exp(x^{\textrm{Fmult}}_f) \quad & y = y_{\textrm{ref}}, m = m_{\textrm{ref}}, r = r_{\textrm{ref}}\\
+\exp(x^{\textrm{Fmult}}_f + x^{\textrm{Fdev}}_{y,m,r}) \quad & \textrm{otherwise}
+\end{cases}
+}
+}
 \item{\code{sel_pf}}{Matrix \verb{[3, f]}. Fishery selectivity parameters in logit or log space. See equations \code{\link[=conv_selpar]{conv_selpar()}}, where \code{sel_pf} is the \code{x} matrix.}
 \item{\code{sel_pi}}{Matrix \verb{[3, i]}. Index selectivity parameters in logit or log space. See equations \code{\link[=conv_selpar]{conv_selpar()}}, where \code{sel_pi} is the \code{x} matrix.}
 \item{\code{mov_x_marrs}}{Array \verb{[m, a, r, r, s]}. Base movement matrix. Set to -1000 to effectively exclude movements from region pairs.
