@@ -118,6 +118,12 @@
     <loc>https://blue-matter.github.io/MARS/reference/optimize_RTMB.html</loc>
   </url>
   <url>
+    <loc>https://blue-matter.github.io/MARS/reference/plot-MARS-data.html</loc>
+  </url>
+  <url>
+    <loc>https://blue-matter.github.io/MARS/reference/plot-MARS-state.html</loc>
+  </url>
+  <url>
     <loc>https://blue-matter.github.io/MARS/reference/posfun.html</loc>
   </url>
   <url>
@@ -125,6 +131,9 @@
   </url>
   <url>
     <loc>https://blue-matter.github.io/MARS/reference/report.html</loc>
+  </url>
+  <url>
+    <loc>https://blue-matter.github.io/MARS/reference/residuals.MARSassess.html</loc>
   </url>
   <url>
     <loc>https://blue-matter.github.io/MARS/reference/retrospective.html</loc>
