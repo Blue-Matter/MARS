@@ -1,16 +1,4 @@
 
-
-residuals.MARSassess <- function(object, var, std = FALSE, ...) {
-  dat <- get_MARSdata(object)
-
-  if (var == "Cobs_ymfr") {
-    res <- log(dat@Dfishery@Cobs_ymfr/apply(object@report$CB_ymfrs, 1:4, sum))
-    if (std) res <- res/dat@Dfishery@Csd_ymfr
-  }
-
-  return(res)
-}
-
 # Data plots ----
 #' @name plot-MARS-data
 #' @title Plotting functions for data in MARS model
@@ -244,6 +232,7 @@ plot_IAL <- function(fit, i = 1) {
   invisible()
 }
 
+#' @importFrom graphics lines mtext
 plot_composition <- function(obs, pred = NULL, xval = 1:ncol(obs), xlab = "Age",
                              ylab = "Value", zval = 1:nrow(obs), N = round(rowSums(obs), 2)) {
 

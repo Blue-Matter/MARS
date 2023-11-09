@@ -35,6 +35,7 @@ reference:
   contents:
   - profile
   - report
+  - residuals.MARSassess
   - retrospective
   - simulate
 

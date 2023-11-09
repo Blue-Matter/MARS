@@ -1,11 +1,18 @@
 
 make_rmd_CAA <- function(f, r, fname, rname) {
   cap <- paste0("Catch at age for ", fname, " in ", rname)
+  cap2 <- paste0("Pearson residuals for the catch at age for ", fname, " in ", rname)
 
   rmd <- c(
     paste0("```{r caa-f", f, "-r", r, ", fig.cap=\"", cap, ".\"}"),
     paste0("if (length(dat@Dfishery@CAAobs_ymafr) && any(dat@Dfishery@CAAobs_ymafr[, , , ", f, ", ", r, "] > 0, na.rm = TRUE)) {"),
     paste0("  plot_CAA(x, f = ", f, ", r = ", r, ")"),
+    "}",
+    "```",
+    "",
+    paste0("```{r caa-resid-f", f, "-r", r, ", fig.cap=\"", cap2, ".\"}"),
+    paste0("if (length(dat@Dfishery@CAAobs_ymafr) && any(dat@Dfishery@CAAobs_ymafr[, , , ", f, ", ", r, "] > 0, na.rm = TRUE)) {"),
+    paste0("  plot_resid_CAA(x, f = ", f, ", r = ", r, ")"),
     "}",
     "```",
     ""
@@ -16,11 +23,18 @@ make_rmd_CAA <- function(f, r, fname, rname) {
 
 make_rmd_CAL <- function(f, r, fname, rname) {
   cap <- paste0("Catch at length for ", fname, " in ", rname)
+  cap2 <- paste0("Pearson residuals for the catch at length for ", fname, " in ", rname)
 
   rmd <- c(
     paste0("```{r cal-f", f, "-r", r, ", fig.cap=\"", cap, ".\"}"),
     paste0("if (length(dat@Dfishery@CALobs_ymlfr) && any(dat@Dfishery@CALobs_ymlfr[, , , ", f, ", ", r, "] > 0, na.rm = TRUE)) {"),
     paste0("  plot_CAL(x, f = ", f, ", r = ", r, ")"),
+    "}",
+    "```",
+    "",
+    paste0("```{r cal-resid-f", f, "-r", r, ", fig.cap=\"", cap2, ".\"}"),
+    paste0("if (length(dat@Dfishery@CALobs_ymlfr) && any(dat@Dfishery@CALobs_ymlfr[, , , ", f, ", ", r, "] > 0, na.rm = TRUE)) {"),
+    paste0("  plot_resid_CAL(x, f = ", f, ", r = ", r, ")"),
     "}",
     "```",
     ""
@@ -47,19 +61,24 @@ make_rmd_fishery <- function(f, fname, nm = 1, rname, nr = length(rname)) {
     "",
     "#### Fits and residuals",
     "",
+    paste0("```{r catch-", f, ", fig.cap=\"Catch of ", fname, ".\"}"),
+    paste0("plot_catch(x, f = ", f, ")"),
+    "```",
+    "",
+    paste0("```{r catch-resid-", f, ", fig.cap=\"Catch residuals of ", fname, ".\"}"),
+    paste0("plot_resid_Cobs(x, f = ", f, ")"),
+    "```",
+    "",
     rmd_CAA,
     rmd_CAL,
     "#### Estimates",
+    "",
     paste0("```{r sel-", f, ", fig.cap=\"Selectivity.\"}"),
     paste0("plot_self(x, f = ", f, ")"),
     "```",
     "",
     paste0("```{r Ffleet-", f, ", fig.cap=\"Apical fishing mortality of ", fname, " (instantaneous rate, per ", Frate, ").\"}"),
     paste0("plot_Ffleet(x, f = ", f, ")"),
-    "```",
-    "",
-    paste0("```{r catch-", f, ", fig.cap=\"Catch of ", fname, ".\"}"),
-    paste0("plot_catch(x, f = ", f, ")"),
     "```",
     "",
     paste0("```{r catch-region-prop-", f, ", fig.cap=\"Catch by region of ", fname, ".\"}"),
@@ -121,8 +140,16 @@ make_rmd_survey <- function(i, iname) {
     paste0("plot_IAA(x, i = ", i, ")"),
     "```",
     "",
+    paste0("```{r IAA-resid-", i, ", fig.cap=\"Pearson residuals for the age composition from ", iname, ".\"}"),
+    paste0("plot_resid_IAA(x, i = ", i, ")"),
+    "```",
+    "",
     paste0("```{r IAL-", i, ", fig.cap=\"Length composition from ", iname, ".\"}"),
     paste0("plot_IAL(x, i = ", i, ")"),
+    "```",
+    "",
+    paste0("```{r IAL-resid-", i, ", fig.cap=\"Pearson residuals for the length composition from ", iname, ".\"}"),
+    paste0("plot_resid_IAL(x, i = ", i, ")"),
     "```",
     ""
   )

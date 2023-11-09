@@ -350,7 +350,7 @@ plot_seli <- function(fit, i = 1) {
     x <- fit@report$sel_li[, i]
 
     plot(lmid, x, xlab = "Length", ylab = paste(iname, "selectivity"),
-         typ = "o", col = color, pch = 16,
+         typ = "o", pch = 16,
          ylim = c(0, 1), lty = 1, zero_line = TRUE)
   } else {
 
@@ -377,6 +377,7 @@ plot_seli <- function(fit, i = 1) {
       x <- x[1, , drop = FALSE]
     }
     age <- dat@Dlabel@age
+    color <- make_color(nrow(x), "fleet")
 
     matplot(age, t(x), xlab = "Age", ylab = paste(iname, "selectivity"),
             typ = "o", col = color, pch = 16,
