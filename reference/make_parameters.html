@@ -30,6 +30,7 @@ checks whether custom made parameter lists are of the correct dimension."><!-- m
 <li class="nav-item dropdown">
   <a href="#" class="nav-link dropdown-toggle" data-bs-toggle="dropdown" role="button" aria-expanded="false" aria-haspopup="true" id="dropdown-articles">Articles</a>
   <div class="dropdown-menu" aria-labelledby="dropdown-articles">
+    <a class="dropdown-item" href="../articles/equations.html">Model equations</a>
     <a class="dropdown-item" href="../articles/introduction.html">Introduction</a>
   </div>
 </li>
@@ -169,7 +170,7 @@ Default steepness value of 0.8</p></dd>
 <dt><code>mat_ps</code></dt>
 <dd><p>Matrix <code>[2, s]</code>. Maturity parameters (can be estimated or specified in data object). Logistic functional form. The
 parameter in the first row is the age of 50 percent maturity in logit space: <code>a50_s &lt;- plogis(mat_ps[1, ] * na)</code>.
-In the second row is the age of 95 percent maturity as a logarithmic offset: <code>a95_s &lt;- exp(a50_s + mat_ps[2, ])</code>.
+In the second row is the age of 95 percent maturity as a logarithmic offset: <code>a95_s &lt;- a50_s + exp(mat_ps[2, ])</code>.
 Default <code>a50_s &lt;- 0.5 * na</code> and <code>a95_s &lt;- a50_s + 1</code></p></dd>
 
 <dt><code>log_M_s</code></dt>
@@ -185,6 +186,16 @@ Default parameter value for all stocks: <code>M &lt;- -log(0.05)/MARSdata@Dmodel
 <dt><code>log_q_fs</code></dt>
 <dd><p>Matrix <code>[f, s]</code>. The natural logarithm of <code>q_fs</code>, the relative fishing efficiency of <code>f</code> for stock <code>s</code>.
 Equal values imply equal catchability of all stocks. See equations in <code><a href="calc_F.html">calc_F()</a></code>. Default sets all values to zero.</p></dd>
+
+<dt><code>log_Fdev_ymfr</code></dt>
+<dd><p>Array <code>[y, m, f, r]</code>. Fishing mortality parameters. For each fleet, the log of F is estimated directly for the
+reference year, season, region. For other strata, F is an offset from this value:
+$$
+F_{y,m,f,r} = \begin{cases}
+\exp(x^{\textrm{Fmult}}_f) \quad &amp; y = y_{\textrm{ref}}, m = m_{\textrm{ref}}, r = r_{\textrm{ref}}\\
+\exp(x^{\textrm{Fmult}}_f + x^{\textrm{Fdev}}_{y,m,r}) \quad &amp; \textrm{otherwise}
+\end{cases}
+$$</p></dd>
 
 <dt><code>sel_pf</code></dt>
 <dd><p>Matrix <code>[3, f]</code>. Fishery selectivity parameters in logit or log space. See equations <code><a href="conv_selpar.html">conv_selpar()</a></code>, where <code>sel_pf</code> is the <code>x</code> matrix.</p></dd>
