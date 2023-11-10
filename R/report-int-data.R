@@ -117,8 +117,10 @@ plot_CAA <- function(fit, f = 1, r = 1) {
       obs <- apply(dat@Dfishery@CAAobs_ymafr[, , , f, r, drop = FALSE], 1:3, identity)
       obs <- collapse_yearseason(obs) %>% apply(1, function(x) x/sum(x, na.rm = TRUE)) %>% t()
 
-      plot_composition(obs[N > 0, ], pred[N > 0, ], xval = Dlabel@age, ylab = "Proportion",
-                       zval = year[N > 0], N = N[N > 0])
+      include <- rowSums(obs, na.rm = TRUE) > 0
+
+      plot_composition(obs[include, ], pred[include, ], xval = Dlabel@age, ylab = "Proportion",
+                       zval = year[include], N = N[include])
     }
   }
 
@@ -151,9 +153,11 @@ plot_CAL <- function(fit, f = 1, r = 1) {
       obs <- apply(dat@Dfishery@CALobs_ymlfr[, , , f, r, drop = FALSE], 1:3, identity)
       obs <- collapse_yearseason(obs) %>% apply(1, function(x) x/sum(x, na.rm = TRUE)) %>% t()
 
-      plot_composition(obs[N > 0, ], pred[N > 0, ], xval = dat@Dmodel@lmid,
+      include <- rowSums(obs, na.rm = TRUE) > 0
+
+      plot_composition(obs[include, ], pred[include, ], xval = dat@Dmodel@lmid,
                        xlab = "Length", ylab = "Proportion",
-                       zval = year[N > 0], N = N[N > 0])
+                       zval = year[include], N = N[include])
     }
   }
 
@@ -186,11 +190,10 @@ plot_IAA <- function(fit, i = 1) {
       obs <- apply(dat@Dsurvey@IAAobs_ymai[, , , i, drop = FALSE], 1:3, identity)
       obs <- collapse_yearseason(obs) %>% apply(1, function(x) x/sum(x, na.rm = TRUE)) %>% t()
 
-      N <- apply(dat@Dsurvey@IAAN_ymi[, , i, drop = FALSE], 1:2, identity) %>% t() %>% as.numeric()
-      N[is.na(N)] <- 0
+      include <- rowSums(obs, na.rm = TRUE) > 0
 
-      plot_composition(obs[N > 0, ], pred[N > 0, ], xval = Dlabel@age, ylab = "Proportion",
-                       zval = year[N > 0], N = N[N > 0])
+      plot_composition(obs[include, ], pred[include, ], xval = Dlabel@age, ylab = "Proportion",
+                       zval = year[include], N = N[include])
     }
   }
 
@@ -223,9 +226,11 @@ plot_IAL <- function(fit, i = 1) {
       obs <- apply(dat@Dsurvey@IALobs_ymli[, , , i, drop = FALSE], 1:3, identity)
       obs <- collapse_yearseason(obs) %>% apply(1, function(x) x/sum(x, na.rm = TRUE)) %>% t()
 
-      plot_composition(obs[N > 0, ], pred[N > 0, ], xval = dat@Dmodel@lmid,
+      include <- rowSums(obs, na.rm = TRUE) > 0
+
+      plot_composition(obs[include > 0, ], pred[include > 0, ], xval = dat@Dmodel@lmid,
                        xlab = "Length", ylab = "Proportion",
-                       zval = year[N > 0], N = N[N > 0])
+                       zval = year[include > 0], N = N[include > 0])
     }
   }
 

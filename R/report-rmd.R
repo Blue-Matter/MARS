@@ -1,7 +1,8 @@
 
 make_rmd_CAA <- function(f, r, fname, rname) {
-  cap <- paste0("Catch at age for ", fname, " in ", rname)
+  cap <- paste0("Observed (black) and predicted (red) catch at age for ", fname, " in ", rname)
   cap2 <- paste0("Pearson residuals for the catch at age for ", fname, " in ", rname)
+  cap3 <- paste0("Residual histogram for the catch at age for ", fname, " in ", rname)
 
   rmd <- c(
     paste0("```{r caa-f", f, "-r", r, ", fig.cap=\"", cap, ".\"}"),
@@ -15,6 +16,12 @@ make_rmd_CAA <- function(f, r, fname, rname) {
     paste0("  plot_resid_CAA(x, f = ", f, ", r = ", r, ")"),
     "}",
     "```",
+    "",
+    paste0("```{r caa-hist-resid-f", f, "-r", r, ", fig.cap=\"", cap3, ".\"}"),
+    paste0("if (length(dat@Dfishery@CAAobs_ymafr) && any(dat@Dfishery@CAAobs_ymafr[, , , ", f, ", ", r, "] > 0, na.rm = TRUE)) {"),
+    paste0("  plot_resid_CAA(x, f = ", f, ", r = ", r, ", do_hist = TRUE)"),
+    "}",
+    "```",
     ""
   )
 
@@ -24,6 +31,7 @@ make_rmd_CAA <- function(f, r, fname, rname) {
 make_rmd_CAL <- function(f, r, fname, rname) {
   cap <- paste0("Catch at length for ", fname, " in ", rname)
   cap2 <- paste0("Pearson residuals for the catch at length for ", fname, " in ", rname)
+  cap3 <- paste0("Residual histogram for the catch at length for ", fname, " in ", rname)
 
   rmd <- c(
     paste0("```{r cal-f", f, "-r", r, ", fig.cap=\"", cap, ".\"}"),
@@ -35,6 +43,12 @@ make_rmd_CAL <- function(f, r, fname, rname) {
     paste0("```{r cal-resid-f", f, "-r", r, ", fig.cap=\"", cap2, ".\"}"),
     paste0("if (length(dat@Dfishery@CALobs_ymlfr) && any(dat@Dfishery@CALobs_ymlfr[, , , ", f, ", ", r, "] > 0, na.rm = TRUE)) {"),
     paste0("  plot_resid_CAL(x, f = ", f, ", r = ", r, ")"),
+    "}",
+    "```",
+    "",
+    paste0("```{r cal-hist-resid-f", f, "-r", r, ", fig.cap=\"", cap3, ".\"}"),
+    paste0("if (length(dat@Dfishery@CALobs_ymlfr) && any(dat@Dfishery@CALobs_ymlfr[, , , ", f, ", ", r, "] > 0, na.rm = TRUE)) {"),
+    paste0("  plot_resid_CAL(x, f = ", f, ", r = ", r, ", do_hist = TRUE)"),
     "}",
     "```",
     ""
@@ -144,12 +158,20 @@ make_rmd_survey <- function(i, iname) {
     paste0("plot_resid_IAA(x, i = ", i, ")"),
     "```",
     "",
+    paste0("```{r IAA-hist-resid-", i, ", fig.cap=\"Residual histogram for the age composition from ", iname, ".\"}"),
+    paste0("plot_resid_IAA(x, i = ", i, ", do_hist = TRUE)"),
+    "```",
+    "",
     paste0("```{r IAL-", i, ", fig.cap=\"Length composition from ", iname, ".\"}"),
     paste0("plot_IAL(x, i = ", i, ")"),
     "```",
     "",
     paste0("```{r IAL-resid-", i, ", fig.cap=\"Pearson residuals for the length composition from ", iname, ".\"}"),
     paste0("plot_resid_IAL(x, i = ", i, ")"),
+    "```",
+    "",
+    paste0("```{r IAL-hist-resid-", i, ", fig.cap=\"Residual histogram for the length composition from ", iname, ".\"}"),
+    paste0("plot_resid_IAL(x, i = ", i, ", do_hist = TRUE)"),
     "```",
     ""
   )

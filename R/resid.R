@@ -151,15 +151,29 @@ resid_comp <- function(obs, pred, like, ...) {
   obs_prob <- obs/sum(obs, na.rm = TRUE)
   pred_prob <- pred/sum(pred, na.rm = TRUE)
 
-  res <- switch(
+  # Observed minus predicted
+  num <- switch(
     like,
-    "multinomial" = (obs_prob - pred_prob)/sqrt(pred_prob * (1 - pred_prob)/dots$N),
-    "dirmult1" = NA,
-    "dirmult2" = NA,
-    "lognormal" = log(obs_prob/pred_prob)/sqrt(pred_prob),
+    "multinomial" = dots$N * (obs_prob - pred_prob),
+    "dirmult1" = dots$N * (obs_prob - pred_prob),
+    "dirmult2" = dots$N * (obs_prob - pred_prob),
+    "lognormal" = log(obs_prob/pred_prob),
     "logitnormal" = NA,
     NA
   )
+
+  # Variance
+  denom <- switch(
+    like,
+    "multinomial" = dots$N * pred_prob * (1 - pred_prob),
+    "dirmult1" = dots$N * pred_prob * (1 - pred_prob) * dots$N * (1 + dots$theta) / (1 + dots$theta * dots$N),
+    "dirmult2" = dots$N * pred_prob * (1 - pred_prob) * (dots$N + dots$theta) / (1 + dots$theta),
+    "lognormal" = 1/pred_prob,
+    "logitnormal" = NA,
+    NA
+  )
+
+  res <- num/sqrt(denom)
   return(res)
 }
 
@@ -209,7 +223,7 @@ plot_resid_Iobs <- function(fit, i = 1, ...) {
   invisible()
 }
 
-plot_resid_CAA <- function(fit, f = 1, r = 1, ...) {
+plot_resid_CAA <- function(fit, f = 1, r = 1, do_hist = FALSE, ...) {
   vars <- "CAAobs_ymafr"
 
   dat <- get_MARSdata(fit)
@@ -222,11 +236,11 @@ plot_resid_CAA <- function(fit, f = 1, r = 1, ...) {
   year <- make_yearseason(dat@Dlabel@year, dat@Dmodel@nm)
   x <- collapse_yearseason(x)
 
-  .plot_resid_comp(year, dat@Dlabel@age, x, xlab = "Year", ylab = "Age")
+  .plot_resid_comp(year, dat@Dlabel@age, x, xlab = "Year", ylab = "Age", do_hist = do_hist)
 }
 
 
-plot_resid_CAL <- function(fit, f = 1, r = 1, ...) {
+plot_resid_CAL <- function(fit, f = 1, r = 1, do_hist = FALSE, ...) {
   vars <- "CALobs_ymlfr"
 
   dat <- get_MARSdata(fit)
@@ -239,10 +253,10 @@ plot_resid_CAL <- function(fit, f = 1, r = 1, ...) {
   year <- make_yearseason(dat@Dlabel@year, dat@Dmodel@nm)
   x <- collapse_yearseason(x)
 
-  .plot_resid_comp(year, dat@Dmodel@lmid, x, xlab = "Year", ylab = "Length")
+  .plot_resid_comp(year, dat@Dmodel@lmid, x, xlab = "Year", ylab = "Length", do_hist = do_hist)
 }
 
-plot_resid_IAA <- function(fit, i = 1, ...) {
+plot_resid_IAA <- function(fit, i = 1, do_hist = FALSE, ...) {
   vars <- "IAAobs_ymai"
 
   dat <- get_MARSdata(fit)
@@ -255,10 +269,10 @@ plot_resid_IAA <- function(fit, i = 1, ...) {
   year <- make_yearseason(dat@Dlabel@year, dat@Dmodel@nm)
   x <- collapse_yearseason(x)
 
-  .plot_resid_comp(year, dat@Dlabel@age, x, xlab = "Year", ylab = "Age")
+  .plot_resid_comp(year, dat@Dlabel@age, x, xlab = "Year", ylab = "Age", do_hist = do_hist)
 }
 
-plot_resid_IAL <- function(fit, i = 1, ...) {
+plot_resid_IAL <- function(fit, i = 1, do_hist = FALSE, ...) {
   vars <- "IALobs_ymli"
 
   dat <- get_MARSdata(fit)
@@ -271,12 +285,15 @@ plot_resid_IAL <- function(fit, i = 1, ...) {
   year <- make_yearseason(dat@Dlabel@year, dat@Dmodel@nm)
   x <- collapse_yearseason(x)
 
-  .plot_resid_comp(year, dat@Dmodel@lmid, x, xlab = "Year", ylab = "Length")
+  .plot_resid_comp(year, dat@Dmodel@lmid, x, xlab = "Year", ylab = "Length", do_hist = do_hist)
 }
 
-.plot_resid_comp <- function(x = 1:nrow(z), y = 1:ncol(z), z, xlab = "Year", ylab = "Age", zmax = 2) {
+#' @importFrom graphics hist
+.plot_resid_comp <- function(x = 1:nrow(z), y = 1:ncol(z), z, xlab = "Year", ylab = "Age", zmax = 2,
+                             do_hist = FALSE) {
 
   if (all(is.na(z))) return(invisible())
+  if (do_hist) return(hist(z, xlab = "Residuals", main = ""))
 
   zz <- pmin(z, zmax) %>% pmax(-zmax) %>% round(2)
   zlegend <- seq(-zmax, zmax, 0.01)
