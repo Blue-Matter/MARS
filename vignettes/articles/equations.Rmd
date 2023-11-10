@@ -35,7 +35,7 @@ The parameters here are set up as fixed inputs prior to fitting the model.
 
 ```{r dyn-input, echo = FALSE}
 dyn_input <- read.csv("tables/data_var.csv") %>%
-  mutate(Number = paste0("3.", 1:n()))
+  mutate(Number = paste0("2.", 1:n()))
 knitr::kable(dyn_input)
 ```
 
@@ -64,7 +64,7 @@ This section defines additional variables derived from data or estimated paramet
 
 ```{r param2, echo = FALSE}
 param2 <- read.csv("tables/param2.csv") %>%
-  mutate(Number = paste0("3.", 1:n()))
+  mutate(Number = paste0("4.", 1:n()))
 knitr::kable(param2)
 ```
 
@@ -77,7 +77,7 @@ The following equations project the population forward in time.
 
 ```{r pop-dyn, echo = FALSE}
 pop_dyn <- read.csv("tables/pop_dyn.csv") %>%
-  mutate(Number = paste0("3.", 1:n()))
+  mutate(Number = paste0("5.", 1:n()))
 knitr::kable(pop_dyn)
 ```
 
@@ -93,7 +93,7 @@ The parental age is not observed, so we calculate the probability across all pot
 
 ```{r report-var, echo = FALSE}
 report_var <- read.csv("tables/report_var.csv") %>%
-  mutate(Number = paste0("3.", 1:n()))
+  mutate(Number = paste0("6.", 1:n()))
 knitr::kable(report_var)
 ```
 
@@ -110,7 +110,7 @@ The close-kin likelihood uses the ratio of matches (for either parent-offspring 
 
 ```{r like, echo = FALSE}
 like <- read.csv("tables/likelihood.csv") %>%
-  mutate(Number = paste0("3.", 1:n()))
+  mutate(Number = paste0("7.", 1:n()))
 knitr::kable(like)
 ```
 
@@ -120,7 +120,7 @@ $N$ is unique to each vector observation, e.g., age composition by season, fleet
 
 ```{r like-comp, echo = FALSE}
 like_comp <- read.csv("tables/like_comp.csv") %>%
-  mutate(Number = paste0("3.", 1:n()))
+  mutate(Number = paste0("8.", 1:n()))
 knitr::kable(like_comp)
 ```
 
@@ -130,7 +130,7 @@ Prior distributions for various parameters are described here.
 
 ```{r priors, echo = FALSE}
 pr <- read.csv("tables/prior.csv") %>%
-  mutate(Number = paste0("3.", 1:n()))
+  mutate(Number = paste0("9.", 1:n()))
 knitr::kable(pr)
 ```
 
