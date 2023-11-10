@@ -332,7 +332,7 @@ update_report <- function(r, MARSdata) {
   }
 
   ## Marginal fishery age composition ----
-  any_CAA <- any(CAAN_ymfr > 0, na.rm = TRUE)
+  any_CAA <- any(CAAobs_ymafr > 0, na.rm = TRUE)
   if (any_CAA) {
     CN_ymafr <- apply(CN_ymafrs, 1:5, sum)
 

@@ -30,6 +30,7 @@
 #' like_comp(obs, pred, N = 100, type = "multinomial")
 #' like_comp(obs, pred, N = 10, type = "dirmult1", theta = 1)
 #' like_comp(obs, pred, N = 10, type = "dirmult1", theta = 20)
+#' @importFrom stats rmultinom rnorm
 #' @export
 like_comp <- function(obs, pred, type = c("multinomial", "dirmult1", "dirmult2", "lognormal", "logitnormal"),
                       N = sum(obs), theta, stdev) {
@@ -44,44 +45,57 @@ like_comp <- function(obs, pred, type = c("multinomial", "dirmult1", "dirmult2",
   } else if (type == "multinomial") {
 
     if (inherits(obs, "simref")) {
-      if (!sum(pred)) {
-        pred[] <- 1
-        N <- 0
+      v <- 0
+      if (sum(pred) && !is.na(N)) {
+        obs[] <- stats::rmultinom(1, size = N, prob = pred)
+      } else {
+        obs[] <- NA
       }
-      if (is.na(N)) N <- 100
-      v <- dmultinom(obs, size = N, prob = pred, log = TRUE) # selectMethod("dmultinom", "simref")
     } else {
       pobs <- obs/sum(obs)
       v <- dmultinom(N * pobs, prob = pred, log = TRUE)
     }
 
-  } else if (type == "dirmult1") {
+  } else if (grepl("dirmult", type)) {
 
-    alpha <- theta * N * pred/sum(pred)
-    v <- ddirmnom(obs, size = N, alpha = alpha, log = TRUE)
+    if (type == "dirmult1") {
+      alpha <- theta * N * pred/sum(pred)
+    } else if (type == "dirmult2") {
+      alpha <- theta * pred/sum(pred)
+    }
 
-  } else if (type == "dirmult2") {
-
-    alpha <- theta * pred/sum(pred)
-    v <- ddirmnom(obs, size = N, alpha = alpha, log = TRUE)
+    if (inherits(obs, "simref")) {
+      if (!requireNamespace("extraDistr", quietly = TRUE)) {
+        stop("Need the extraDistr package to simulate from the Dirichlet-multinomial distribution")
+      }
+      v <- 0
+      if (sum(pred) && !is.na(N)) {
+        obs[] <- extraDistr::rdirmnom(1, size = N, alpha = alpha)
+      } else {
+        obs[] <- NA
+      }
+    } else {
+      v <- ddirmnom(obs, size = N, alpha = alpha, log = TRUE)
+    }
 
   } else if (type == "lognormal") {
 
-    pobs <- obs/sum(obs)
     ppred <- pred/sum(pred)
+    stopifnot(length(stdev) == 1 || length(stdev) == length(obs))
+    if (length(stdev) == 1) stdev <- rep(stdev, pobs)
 
-    if (any(obs > 0)) {
-      stopifnot(length(stdev) == 1 || length(stdev) == length(obs))
-      pobs <- pobs[obs > 0]
-      ppred <- ppred[obs > 0]
-
-      if (length(stdev) == 1) {
-        stdev <- rep(stdev, pobs)
+    if (inherits(obs, "simref")) {
+      v <- 0
+      if (sum(pred)) {
+        obs[] <- exp(stats::rnorm(length(pred), log(pred/sum(pred)), stdev))
       } else {
-        stdev <- stdev[obs > 0]
+        obs[] <- NA
       }
+    } else {
+      pobs <- obs/sum(obs)
+      resid <- pobs/ppred
+      v <- dnorm(log(resid[obs > 0]), 0, stdev[obs > 0], log = TRUE) %>% sum()
     }
-    v <- dnorm(log(ppred/pobs), 0, stdev, log = TRUE) %>% sum()
 
   } else if (type == "logitnormal") {
     stopifnot(length(obs) == 2)

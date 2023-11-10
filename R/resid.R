@@ -157,7 +157,7 @@ resid_comp <- function(obs, pred, like, ...) {
     "multinomial" = dots$N * (obs_prob - pred_prob),
     "dirmult1" = dots$N * (obs_prob - pred_prob),
     "dirmult2" = dots$N * (obs_prob - pred_prob),
-    "lognormal" = log(obs_prob/pred_prob),
+    "lognormal" = ifelse(obs > 0, log(obs_prob/pred_prob), NA),
     "logitnormal" = NA,
     NA
   )

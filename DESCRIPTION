@@ -4,7 +4,7 @@ Version: 0.0.0.9000
 Authors@R: 
     person("Quang", "Huynh", , "quang@bluematterscience.com", role = c("aut", "cre"),
            comment = c(ORCID = "0000-0001-7835-4376"))
-Date: 2023-10-16
+Date: 2023-11-10
 Maintainer: Quang Huynh <quang@bluematterscience.com>
 Description: Implementation of a next-generation, multi-stock assessment.
 License: GPL (>= 3)
@@ -22,6 +22,7 @@ Imports:
     TMB,
     utils
 Suggests: 
+    extraDistr,
     numDeriv,
     usethis
 LazyData: yes
