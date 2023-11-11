@@ -74,7 +74,7 @@
   <main id="main" class="col-md-9"><div class="page-header">
       <img src="" class="logo" alt=""><h1>Model equations</h1>
             
-            <h4 data-toc-skip class="date">2023-11-10</h4>
+            <h4 data-toc-skip class="date">2023-11-11</h4>
       
       <small class="dont-index">Source: <a href="https://github.com/Blue-Matter/MARS/blob/HEAD/vignettes/articles/equations.Rmd" class="external-link"><code>vignettes/articles/equations.Rmd</code></a></small>
       <div class="d-none name"><code>equations.Rmd</code></div>
@@ -160,79 +160,79 @@ model.</p>
 <tr class="odd">
 <td align="left">Stock weight at age</td>
 <td align="left"><span class="math inline">\(w_{y,m,a,s}\)</span></td>
-<td align="left">3.1</td>
+<td align="left">2.1</td>
 </tr>
 <tr class="even">
 <td align="left">Fishery weight at age</td>
 <td align="left"><span class="math inline">\(w^F_{y,m,a,f,s}\)</span></td>
-<td align="left">3.2</td>
+<td align="left">2.2</td>
 </tr>
 <tr class="odd">
 <td align="left">Maturity ogive</td>
 <td align="left"><span class="math inline">\(m_{y,a,s}\)</span></td>
-<td align="left">3.3</td>
+<td align="left">2.3</td>
 </tr>
 <tr class="even">
 <td align="left">Fecundity</td>
 <td align="left"><span class="math inline">\(f_{y,a,s}\)</span></td>
-<td align="left">3.4</td>
+<td align="left">2.4</td>
 </tr>
 <tr class="odd">
 <td align="left">Natural mortality (instantaneous per year)</td>
 <td align="left"><span class="math inline">\(M_{y,a,s}\)</span></td>
-<td align="left">3.5</td>
+<td align="left">2.5</td>
 </tr>
 <tr class="even">
 <td align="left">Length-at-age probability</td>
 <td align="left"><span class="math inline">\(\textrm{Pr}(\ell \mid a
 )_{y,m,s}\)</span></td>
-<td align="left">3.6</td>
+<td align="left">2.6</td>
 </tr>
 <tr class="odd">
 <td align="left">Fractional parameter (between 0 - 1)</td>
 <td align="left"><span class="math inline">\(\Delta\)</span></td>
-<td align="left">3.7</td>
+<td align="left">2.7</td>
 </tr>
 <tr class="even">
 <td align="left">Season length (relative to year)</td>
 <td align="left"><span class="math inline">\(\Delta_m\)</span></td>
-<td align="left">3.8</td>
+<td align="left">2.8</td>
 </tr>
 <tr class="odd">
 <td align="left">Spawn timing (within season)</td>
 <td align="left"><span class="math inline">\(\Delta_{sp}\)</span></td>
-<td align="left">3.9</td>
+<td align="left">2.9</td>
 </tr>
 <tr class="even">
 <td align="left">Season of spawning (subscript)</td>
 <td align="left"><span class="math inline">\(m_\textrm{sp}\)</span></td>
-<td align="left">3.10</td>
+<td align="left">2.10</td>
 </tr>
 <tr class="odd">
 <td align="left">Season of recruitment (subscript)</td>
 <td align="left"><span class="math inline">\(m_\textrm{rec}\)</span></td>
-<td align="left">3.11</td>
+<td align="left">2.11</td>
 </tr>
 <tr class="even">
 <td align="left">Natal spawning (proportion of mature individuals that
 spawn)</td>
 <td align="left"><span class="math inline">\(n_{r,s}\)</span></td>
-<td align="left">3.12</td>
+<td align="left">2.12</td>
 </tr>
 <tr class="odd">
 <td align="left">Stock scaling parameter</td>
 <td align="left"><span class="math inline">\(r_s\)</span></td>
-<td align="left">3.13</td>
+<td align="left">2.13</td>
 </tr>
 <tr class="even">
 <td align="left">Survey timing</td>
 <td align="left"><span class="math inline">\(\Delta_i\)</span></td>
-<td align="left">3.14</td>
+<td align="left">2.14</td>
 </tr>
 <tr class="odd">
 <td align="left">Survey sampling coverage</td>
 <td align="left"><span class="math inline">\(\delta_{i,r,s}\)</span></td>
-<td align="left">3.15</td>
+<td align="left">2.15</td>
 </tr>
 </tbody>
 </table>
@@ -419,20 +419,20 @@ output at the end of this numerical spool-up.</li>
 &amp;, L_\ell &lt; \mu_f \\ 2^{-\left(\dfrac{L_\ell -
 \mu_f}{\sigma^{\textrm{dsc}}_f}\right)^2} &amp;, L_\ell \ge \mu_f
 \end{cases}\)</span></td>
-<td align="left">3.1</td>
+<td align="left">4.1</td>
 </tr>
 <tr class="even">
 <td align="left">Selectivity at age</td>
 <td align="left"><span class="math inline">\(s_{y,m,a,f,s} = \sum_\ell
 \textrm{Pr}(\ell \mid a )_{y,m,s} \times s_{\ell,f}\)</span></td>
-<td align="left">3.2</td>
+<td align="left">4.2</td>
 </tr>
 <tr class="odd">
 <td align="left">Maturity (if estimated)</td>
 <td align="left"><span class="math inline">\(m_{a,s} = \left[1 +
 \exp\left(-\log(19)\frac{a-a^{50}_s}{a^{95}_s -
 a^{50}_s}\right)\right]^{-1}\)</span></td>
-<td align="left">3.3</td>
+<td align="left">4.3</td>
 </tr>
 <tr class="even">
 <td align="left">Movement from <span class="math inline">\(r\)</span> to
@@ -442,21 +442,21 @@ a^{50}_s}\right)\right]^{-1}\)</span></td>
 \dfrac{\exp(x^b_{m,a,r,r',s} + x^g_{y,m,a,r,s} +
 x^v_{y,m,a,s})}{\sum_{r'} \exp(x^b_{m,a,r,r',s} +
 x^g_{y,m,a,r,s} + x^v_{y,m,a,s})}\)</span></td>
-<td align="left">3.4</td>
+<td align="left">4.4</td>
 </tr>
 <tr class="odd">
 <td align="left">Beverton-Holt stock recruit parameters</td>
 <td align="left"><span class="math inline">\(\begin{align} \alpha_s
 &amp;= \dfrac{4h_s}{(1-h_s)\phi_{0,s}}\\ \beta_s &amp;=
 \dfrac{5h_s-1}{(1-h_s)R_{0,s}\phi_{0,s}}\end{align}\)</span></td>
-<td align="left">3.5</td>
+<td align="left">4.5</td>
 </tr>
 <tr class="even">
 <td align="left">Ricker stock recruit parameters</td>
 <td align="left"><span class="math inline">\(\begin{align} \alpha_s
 &amp;= \dfrac{5h^{1.25}}{\phi_{0,s}}\\ \beta_s &amp;=
 \dfrac{\log([5h_s]^{1.25})}{R_{0,s}\phi_{0,s}}\end{align}\)</span></td>
-<td align="left">3.6</td>
+<td align="left">4.6</td>
 </tr>
 </tbody>
 </table>
@@ -498,12 +498,12 @@ spawning in equilibrium.</li>
 <tr class="odd">
 <td align="left">Index of fishing effort (instantaneous per season)</td>
 <td align="left"><span class="math inline">\(F_{y,m,f,r}\)</span></td>
-<td align="left">3.1</td>
+<td align="left">5.1</td>
 </tr>
 <tr class="even">
 <td align="left">Stock abundance</td>
 <td align="left"><span class="math inline">\(N_{y,m,a,r,s}\)</span></td>
-<td align="left">3.2</td>
+<td align="left">5.2</td>
 </tr>
 <tr class="odd">
 <td align="left">Equilibrium recruitment</td>
@@ -512,27 +512,27 @@ spawning in equilibrium.</li>
 \textrm{Beverton-Holt}\\ \dfrac{\log(\alpha_s
 \phi_{eq,s})}{\beta_s\phi_{eq,s}} &amp; \textrm{Ricker}
 \end{cases}\)</span></td>
-<td align="left">3.3</td>
+<td align="left">5.3</td>
 </tr>
 <tr class="even">
 <td align="left">Initial abundance</td>
 <td align="left"><span class="math inline">\(N_{y=1,m=1,a,r,s} =
 R_{\textrm{eq},s}\exp(x^{\textrm{Req}}_{a,s}) \times
 \textrm{NPR}^{\textrm{eq}}_{m=1,a,r,s}\)</span></td>
-<td align="left">3.4</td>
+<td align="left">5.4</td>
 </tr>
 <tr class="odd">
 <td align="left">Fishing mortality by time, age, fleet, region,
 stock</td>
 <td align="left"><span class="math inline">\(F_{y,m,a,f,r,s} =
 q^F_{f,s}s_{y,m,a,f,s}F_{y,m,f,r}\)</span></td>
-<td align="left">3.5</td>
+<td align="left">5.5</td>
 </tr>
 <tr class="even">
 <td align="left">Total mortality (instantaneous per season)</td>
 <td align="left"><span class="math inline">\(Z_{y,m,a,r,s} = \Delta_m
 M_{y,a,s} + \sum_f F_{y,m,a,f,r,s}\)</span></td>
-<td align="left">3.6</td>
+<td align="left">5.6</td>
 </tr>
 <tr class="odd">
 <td align="left">Seasonal abundance without incoming recruitment (after
@@ -540,41 +540,41 @@ survival and movement)</td>
 <td align="left"><span class="math inline">\(N_{y,m,a,r',s} = \sum_r
 N_{y,m-1,a,r,s}\exp(-Z_{y,m-1,a,r,s})
 \textrm{mov}_{y,m,a,r,r',s}\)</span></td>
-<td align="left">3.7</td>
+<td align="left">5.7</td>
 </tr>
 <tr class="even">
 <td align="left">Potential spawners (PS)</td>
 <td align="left"><span class="math inline">\(N^{\textrm{PS}}_{y,a,r,s} =
 N_{y,m =
 m_\textrm{sp},a,r,s}\exp(-\Delta_\textrm{sp}Z_{y,m=m_\textrm{sp},a,r,s})m_{y,a,s}\)</span></td>
-<td align="left">3.8</td>
+<td align="left">5.8</td>
 </tr>
 <tr class="odd">
 <td align="left">Active spawners</td>
 <td align="left"><span class="math inline">\(N^{\textrm{S}}_{y,a,r,s} =
 N^{\textrm{PS}}_{y,m = m_{\textrm{sp}},a,r,s}\times
 n_{r,s}\)</span></td>
-<td align="left">3.9</td>
+<td align="left">5.9</td>
 </tr>
 <tr class="even">
 <td align="left">Spawning output</td>
 <td align="left"><span class="math inline">\(S_{y,r,s} = \sum_a
 N^{\textrm{S}}_{y,a,r,s} f_{y,a,s}\)</span></td>
-<td align="left">3.10</td>
+<td align="left">5.10</td>
 </tr>
 <tr class="odd">
 <td align="left">Recruitment: Beverton-Holt</td>
 <td align="left"><span class="math inline">\(R_{y,s} = \dfrac{\alpha_s
 \sum_r S_{y,r,s}}{1 + \beta_s \sum_r
 S_{y,r,s}}\exp(x^R_{y,s})\)</span></td>
-<td align="left">3.11</td>
+<td align="left">5.11</td>
 </tr>
 <tr class="even">
 <td align="left">Recruitment: Ricker</td>
 <td align="left"><span class="math inline">\(R_{y,s} = \alpha_s \sum_r
 S_{y,r,s} \exp(-\beta_s \times \sum_r
 S_{y,r,s})\exp(x^R_{y,s})\)</span></td>
-<td align="left">3.12</td>
+<td align="left">5.12</td>
 </tr>
 <tr class="odd">
 <td align="left">Seasonal abundance (incoming recruitment and advancing
@@ -587,7 +587,7 @@ m_{\textrm{rec}}\)</span>)</td>
 \sum_{a'=A-1}^A\sum_r
 N_{y,m-1,a',r,s}\exp(-Z_{y,m-1,a',r,s})\textrm{mov}_{y,m,a,r,r',s}
 &amp; a = A\end{cases}\)</span></td>
-<td align="left">3.13</td>
+<td align="left">5.13</td>
 </tr>
 </tbody>
 </table>
@@ -636,76 +636,76 @@ cohort from <span class="math inline">\(i\)</span> to <span class="math inline">
 \dfrac{F^{\textrm{eq}}_{m,a,f,r,s}}{Z^{\textrm{eq}}_{m,a,r,s}} (1 -
 \exp(-Z^{\textrm{eq}}_{y,m,a,r,s}))
 N^{\textrm{eq}}_{m,a,r,s}\)</span></td>
-<td align="left">3.1</td>
+<td align="left">6.1</td>
 </tr>
 <tr class="even">
 <td align="left">Equilibrium catch (biomass)</td>
 <td align="left"><span class="math inline">\(C^{Beq}_{m,f,r,s} = \sum_a
 w^F_{y=1,m,a,f,s} C^{Neq}_{m,a,f,r,s}\)</span></td>
-<td align="left">3.2</td>
+<td align="left">6.2</td>
 </tr>
 <tr class="odd">
 <td align="left">Catch (abundance, age)</td>
 <td align="left"><span class="math inline">\(C^N_{y,m,a,f,r,s} =
 \dfrac{F_{y,m,a,f,r,s}}{Z_{y,m,a,r,s}} (1 - \exp(-Z_{y,m,a,r,s}))
 N_{y,m,a,r,s}\)</span></td>
-<td align="left">3.3</td>
+<td align="left">6.3</td>
 </tr>
 <tr class="even">
 <td align="left">Catch (abundance, length)</td>
 <td align="left"><span class="math inline">\(C^N_{y,m,l,f,r,s} = \sum_a
 C^N_{y,m,a,f,r,s} \textrm{Pr}(\ell\mid a)_{y,m,s}\)</span></td>
-<td align="left">3.4</td>
+<td align="left">6.4</td>
 </tr>
 <tr class="odd">
 <td align="left">Catch (biomass)</td>
 <td align="left"><span class="math inline">\(C^B_{y,m,f,r,s} = \sum_a
 w^F_{y,m,a,f,s} C^N_{y,m,a,f,r,s}\)</span></td>
-<td align="left">3.5</td>
+<td align="left">6.5</td>
 </tr>
 <tr class="even">
 <td align="left">Total biomass</td>
 <td align="left"><span class="math inline">\(B_{y,m,r,s} = \sum_a
 w_{y,m,a,s} N_{y,m,a,r,s}\)</span></td>
-<td align="left">3.6</td>
+<td align="left">6.6</td>
 </tr>
 <tr class="odd">
 <td align="left">Vulnerable biomass</td>
 <td align="left"><span class="math inline">\(V_{y,m,r,s} = \sum_a
 s_{y,m,a,f,s} w^F_{y,m,a,f,s} N_{y,m,a,r,s}\)</span></td>
-<td align="left">3.7</td>
+<td align="left">6.7</td>
 </tr>
 <tr class="even">
 <td align="left">Index age composition</td>
 <td align="left"><span class="math inline">\(I^A_{y,m,a,i,s} = q_i
 \sum_r s_{y,m,a,i,s} N_{y,m,a,r,s} \exp(-\Delta_i \times
 Z_{y,m,a,r,s})\delta_{i,r,s}\)</span></td>
-<td align="left">3.8</td>
+<td align="left">6.8</td>
 </tr>
 <tr class="odd">
 <td align="left">Index length composition</td>
 <td align="left"><span class="math inline">\(I^L_{y,m,\ell,i,s} = \sum_a
 I^A_{y,m,a,i,s} \textrm{Pr}(\ell\mid a)_{y,m,s}\)</span></td>
-<td align="left">3.9</td>
+<td align="left">6.9</td>
 </tr>
 <tr class="even">
 <td align="left">Biomass index</td>
 <td align="left"><span class="math inline">\(I_{y,m,i} = q_i \sum_a
 \sum_s w_{y,m,a,s} I^A_{y,m,a,i,s}\)</span></td>
-<td align="left">3.10</td>
+<td align="left">6.10</td>
 </tr>
 <tr class="odd">
 <td align="left">Annual catch at age (all seasons, fleets, and
 regions)</td>
 <td align="left"><span class="math inline">\(C^N_{y,a,s} =
 \sum_m\sum_f\sum_rC^N_{y,m,a,f,r,s}\)</span></td>
-<td align="left">3.11</td>
+<td align="left">6.11</td>
 </tr>
 <tr class="even">
 <td align="left">Abundance at year start across regions</td>
 <td align="left"><span class="math inline">\(N_{y,a,s} = \sum_r
 N_{y,m=1,a,r,s}\)</span></td>
-<td align="left">3.12</td>
+<td align="left">6.12</td>
 </tr>
 <tr class="odd">
 <td align="left">Summary fishing mortality per year <span class="math inline">\(F_{y,a,s}\)</span>
@@ -713,42 +713,42 @@ N_{y,m=1,a,r,s}\)</span></td>
 <td align="left"><span class="math inline">\(C^N_{y,a,s} =
 \dfrac{F_{y,a,s}}{F_{y,a,s} + M_{y,a,s}}(1 - \exp(-[F_{y,a,s} +
 M_{y,a,s}])) N_{y,a,s}\)</span></td>
-<td align="left">3.13</td>
+<td align="left">6.13</td>
 </tr>
 <tr class="even">
 <td align="left">Parent-offspring probability</td>
 <td align="left"><span class="math inline">\(\textrm{Pr}(\textrm{POP}
 \mid y, t, a',s) = 2 \times \dfrac{f_{y,a = y - (t -
 a'),s}}{\sum_a f_{y,a,s}N^{\textrm{S}}_{y,a,s}}\)</span></td>
-<td align="left">3.14</td>
+<td align="left">6.14</td>
 </tr>
 <tr class="odd">
 <td align="left">Half-sibling probability</td>
 <td align="left"><span class="math inline">\(\textrm{Pr}(\textrm{HSP}
 \mid i,j,s) = 4 \times \sum_a c_{i,a,s} \times \textrm{surv}_{ijs}
 \times c_{j,a,s}\)</span></td>
-<td align="left">3.15</td>
+<td align="left">6.15</td>
 </tr>
 <tr class="even">
 <td align="left">Parental probability for older sibling <span class="math inline">\(i\)</span>
 </td>
 <td align="left"><span class="math inline">\(c_{i,a,s} =
 \dfrac{N_{y=i,a,s}f_{y=i,a,s}}{\sum_{a'}N_{y=i,a',s}f_{y=i,a',s}}\)</span></td>
-<td align="left">3.16</td>
+<td align="left">6.16</td>
 </tr>
 <tr class="odd">
 <td align="left">Parental survival from year <span class="math inline">\(i\)</span> to <span class="math inline">\(j\)</span>
 </td>
 <td align="left"><span class="math inline">\(\textrm{surv}_{ijs} =
 \exp\left(-\sum\limits_{t=0}^{j-i-1}Z_{i+t,a+t,s}\right)\)</span></td>
-<td align="left">3.17</td>
+<td align="left">6.17</td>
 </tr>
 <tr class="even">
 <td align="left">Parental probability for younger sibling <span class="math inline">\(j\)</span>
 </td>
 <td align="left"><span class="math inline">\(c_{j,a,s} =
 \dfrac{f_{y=j,a,s}}{\sum_{a'}N_{y=j,a',s}f_{y=j,a',s}}\)</span></td>
-<td align="left">3.18</td>
+<td align="left">6.18</td>
 </tr>
 </tbody>
 </table>
@@ -796,7 +796,7 @@ comparisons (<span class="math inline">\(N\)</span>).</p>
 \hat{C}^{Beq}_{m,f,r,s}\)</span></td>
 <td align="left">Lognormal</td>
 <td align="left"><span class="math inline">\(\sigma = 0.01\)</span></td>
-<td align="left">3.1</td>
+<td align="left">7.1</td>
 </tr>
 <tr class="even">
 <td align="left">Catch (biomass)</td>
@@ -805,7 +805,7 @@ comparisons (<span class="math inline">\(N\)</span>).</p>
 \hat{C}^B_{y,m,f,r,s}\)</span></td>
 <td align="left">Lognormal</td>
 <td align="left"><span class="math inline">\(\sigma^C_{y,m,f,r}\)</span></td>
-<td align="left">3.2</td>
+<td align="left">7.2</td>
 </tr>
 <tr class="odd">
 <td align="left">Catch at age</td>
@@ -815,7 +815,7 @@ comparisons (<span class="math inline">\(N\)</span>).</p>
 \hat{C}^N_{y,m,a,f,r,s}\)</span></td>
 <td align="left">Composition</td>
 <td align="left">See next table</td>
-<td align="left">3.3</td>
+<td align="left">7.3</td>
 </tr>
 <tr class="even">
 <td align="left">Catch at length</td>
@@ -825,7 +825,7 @@ comparisons (<span class="math inline">\(N\)</span>).</p>
 \hat{C}^N_{y,m,\ell,f,r,s}\)</span></td>
 <td align="left">Composition</td>
 <td align="left">See next table</td>
-<td align="left">3.4</td>
+<td align="left">7.4</td>
 </tr>
 <tr class="odd">
 <td align="left">Total indices</td>
@@ -833,7 +833,7 @@ comparisons (<span class="math inline">\(N\)</span>).</p>
 <td align="left"><span class="math inline">\(\hat{I}_{y,m,i}\)</span></td>
 <td align="left">Lognormal</td>
 <td align="left"><span class="math inline">\(\sigma^I_{y,m,i}\)</span></td>
-<td align="left">3.5</td>
+<td align="left">7.5</td>
 </tr>
 <tr class="even">
 <td align="left">Index at age</td>
@@ -842,7 +842,7 @@ comparisons (<span class="math inline">\(N\)</span>).</p>
 \hat{I}^N_{y,m,a,i,s}/\sum_a\sum_s \hat{I}^N_{y,m,a,i,s}\)</span></td>
 <td align="left">Composition</td>
 <td align="left">See next table</td>
-<td align="left">3.6</td>
+<td align="left">7.6</td>
 </tr>
 <tr class="odd">
 <td align="left">Index at length</td>
@@ -852,7 +852,7 @@ comparisons (<span class="math inline">\(N\)</span>).</p>
 \hat{I}^N_{y,m,\ell,i,s}\)</span></td>
 <td align="left">Composition</td>
 <td align="left">See next table</td>
-<td align="left">3.7</td>
+<td align="left">7.7</td>
 </tr>
 <tr class="even">
 <td align="left">Stock composition</td>
@@ -861,7 +861,7 @@ comparisons (<span class="math inline">\(N\)</span>).</p>
 \hat{C}^N_{y,m,a,f,r,s}\)</span></td>
 <td align="left">Composition</td>
 <td align="left">See next table</td>
-<td align="left">3.8</td>
+<td align="left">7.8</td>
 </tr>
 <tr class="odd">
 <td align="left">Parent-offspring pairs</td>
@@ -870,7 +870,7 @@ comparisons (<span class="math inline">\(N\)</span>).</p>
 <td align="left">Binomial</td>
 <td align="left"><span class="math inline">\(N\hat{p}^{POP}(1 -
 \hat{p}^{POP})\)</span></td>
-<td align="left">3.9</td>
+<td align="left">7.9</td>
 </tr>
 <tr class="even">
 <td align="left">Half-sibling pairs</td>
@@ -879,7 +879,7 @@ comparisons (<span class="math inline">\(N\)</span>).</p>
 <td align="left">Binomial</td>
 <td align="left"><span class="math inline">\(N\hat{p}^{HSP}(1 -
 \hat{p}^{HSP})\)</span></td>
-<td align="left">3.10</td>
+<td align="left">7.10</td>
 </tr>
 <tr class="odd">
 <td align="left">Tag</td>
@@ -887,7 +887,7 @@ comparisons (<span class="math inline">\(N\)</span>).</p>
 <td align="left"></td>
 <td align="left"></td>
 <td align="left"></td>
-<td align="left">3.11</td>
+<td align="left">7.11</td>
 </tr>
 </tbody>
 </table>
@@ -918,26 +918,26 @@ unique to fleet or survey.</p>
 <td align="left">Multinomial</td>
 <td align="left"><span class="math inline">\(N\hat{p}\)</span></td>
 <td align="left"><span class="math inline">\(N\hat{p}(1-\hat{p})\)</span></td>
-<td align="left">3.1</td>
+<td align="left">8.1</td>
 </tr>
 <tr class="even">
 <td align="left">Dirichlet-multinomial (Type 1)</td>
 <td align="left"><span class="math inline">\(N\hat{p}\)</span></td>
 <td align="left"><span class="math inline">\(N\hat{p}(1-\hat{p})\dfrac{N+\theta N}{1+\theta
 N}\)</span></td>
-<td align="left">3.2</td>
+<td align="left">8.2</td>
 </tr>
 <tr class="odd">
 <td align="left">Dirichlet-multinomial (Type 2)</td>
 <td align="left"><span class="math inline">\(N\hat{p}\)</span></td>
 <td align="left"><span class="math inline">\(N\hat{p}(1-\hat{p})\dfrac{N+\theta}{1+\theta}\)</span></td>
-<td align="left">3.3</td>
+<td align="left">8.3</td>
 </tr>
 <tr class="even">
 <td align="left">Lognormal (summed across positive bins)</td>
 <td align="left"><span class="math inline">\(\log(\hat{p})\)</span></td>
 <td align="left"><span class="math inline">\(\hat{p}^{-1}\)</span></td>
-<td align="left">3.4</td>
+<td align="left">8.4</td>
 </tr>
 </tbody>
 </table>
@@ -965,14 +965,14 @@ N}\)</span></td>
 <td align="left">Lognormal</td>
 <td align="left"><span class="math inline">\(x^{\textrm{Req}}_{a,s} \sim
 N(-0.5 (\sigma^R_s)^2, \sigma^R_s)\)</span></td>
-<td align="left">3.1</td>
+<td align="left">9.1</td>
 </tr>
 <tr class="even">
 <td align="left">Recruitment deviates</td>
 <td align="left">Lognormal</td>
 <td align="left"><span class="math inline">\(x^R_{y,s} \sim N(-0.5
 (\sigma^R_s)^2, \sigma^R_s)\)</span></td>
-<td align="left">3.2</td>
+<td align="left">9.2</td>
 </tr>
 </tbody>
 </table>
