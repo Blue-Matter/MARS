@@ -9,7 +9,8 @@
 #'
 #' @param fitted [MARSassess-class] object returned by [fit_MARS()]
 #' @param p1 Character string that represents the first parameter to be profiled,
-#' including the parameter name and index. See "Parameters" section of [make_parameters()]
+#' including the parameter name and index of the vector/array. See "Parameters" section of [make_parameters()].
+#' Additionally, this function allows users to specify `R0_s` and `h_s` (in normal units).
 #' @param v1 Vector of values corresponding to `p1`
 #' @param p2 Character string that represents the optional second parameter to be profiled
 #' @param v2 Vector of values corresponding to `p2`
@@ -18,6 +19,11 @@
 #' The profile generic returns a data frame of the likelihood values that correspond to
 #' fixed values of `p1` and `p2`.
 #'
+#' - Likelihood `loglike` refers to maximizing the probability of the observed data (higher values for better fit)
+#' - Prior `logprior` refers to maximizing the probability of a parameter to their prior distribution (higher values are closer to the prior)
+#' - Penalty `penalty` are values added to the objective function when parameters exceed model bounds (lower values are better)
+#' - `fn` is the objective function returned by RTMB (lower values are better)
+#' - `objective` is the objective function returned by the optimizer (lower values are better)
 #' @importFrom stats profile
 #' @export
 profile.MARSassess <- function(fitted, p1, v1, p2, v2, ...) {
@@ -54,7 +60,26 @@ profile.MARSassess <- function(fitted, p1, v1, p2, v2, ...) {
     pi <- pars[i]
     vi <- vals[i]
 
-    p_name <- strsplit(pi, "\\[")[[1]][1]
+    split_pi <- strsplit(pi, "\\[|\\]")[[1]] # Regex cheat sheet, split by [ or ]
+    p_name <- split_pi[1]
+
+    # Transform vi if pi = "R0_s[x]"
+    if (grepl("R0_s", pi) && !grepl("t_R0_s", pi)) {
+      p_name <- "t_R0_s"
+      pi <- sub("R0_s", "t_R0_s", pi)
+      vi <- log(vi/MARSdata@Dmodel@scale_s[as.integer(split_pi[2])])
+    }
+
+    # Transform vi if pi = "h_s[x]"
+    if (grepl("h_s", pi) && !grepl("t_h_s", pi)) {
+      p_name <- "t_h_s"
+      pi <- sub("h_s", "t_h_s", pi)
+      vi <- switch(
+        MARSdata@Dstock@SRR_s[as.integer(split_pi[2])],
+        "BH" = qlogis((vi - 0.2)/0.8),
+        "Ricker" = log(vi - 0.2),
+      )
+    }
 
     if (is.null(map[[p_name]])) {
       map[[p_name]] <- if (is.null(dim(p[[p_name]]))) {
@@ -108,7 +133,7 @@ get_likelihood_components <- function(fit) {
 #' @param ... Other argument to base graphics
 #' @return
 #' The accompanying plot function returns a line plot for a 1-dimensional profile or a contour plot for a two
-#' dimensional profile.
+#' dimensional profile. Will plot the negative log likelihood or negative log prior (better fit with lower values).
 #' @importFrom graphics contour
 #' @importFrom reshape2 acast
 #' @export
@@ -127,7 +152,13 @@ plot.MARSprof <- function(x, component = "objective", rel = TRUE, xlab, ylab, ma
       yplot <- -1 * yplot
     }
     if (rel) yplot <- yplot - min(yplot)
-    if (missing(ylab)) ylab <- paste("Change in", component)
+    if (missing(ylab)) {
+      if (grepl("logprior", component) || grepl("loglike", component)) {
+        ylab <- paste("Change in negative ", component)
+      } else {
+        ylab <- paste("Change in", component)
+      }
+    }
     if (missing(main)) main <- NULL
 
     plot(xplot, yplot, xlab = xlab, ylab = ylab, typ = "o", main = main, ...)

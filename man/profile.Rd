@@ -14,7 +14,8 @@
 \item{fitted}{\linkS4class{MARSassess} object returned by \code{\link[=fit_MARS]{fit_MARS()}}}
 
 \item{p1}{Character string that represents the first parameter to be profiled,
-including the parameter name and index. See "Parameters" section of \code{\link[=make_parameters]{make_parameters()}}}
+including the parameter name and index of the vector/array. See "Parameters" section of \code{\link[=make_parameters]{make_parameters()}}.
+Additionally, this function allows users to specify \code{R0_s} and \code{h_s} (in normal units).}
 
 \item{v1}{Vector of values corresponding to \code{p1}}
 
@@ -39,9 +40,16 @@ including the parameter name and index. See "Parameters" section of \code{\link[
 \value{
 The profile generic returns a data frame of the likelihood values that correspond to
 fixed values of \code{p1} and \code{p2}.
+\itemize{
+\item Likelihood \code{loglike} refers to maximizing the probability of the observed data (higher values for better fit)
+\item Prior \code{logprior} refers to maximizing the probability of a parameter to their prior distribution (higher values are closer to the prior)
+\item Penalty \code{penalty} are values added to the objective function when parameters exceed model bounds (lower values are better)
+\item \code{fn} is the objective function returned by RTMB (lower values are better)
+\item \code{objective} is the objective function returned by the optimizer (lower values are better)
+}
 
 The accompanying plot function returns a line plot for a 1-dimensional profile or a contour plot for a two
-dimensional profile.
+dimensional profile. Will plot the negative log likelihood or negative log prior (better fit with lower values).
 }
 \description{
 Evaluate change in objective function and likelihood components for up to 2 parameters.

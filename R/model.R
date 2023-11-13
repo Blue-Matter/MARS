@@ -571,6 +571,8 @@ update_report <- function(r, MARSdata) {
   ## Parameters ----
   ADREPORT(R0_s)
   ADREPORT(h_s)
+  REPORT(R0_s)
+  REPORT(h_s)
   REPORT(kappa_s)
   REPORT(SB0_s)
   REPORT(sralpha_s)
