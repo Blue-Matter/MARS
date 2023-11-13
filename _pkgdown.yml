@@ -66,6 +66,7 @@ reference:
   - calc_growth
   - CondExpLt
   - conv_Sigma
+  - get_MARSdata
   - get_sdreport
   - optimize_RTMB
   - posfun

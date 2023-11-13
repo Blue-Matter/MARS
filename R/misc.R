@@ -198,8 +198,10 @@ get_sdreport <- function(obj, getReportCovariance = FALSE, silent = FALSE, ...) 
     if (!is.character(ch)) res$cov.fixed <- chol2inv(ch)
   }
 
+  corr.names <- make_unique_names(names(res$par.fixed))
+
   res$env$corr.fixed <- cov2cor(res$cov.fixed) %>% round(3) %>%
-    structure(dimnames = list(names(res$par.fixed), names(res$par.fixed)))
+    structure(dimnames = list(corr.names, corr.names))
 
   if (!silent && !res$pdHess) message_oops("Check convergence. Covariance matrix is not positive-definite.")
 
@@ -232,6 +234,14 @@ sdreport_int <- function(object, select = c("all", "fixed", "random", "report"),
 }
 
 
+#' Retrieve data object used to fit model
+#'
+#' A convenient function to retrieve the data object used to fit the model. The object is embedded in an environment
+#' within the RTMB object.
+#'
+#' @param MARSassess [MARSassess-class] object returned by `fit_MARS()`
+#' @return [MARSdata-class] object
+#' @export
 get_MARSdata <- function(MARSassess) {
   func <- attr(MARSassess@obj$env$data, "func")
   MARSdata <- get("MARSdata", envir = environment(func), inherits = FALSE)
