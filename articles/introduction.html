@@ -39,10 +39,10 @@
   <a class="nav-link" href="../reference/index.html">Reference</a>
 </li>
 <li class="active nav-item dropdown">
-  <a href="#" class="nav-link dropdown-toggle" data-bs-toggle="dropdown" role="button" aria-expanded="false" aria-haspopup="true" id="dropdown-articles">Articles</a>
-  <div class="dropdown-menu" aria-labelledby="dropdown-articles">
-    <a class="dropdown-item" href="../articles/equations.html">Model equations</a>
+  <a href="#" class="nav-link dropdown-toggle" data-bs-toggle="dropdown" role="button" aria-expanded="false" aria-haspopup="true" id="dropdown-topics">Topics</a>
+  <div class="dropdown-menu" aria-labelledby="dropdown-topics">
     <a class="dropdown-item" href="../articles/introduction.html">Introduction</a>
+    <a class="dropdown-item" href="../articles/equations.html">Model equations</a>
   </div>
 </li>
 <li class="nav-item">
@@ -76,7 +76,7 @@
             
             <h4 data-toc-skip class="date">2023-11-14</h4>
       
-      <small class="dont-index">Source: <a href="https://github.com/Blue-Matter/MARS/blob/HEAD/vignettes/articles/introduction.Rmd" class="external-link"><code>vignettes/articles/introduction.Rmd</code></a></small>
+      <small class="dont-index">Source: <a href="https://github.com/Blue-Matter/MARS/blob/HEAD/vignettes/introduction.Rmd" class="external-link"><code>vignettes/introduction.Rmd</code></a></small>
       <div class="d-none name"><code>introduction.Rmd</code></div>
     </div>
 
@@ -154,7 +154,7 @@ creates and fits the model:</p>
 ascertain goodness of fit, residuals, etc.</p>
 <div class="sourceCode" id="cb2"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="fu"><a href="../reference/report.html">report</a></span><span class="op">(</span><span class="va">fit</span><span class="op">)</span></span></code></pre></div>
-<p><img src="../../reference/figures/intro-index-1.png"><!-- --></p>
+<p><img src="../reference/figures/intro-index-1.png"><!-- --></p>
 <p><em>Example figure that compares the fit in the observed and
 predicted index.</em></p>
 </div>
@@ -171,7 +171,7 @@ between parameters.</p>
 <div class="sourceCode" id="cb3"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">prof_df</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/profile.html">profile</a></span><span class="op">(</span><span class="va">fit</span>, <span class="st">"R0_s[1]"</span>, v1 <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/seq.html" class="external-link">seq</a></span><span class="op">(</span><span class="fl">750</span>, <span class="fl">850</span>, <span class="fl">25</span><span class="op">)</span>, <span class="st">"h_s[1]"</span>, v2 <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/seq.html" class="external-link">seq</a></span><span class="op">(</span><span class="fl">0.75</span>, <span class="fl">0.95</span>, <span class="fl">0.05</span><span class="op">)</span><span class="op">)</span></span>
 <span><span class="fu"><a href="https://rdrr.io/r/graphics/plot.default.html" class="external-link">plot</a></span><span class="op">(</span><span class="va">prof_df</span><span class="op">)</span></span></code></pre></div>
-<p><img src="../../reference/figures/intro-prof-1.png"><!-- --></p>
+<p><img src="../reference/figures/intro-prof-1.png"><!-- --></p>
 <p><em>Contour plot of the change in the objective function to unfished
 recruitment (x-axis) and steepness (y-axis) in stock 1.</em></p>
 <p>The <code><a href="../reference/retrospective.html">retrospective()</a></code> evaluates the consistency of model
@@ -182,7 +182,7 @@ assessments.</p>
 <code class="sourceCode R"><span><span class="va">ret</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/retrospective.html">retrospective</a></span><span class="op">(</span><span class="va">fit</span><span class="op">)</span></span>
 <span><span class="fu"><a href="../reference/report.html">report</a></span><span class="op">(</span><span class="va">ret</span><span class="op">)</span></span>
 <span><span class="fu"><a href="https://rdrr.io/r/base/summary.html" class="external-link">summary</a></span><span class="op">(</span><span class="va">ret</span><span class="op">)</span></span></code></pre></div>
-<p><img src="../../reference/figures/intro-ret-1.png"><!-- --></p>
+<p><img src="../reference/figures/intro-ret-1.png"><!-- --></p>
 <p><em>Retrospective figure for recruitment estimates. The summary()
 generic reports Mohn’s rho.</em></p>
 <p>The <code><a href="../reference/simulate.html">simulate()</a></code> generic generates new observations by
