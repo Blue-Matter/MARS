@@ -3,6 +3,16 @@ template:
   bootstrap: 5
   bootswatch: spacelab
 
+navbar:
+  components:
+    articles:
+      text: Topics
+      menu:
+      - text: Introduction
+        href: articles/introduction.html
+      - text: Model equations
+        href: articles/equations.html
+
 reference:
 
 - title: internal

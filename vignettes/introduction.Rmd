@@ -72,7 +72,7 @@ report(fit)
 
 ```{r index, eval = TRUE, echo = FALSE}
 #plot_index(fit, i = 1)
-knitr::include_graphics("../../man/figures/intro-index-1.png")
+knitr::include_graphics("../man/figures/intro-index-1.png")
 ```
 
 *Example figure that compares the fit in the observed and predicted index.*
@@ -92,7 +92,7 @@ plot(prof_df)
 ```{r prof, echo = FALSE}
 #prof_df <- readRDS('../../scratch/prof_df.rds')
 #plot(prof_df, main = "Change in objective function")
-knitr::include_graphics("../../man/figures/intro-prof-1.png")
+knitr::include_graphics("../man/figures/intro-prof-1.png")
 ```
 
 *Contour plot of the change in the objective function to unfished recruitment (x-axis) and steepness (y-axis) in stock 1.*
@@ -109,7 +109,7 @@ summary(ret)
 ```{r ret, echo = FALSE}
 #r <- readRDS(file = "../../scratch/multiarea_ret.rds")
 #plot(r, "R_yst")
-knitr::include_graphics("../../man/figures/intro-ret-1.png")
+knitr::include_graphics("../man/figures/intro-ret-1.png")
 ```
 
 *Retrospective figure for recruitment estimates. The summary() generic reports Mohn's rho.*
