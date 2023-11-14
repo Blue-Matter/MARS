@@ -73,7 +73,8 @@
 
 <dt>p1</dt>
 <dd><p>Character string that represents the first parameter to be profiled,
-including the parameter name and index. See "Parameters" section of <code><a href="make_parameters.html">make_parameters()</a></code></p></dd>
+including the parameter name and index of the vector/array. See "Parameters" section of <code><a href="make_parameters.html">make_parameters()</a></code>.
+Additionally, this function allows users to specify <code>R0_s</code> and <code>h_s</code> (in normal units).</p></dd>
 
 
 <dt>v1</dt>
@@ -121,11 +122,13 @@ including the parameter name and index. See "Parameters" section of <code><a hre
     
 
 <p>The profile generic returns a data frame of the likelihood values that correspond to
-fixed values of <code>p1</code> and <code>p2</code>.</p>
-
-
-<p>The accompanying plot function returns a line plot for a 1-dimensional profile or a contour plot for a two
-dimensional profile.</p>
+fixed values of <code>p1</code> and <code>p2</code>.</p><ul><li><p>Likelihood <code>loglike</code> refers to maximizing the probability of the observed data (higher values for better fit)</p></li>
+<li><p>Prior <code>logprior</code> refers to maximizing the probability of a parameter to their prior distribution (higher values are closer to the prior)</p></li>
+<li><p>Penalty <code>penalty</code> are values added to the objective function when parameters exceed model bounds (lower values are better)</p></li>
+<li><p><code>fn</code> is the objective function returned by RTMB (lower values are better)</p></li>
+<li><p><code>objective</code> is the objective function returned by the optimizer (lower values are better)</p></li>
+</ul><p>The accompanying plot function returns a line plot for a 1-dimensional profile or a contour plot for a two
+dimensional profile. Will plot the negative log likelihood or negative log prior (better fit with lower values).</p>
     </div>
 
   </main><aside class="col-md-3"><nav id="toc"><h2>On this page</h2>

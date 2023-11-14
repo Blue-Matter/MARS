@@ -74,7 +74,7 @@
   <main id="main" class="col-md-9"><div class="page-header">
       <img src="" class="logo" alt=""><h1>Introduction</h1>
             
-            <h4 data-toc-skip class="date">2023-11-11</h4>
+            <h4 data-toc-skip class="date">2023-11-14</h4>
       
       <small class="dont-index">Source: <a href="https://github.com/Blue-Matter/MARS/blob/HEAD/vignettes/articles/introduction.Rmd" class="external-link"><code>vignettes/articles/introduction.Rmd</code></a></small>
       <div class="d-none name"><code>introduction.Rmd</code></div>
@@ -82,15 +82,117 @@
 
     
     
+<div class="section level2">
+<h2 id="background">Background<a class="anchor" aria-label="anchor" href="#background"></a>
+</h2>
+<p>Traditional stock assessment have fitted population models on the
+assumption that the fishery and survey data represent the dynamics of a
+single unit population (typically represented as a “stock”). For some
+mixed-stock fisheries which display complex spatial, seasonal dynamics,
+these assumptions may be difficult to meet in order to estimate biomass
+and abundance for individual stocks. For example, the composition of
+fishery catches may be naively split among constituent stocks, or the
+trends in fishery catch per unit effort may be assumed to be equally
+representative for all stocks.</p>
+<p>These assumptions may not produce a defensible assessment. If
+population mixing is quite variable across seasons and years, then the
+error from data processing can propagate significant error into the
+estimation framework.</p>
+<p>MARS (<em>Multi-stock Assessment with Regional Spatiotemporal
+dynamics</em>) is an age-structured model is intended to address these
+situations where an explicit multi-stock, seasonal, and spatial
+assessment model is desirable.</p>
+<p>Some of the distinguishing features of MARS include:</p>
+<ul>
+<li>Explicit modeling of seasonal and spatial dynamics, with flexible
+parameterizations for stock movement and distribution</li>
+<li>Multi-stock modeling with fishery catches are not identified to the
+stock or species level. Instead, there is a separate likelihood for
+stock composition data to facilitate data weighting and profiling among
+other data types</li>
+<li>Fitting to close-kin genetic data to estimate individual stock size,
+especially if the populations are frequently well mixed in the fishery
+data</li>
+</ul>
+<p>As a “next-generation” stock assessment package, MARS relies on
+state-of-the-art developments in computational power, optimization
+software, and along with important lessons learned from modeling
+mixed-stock marine fisheries, such as Atlantic bluefin tuna.</p>
+<p>MARS is entirely written in R and uses automatic differentiation
+enabled by RTMB for model fitting.</p>
+</div>
+<div class="section level2">
+<h2 id="package-overview">Package overview<a class="anchor" aria-label="anchor" href="#package-overview"></a>
+</h2>
+<div class="section level3">
+<h3 id="model-fitting">Model fitting<a class="anchor" aria-label="anchor" href="#model-fitting"></a>
+</h3>
+<p>Model fitting first starts with a S4 object of class
+<code>MARSdata</code>, the various slots of which identify the various
+settings that control the model structure, and the dimensions of the
+various data series. See <code><a href="../reference/MARSdata-class.html">help("MARSdata-class")</a></code>.
+<code><a href="../reference/check_data.html">check_data()</a></code> scans the object</p>
+<p>Once the data object is set up, we can create the parameter object
+for RTMB with <code><a href="../reference/make_parameters.html">make_parameters()</a></code>. Various arguments aid the
+user for fixing parameters. Bespoke parameter structure, such as further
+mirroring of parameters, can be performed afterwards and can be checked
+with <code><a href="../reference/make_parameters.html">check_parameters()</a></code>.</p>
+<p>These objects can then be passed to <code><a href="../reference/fit_MARS.html">fit_MARS()</a></code> which
+creates and fits the model:</p>
 <div class="sourceCode" id="cb1"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span><span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="va"><a href="https://blue-matter.github.io/MARS/">MARS</a></span><span class="op">)</span></span>
-<span><span class="co">#&gt; Warning in checkMatrixPackageVersion(): Package version inconsistency detected.</span></span>
-<span><span class="co">#&gt; TMB was built with Matrix version 1.6.2</span></span>
-<span><span class="co">#&gt; Current Matrix version is 1.6.1.1</span></span>
-<span><span class="co">#&gt; Please re-install 'TMB' from source using install.packages('TMB', type = 'source') or ask CRAN for a binary version of 'TMB' matching CRAN's 'Matrix' package</span></span>
-<span><span class="co">#&gt; Warning in .recacheSubclasses(def@className, def, env): undefined subclass</span></span>
-<span><span class="co">#&gt; "ndiMatrix" of class "anysparse"; definition not updated</span></span></code></pre></div>
-  </main>
+<code class="sourceCode R"><span><span class="va">MARSdata</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/check_data.html">check_data</a></span><span class="op">(</span><span class="va">MARSdata</span><span class="op">)</span></span>
+<span><span class="va">tmb_list</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/make_parameters.html">make_parameters</a></span><span class="op">(</span><span class="va">MARSdata</span><span class="op">)</span></span>
+<span></span>
+<span><span class="va">parameters</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/make_parameters.html">check_parameters</a></span><span class="op">(</span><span class="va">tmb_list</span><span class="op">$</span><span class="va">p</span>, <span class="va">tmb_list</span><span class="op">$</span><span class="va">map</span>, MARSdata <span class="op">=</span> <span class="va">MARSdata</span><span class="op">)</span></span>
+<span></span>
+<span><span class="va">fit</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/fit_MARS.html">fit_MARS</a></span><span class="op">(</span><span class="va">MARSdata</span>, <span class="va">parameters</span>, map <span class="op">=</span> <span class="va">tmb_list</span><span class="op">$</span><span class="va">map</span>, random <span class="op">=</span> <span class="va">tmb_list</span><span class="op">$</span><span class="va">random</span><span class="op">)</span></span></code></pre></div>
+</div>
+<div class="section level3">
+<h3 id="reporting">Reporting<a class="anchor" aria-label="anchor" href="#reporting"></a>
+</h3>
+<p>Markdown reports generate a figures and tables for model estimates,
+ascertain goodness of fit, residuals, etc.</p>
+<div class="sourceCode" id="cb2"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="fu"><a href="../reference/report.html">report</a></span><span class="op">(</span><span class="va">fit</span><span class="op">)</span></span></code></pre></div>
+<p><img src="../../reference/figures/intro-index-1.png"><!-- --></p>
+<p><em>Example figure that compares the fit in the observed and
+predicted index.</em></p>
+</div>
+<div class="section level3">
+<h3 id="diagnostics">Diagnostics<a class="anchor" aria-label="anchor" href="#diagnostics"></a>
+</h3>
+<p>Various built-in functions run diagnostic procedures to evaluate
+model performance.</p>
+<p>The <code><a href="../reference/profile.html">profile()</a></code> generic can profile up to two parameters
+simultaneously. The change in the likelihood and objective function can
+indicate how well the parameter is informed by the various data. A
+two-parameter profile can identify potentially strong correlations
+between parameters.</p>
+<div class="sourceCode" id="cb3"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="va">prof_df</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/profile.html">profile</a></span><span class="op">(</span><span class="va">fit</span>, <span class="st">"R0_s[1]"</span>, v1 <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/seq.html" class="external-link">seq</a></span><span class="op">(</span><span class="fl">750</span>, <span class="fl">850</span>, <span class="fl">25</span><span class="op">)</span>, <span class="st">"h_s[1]"</span>, v2 <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/seq.html" class="external-link">seq</a></span><span class="op">(</span><span class="fl">0.75</span>, <span class="fl">0.95</span>, <span class="fl">0.05</span><span class="op">)</span><span class="op">)</span></span>
+<span><span class="fu"><a href="https://rdrr.io/r/graphics/plot.default.html" class="external-link">plot</a></span><span class="op">(</span><span class="va">prof_df</span><span class="op">)</span></span></code></pre></div>
+<p><img src="../../reference/figures/intro-prof-1.png"><!-- --></p>
+<p><em>Contour plot of the change in the objective function to unfished
+recruitment (x-axis) and steepness (y-axis) in stock 1.</em></p>
+<p>The <code><a href="../reference/retrospective.html">retrospective()</a></code> evaluates the consistency of model
+estimates as the data time series are truncated, starting with the most
+recent years. This diagnostic can inform model behavior in future
+assessments.</p>
+<div class="sourceCode" id="cb4"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="va">ret</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/retrospective.html">retrospective</a></span><span class="op">(</span><span class="va">fit</span><span class="op">)</span></span>
+<span><span class="fu"><a href="../reference/report.html">report</a></span><span class="op">(</span><span class="va">ret</span><span class="op">)</span></span>
+<span><span class="fu"><a href="https://rdrr.io/r/base/summary.html" class="external-link">summary</a></span><span class="op">(</span><span class="va">ret</span><span class="op">)</span></span></code></pre></div>
+<p><img src="../../reference/figures/intro-ret-1.png"><!-- --></p>
+<p><em>Retrospective figure for recruitment estimates. The summary()
+generic reports Mohn’s rho.</em></p>
+<p>The <code><a href="../reference/simulate.html">simulate()</a></code> generic generates new observations by
+sampling from the probability density functions represented in the
+likelihood. Re-fit to these simulated values to ensure that the
+estimated parameters are retrievable.</p>
+</div>
+</div>
+  </main><aside class="col-md-3"><nav id="toc"><h2>On this page</h2>
+    </nav></aside>
 </div>
 
 
