@@ -493,21 +493,95 @@ check_Dtag <- function(Dtag, Dmodel, silent = FALSE) {
   ch <- as.character(substitute(Dtag))
   if (length(ch) > 1) ch <- "Dtag"
 
-  if (length(tag_ymrr)) {
-    dim_tag1 <- dim(tag_ymrr) == c(ny, nm, nr, nr)
-    if (!all(dim_tag1)) stop("dim(tag_ymrr) needs to be: ", c(ny, nm, nr, nr) %>% paste(collapse = ", "))
+  if (length(tag_ymarrs) && length(tag_ymars)) {
+    stop("Tag data found in both Dtag@tag_ymarrs (tag movement) and Dtag@ymars (tag distribution). Only one tag setup can be used at this time.")
   }
-  if (length(tag_ymr)) {
-    dim_tag2 <- dim(tag_ymr) == c(ny, nm, nr)
-    if (!all(dim_tag2)) stop("dim(tag_ymr) needs to be: ", c(ny, nm, nr) %>% paste(collapse = ", "))
-  }
-  if (length(tag_ymrr) || length(tag_ymr)) {
+
+  if (length(tag_ymarrs) || length(tag_ymars)) {
     if (length(tag_like)) {
       tag_like <- match.arg(tag_like, choices = eval(formals(like_comp)$type))
     } else {
       if (!silent) message("Setting ", ch, "@tag_like = \"multinomial\"")
       Dtag@tag_like <- "multinomial"
     }
+
+    if (!length(tagtheta_s)) {
+      if (grepl("ddirmult", tag_like) && !silent) message("Setting ", ch, "@tagtheta_s to 1 for all stocks")
+      Dtag@tagtheta_s <- rep(1, ns)
+    } else if (length(tagtheta_s) == 1) {
+      Dtag@tagtheta_s <- rep(Dtag@tagtheta_s, ns)
+    } else if (length(tagtheta_s) != ns) {
+      stop("Vector tagtheta_s needs to be length ", ns)
+    }
+
+    if (!length(tagstdev_s)) {
+      if (grepl("log", tag_like) && !silent) message("Setting ", ch, "@tagstdev_s to 0.1 for all fleets")
+      Dtag@tagstdev_s <- rep(0.1, ns)
+    } else if (length(tagstdev_s) == 1) {
+      Dtag@tagstdev_s <- rep(Dtag@tagstdev_s, ns)
+    } else if (length(tagstdev_s) != ns) {
+      stop("Vector tagstdev_s needs to be length ", ns)
+    }
+  }
+
+  if (length(tag_ymarrs)) {
+
+    dim_tag1 <- dim(tag_ymarrs)
+    if (length(dim_tag1) != 6) stop("tag_ymarrs should be a six dimensional array")
+
+    if (any(dim_tag1[c(2, 4, 5, 6)] != c(nm, nr, nr, ns))) {
+      stop("dim(tag_ymarrs) should be ", c(dim_tag1[1], nm, dim_tag1[2], nr, nr, ns) %>% paste(collapse = ", "))
+    }
+
+    if (dim_tag1[1] == ny) {
+      if (!length(tag_yy)) Dtag@tag_yy <- diag(1, ny)
+    } else if (any(dim(tag_yy) != c(dim_tag1[1], ny))) {
+      stop("dim(tag_yy) should be: ", c(dim_tag1[1], ny) %>% paste(collapse = ", "))
+    }
+
+    if (dim_tag1[3] == na) {
+      if (!length(tag_aa)) Dtag@tag_aa <- diag(1, na)
+    } else if (any(dim(tag_aa) != c(dim_tag1[3], na))) {
+      stop("dim(tag_aa) should be: ", c(dim_tag1[3], na) %>% paste(collapse = ", "))
+    }
+
+    if (!length(tagN_ymars)) {
+      if (tag_like %in% c("multinomial", "ddirmult1", "ddirmult2") && !silent) {
+        message("Setting ", ch, "@tagN_ymars from ", ch, "@tag_ymarrs")
+      }
+      Dtag@tagN_ymars <- apply(tag_ymarrs, c(1:4, 6), sum)
+    } else {
+      dim_tagN <- dim(tagN_ymars) == c(dim_tag1[1], nm, dim_tag1[3], nr, ns)
+      if (!all(dim_tagN)) stop("dim(tagN_ymars) needs to be: ", c(dim_tag1[1], nm, dim_tag1[3], nr, ns) %>% paste(collapse = ", "))
+    }
+
+  }
+
+  if (length(tag_ymars)) {
+
+    dim_tag2 <- dim(tag_ymars)
+    if (length(dim_tag2) != 5) stop("tag_ymars should be a five dimensional array")
+
+    if (any(dim_tag2[c(1, 2, 4, 5)] != c(ny, nm, nr, ns))) {
+      stop("dim(tag_ymars) should be ", c(ny, nm, dim_tag2[3], nr, ns) %>% paste(collapse = ", "))
+    }
+
+    if (dim_tag2[3] == na) {
+      if (!length(tag_aa)) Dtag@tag_aa <- diag(1, na)
+    } else if (any(dim(tag_aa) != c(dim_tag2[3], na))) {
+      stop("dim(tag_aa) should be: ", c(dim_tag2[3], na) %>% paste(collapse = ", "))
+    }
+
+    if (!length(tagN_ymas)) {
+      if (tag_like %in% c("multinomial", "ddirmult1", "ddirmult2") && !silent) {
+        message("Setting ", ch, "@tagN_ymas from ", ch, "@tag_ymars")
+      }
+      Dtag@tagN_ymas <- apply(tag_ymars, c(1:3, 5), sum)
+    } else {
+      dim_tagN <- dim(tagN_ymas) == c(dim_tag2[1], nm, dim_tag2[3], ns)
+      if (!all(dim_tagN)) stop("dim(tagN_ymas) needs to be: ", c(dim_tag2[1], nm, dim_tag2[3], ns) %>% paste(collapse = ", "))
+    }
+
   }
 
   return(Dtag)

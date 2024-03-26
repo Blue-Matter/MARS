@@ -517,14 +517,54 @@ update_report <- function(r, MARSdata) {
     loglike_HSP_s <- 0
   }
 
-  loglike_tag <- 0
+  ## Tag
+  if (any(tag_ymarrs > 0, na.rm = TRUE)) {
+    loglike_tag_mov_ymars <- sapply2(1:ns, function(s) {
+      sapply2(1:nr, function(r) {
+        sapply2(1:nrow(tag_aa), function(aa) { # Aggregate over age classes SC_aa
+          avec <- c(1:na)[tag_aa[aa, ]]
+          a <- avec[length(avec)]
+          sapply(1:nm, function(m) {
+            sapply(1:nrow(tag_yy), function(yy) {
+              y <- c(1:ny)[tag_yy[yy, ]][1]
+              like_comp(obs = tag_ymarrs[yy, m, aa, r, , s],
+                        pred = mov_ymarrs[y, m, a, r, , s], type = tag_like,
+                        N = tagN_ymars[yy, m, aa, r, s], theta = tagtheta_s[s],
+                        stdev = tagstdev_s[s])
+            })
+          })
+        })
+      })
+    })
+  } else {
+    loglike_tag_mov_ymars <- 0
+  }
+
+  if (any(tag_ymars > 0, na.rm = TRUE)) {
+    logprior_dist_ymas <- sapply2(1:ns, function(s) {
+      sapply2(1:nrow(tag_aa), function(aa) { # Aggregate over age classes SC_aa
+        sapply(1:nm, function(m) {
+          sapply(1:nrow(tag_yy), function(yy) {
+            pred <- N_ymars[tag_yy[yy, ], m, tag_aa[aa, ], , s]
+            like_comp(obs = tag_ymars[yy, m, aa, , s],
+                      pred = pred, type = tag_like,
+                      N = tagN_ymas[yy, m, aa, r, s], theta = tagtheta_s[s],
+                      stdev = tagstdev_s[s])
+          })
+        })
+      })
+    })
+  } else {
+    loglike_tag_dist_ymas <- 0
+  }
 
   loglike <- sum(loglike_Cinit_mfr) +
     sum(loglike_Cobs_ymfr) + sum(loglike_CAA_ymfr) + sum(loglike_CAL_ymfr) +
     sum(loglike_I_ymi) + sum(loglike_IAA_ymi) + sum(loglike_IAL_ymi) +
     sum(loglike_SC_ymafr) +
     Reduce(sum, loglike_POP_s) + Reduce(sum, loglike_HSP_s) +
-    sum(loglike_tag)
+    sum(loglike_tag_mov_ymars) +
+    sum(loglike_tag_dist_ymas)
 
   # Priors ----
   sdr_s <- exp(p$log_sdr_s)
@@ -667,7 +707,8 @@ update_report <- function(r, MARSdata) {
   if (length(POP_s)) REPORT(loglike_POP_s)
   if (length(HSP_s)) REPORT(loglike_HSP_s)
 
-  #REPORT(loglike_tag)
+  if (any(tag_ymarrs > 0, na.rm = TRUE)) REPORT(loglike_tag_mov_ymars)
+  if (any(tag_ymars > 0, na.rm = TRUE)) REPORT(loglike_tag_dist_ymas)
 
   if (any(par_initrdev_as)) REPORT(logprior_initrdev_as)
   if (any(par_rdev_ys)) REPORT(logprior_rdev_ys)

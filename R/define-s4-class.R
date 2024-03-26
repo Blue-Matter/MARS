@@ -80,7 +80,8 @@ setClass(
 #' @export
 setClass(
   "Dtag",
-  slots = c(tag_ymrr = "array", tag_ymr = "array", tag_like = "character")
+  slots = c(tag_ymarrs = "array", tag_ymars = "array", tag_yy = "matrix", tag_aa = "matrix", tag_like = "character",
+            tagN_ymars = "vector", tagN_ymas = "vector", tagtheta_s = "vector", tagstdev_s = "vector")
 )
 
 #' Dlabel S4 object
@@ -152,6 +153,7 @@ setClass(
 )
 setMethod("initialize", "MARSassess", function(.Object, ...) init_fn(.Object, list(...)))
 
+#' @export
 summary.MARSassess <- function(object, ...) {
   if (length(object@SD) > 1) {
     sdreport_int(object@SD)

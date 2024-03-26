@@ -25,10 +25,16 @@ observed catch with the dimension following the underscore, following this templ
 \section{Slots inherited from Dtag}{
 
 \describe{
-\item{\code{tag_ymrr}}{Array. Number of tags that move between regions. Used to inform movement matrices between time steps.}
-\item{\code{tag_ymr}}{Array. Number of tags among regions. Used to inform stock distribution within time step.}
-\item{\code{tag_like}}{Character. Likelihood for the tagging data, either the vector of proportions by region of origin for \code{tag_ymrr}, or
-by region of stock presence for \code{tag_ymr}. See \code{type} argument of \code{\link[=like_comp]{like_comp()}} for options}
+\item{\code{tag_ymarrs}}{Array. Number of tags that move between regions. Informs movement matrices of stocks between time steps.}
+\item{\code{tag_ymars}}{Array. Number of tags distributed among regions. Informs stock distribution (within time step).}
+\item{\code{tag_yy}}{Boolean matrix that aggregates years for the tag data. Only used for the tag movement array \code{tag_ymarrs}.}
+\item{\code{tag_aa}}{Boolean matrix that aggregates ages for the tag data.}
+\item{\code{tag_like}}{Character. Likelihood for the tagging data, either the vector of proportions by region of origin for \code{tag_ymarrs}, or
+by region of stock distribution for \code{tag_ymars}. See \code{type} argument of \code{\link[=like_comp]{like_comp()}} for options}
+\item{\code{tagN_ymars}}{Array. Sample size of the tag movement vectors if using the multinomial or Dirichlet-multinomial likelihoods.}
+\item{\code{tagN_ymas}}{Array. Sample size of the tag distribution vectors if using the multinomial or Dirichlet-multinomial likelihoods.}
+\item{\code{tagtheta_s}}{Array. Tag dispersion parameter (by stock) if using the Dirichlet-multinomial likelihoods. Default set to 1.}
+\item{\code{tagstdev_s}}{Array. Tag standard deviation (by stock) if using the lognormal likelihood. Default set to 0.1.}
 }
 }
 
