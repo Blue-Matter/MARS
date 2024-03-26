@@ -33,7 +33,7 @@ observed catch with the dimension following the underscore, following this templ
 \item{\code{matd_yas}}{Proportion mature by age class. Ignored if maturity ogive is estimated, e.g., when fitting to close-kin genetic data.}
 \item{\code{swt_ymas}}{Stock weight-at-age. See \code{\link[=calc_growth]{calc_growth()}} example.}
 \item{\code{fec_yas}}{Fecundity, i.e., spawning output, of mature animals. Default uses stock weight at age.}
-\item{\code{Md_yas}}{Natural morality. Ignored if M is estimated.}
+\item{\code{Md_yas}}{Natural mortality. Ignored if M is estimated.}
 \item{\code{SRR_s}}{Character vector of stock-recruit relationship by stock. See \code{SRR} argument in \code{\link[=calc_recruitment]{calc_recruitment()}} for options.}
 \item{\code{delta_s}}{Fraction of season that elapses when spawning occurs, e.g., midseason spawning occurs when \code{delta_s = 0.5}. Default is zero.}
 \item{\code{natal_rs}}{The fraction of the mature stock \code{s} in region \code{r} that spawns at

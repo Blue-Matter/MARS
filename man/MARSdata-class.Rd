@@ -58,10 +58,10 @@ observed catch with the dimension following the underscore, following this templ
 \item{\code{scale_s}}{Vector, length \code{ns}. Multiplicative scaling factor that informs relative stock size to aid parameter estimation. Larger values implies larger stocks. Default set to 1. See \code{\link[=make_parameters]{make_parameters()}}.}
 \item{\code{nyinit}}{Integer, number of years of spool-up to calculate equilibrium unfished and starting conditions for the population model to account for seasonal and spatial dynamics. The numerical spool-up is not needed when both \code{nm = 1} and \code{nr = 1}, i.e., \code{nyinit = 1}. Otherwise, set to \code{1.5 * na} by default.}
 \item{\code{condition}}{Character, either to specify the model estimates fishing mortality as a parameter (\code{"F"}, default) or equal to the catch (\code{"catch"}).}
-\item{\code{nitF}}{Integer, number of iterations to solve Baranov catch equation from observed catch if \code{condition = "F"}. Defaults to 5.}
-\item{\code{y_Fmult_f}}{Integer vector by fleet, the year in which to directly estimate F. Choose a year/season/region combination when the catch is average relative to the time series. Only used if \code{condition = "catch"}.}
-\item{\code{m_Fmult_f}}{Integer vector by fleet, the season in which to directly estimate F. Choose a year/season/region combination when the catch is average relative to the time series. Only used if \code{condition = "catch"}.}
-\item{\code{r_Fmult_f}}{Integer vector by fleet, the region in which to directly estimate F. Choose a year/season/region combination when the catch is average relative to the time series. Only used if \code{condition = "catch"}.}
+\item{\code{nitF}}{Integer, number of iterations to solve Baranov catch equation from observed catch if \code{condition = "catch"}. Defaults to 5.}
+\item{\code{y_Fmult_f}}{Integer vector by fleet, the year in which to directly estimate F. Choose a year/season/region combination when the catch is average relative to the time series. Only used if \code{condition = "F"}.}
+\item{\code{m_Fmult_f}}{Integer vector by fleet, the season in which to directly estimate F. Choose a year/season/region combination when the catch is average relative to the time series. Only used if \code{condition = "F"}.}
+\item{\code{r_Fmult_f}}{Integer vector by fleet, the region in which to directly estimate F. Choose a year/season/region combination when the catch is average relative to the time series. Only used if \code{condition = "F"}.}
 }
 }
 
@@ -76,7 +76,7 @@ observed catch with the dimension following the underscore, following this templ
 \item{\code{matd_yas}}{Proportion mature by age class. Ignored if maturity ogive is estimated, e.g., when fitting to close-kin genetic data.}
 \item{\code{swt_ymas}}{Stock weight-at-age. See \code{\link[=calc_growth]{calc_growth()}} example.}
 \item{\code{fec_yas}}{Fecundity, i.e., spawning output, of mature animals. Default uses stock weight at age.}
-\item{\code{Md_yas}}{Natural morality. Ignored if M is estimated.}
+\item{\code{Md_yas}}{Natural mortality. Ignored if M is estimated.}
 \item{\code{SRR_s}}{Character vector of stock-recruit relationship by stock. See \code{SRR} argument in \code{\link[=calc_recruitment]{calc_recruitment()}} for options.}
 \item{\code{delta_s}}{Fraction of season that elapses when spawning occurs, e.g., midseason spawning occurs when \code{delta_s = 0.5}. Default is zero.}
 \item{\code{natal_rs}}{The fraction of the mature stock \code{s} in region \code{r} that spawns at

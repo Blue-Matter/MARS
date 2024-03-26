@@ -13,8 +13,8 @@
 #' \item{`scale_s`}{Vector, length `ns`. Multiplicative scaling factor that informs relative stock size to aid parameter estimation. Larger values implies larger stocks. Default set to 1. See [make_parameters()].}
 #' \item{`nyinit`}{Integer, number of years of spool-up to calculate equilibrium unfished and starting conditions for the population model to account for seasonal and spatial dynamics. The numerical spool-up is not needed when both `nm = 1` and `nr = 1`, i.e., `nyinit = 1`. Otherwise, set to `1.5 * na` by default.}
 #' \item{`condition`}{Character, either to specify the model estimates fishing mortality as a parameter (`"F"`, default) or equal to the catch (`"catch"`).}
-#' \item{`nitF`}{Integer, number of iterations to solve Baranov catch equation from observed catch if `condition = "F"`. Defaults to 5.}
-#' \item{`y_Fmult_f`}{Integer vector by fleet, the year in which to directly estimate F. Choose a year/season/region combination when the catch is average relative to the time series. Only used if `condition = "catch"`.}
-#' \item{`m_Fmult_f`}{Integer vector by fleet, the season in which to directly estimate F. Choose a year/season/region combination when the catch is average relative to the time series. Only used if `condition = "catch"`.}
-#' \item{`r_Fmult_f`}{Integer vector by fleet, the region in which to directly estimate F. Choose a year/season/region combination when the catch is average relative to the time series. Only used if `condition = "catch"`.}
+#' \item{`nitF`}{Integer, number of iterations to solve Baranov catch equation from observed catch if `condition = "catch"`. Defaults to 5.}
+#' \item{`y_Fmult_f`}{Integer vector by fleet, the year in which to directly estimate F. Choose a year/season/region combination when the catch is average relative to the time series. Only used if `condition = "F"`.}
+#' \item{`m_Fmult_f`}{Integer vector by fleet, the season in which to directly estimate F. Choose a year/season/region combination when the catch is average relative to the time series. Only used if `condition = "F"`.}
+#' \item{`r_Fmult_f`}{Integer vector by fleet, the region in which to directly estimate F. Choose a year/season/region combination when the catch is average relative to the time series. Only used if `condition = "F"`.}
 #' }
