@@ -11,6 +11,7 @@ make_parameters(MARSdata, start = list(), silent = FALSE, ...)
 make_map(
   p,
   MARSdata,
+  map = list(),
   est_M = FALSE,
   est_h = FALSE,
   est_mat = FALSE,
@@ -34,6 +35,8 @@ Overrides default values created by \code{\link[=make_parameters]{make_parameter
 
 \item{p}{List of parameters, e.g., returned by \code{\link[=make_parameters]{make_parameters()}}}
 
+\item{map}{List of mapped parameters. Used by \code{\link[=check_parameters]{check_parameters()}} only to count parameters.}
+
 \item{est_M}{Logical, estimate natural mortality?}
 
 \item{est_h}{Logical, estimate steepness?}
@@ -45,8 +48,6 @@ Overrides default values created by \code{\link[=make_parameters]{make_parameter
 \item{est_mov}{Character describing structure of stock movement parameters. See details below.}
 
 \item{est_qfs}{Logical, estimate relative catchability of stocks by each fleet? Fix \code{log_q_fs} for the first stock if \code{TRUE}}
-
-\item{map}{List of mapped parameters. Used by \code{\link[=check_parameters]{check_parameters()}} only to count parameters.}
 }
 \value{
 \code{\link[=make_parameters]{make_parameters()}} returns a list of parameters (\code{"p"}) concatenated with the output of \code{\link[=make_map]{make_map()}}.

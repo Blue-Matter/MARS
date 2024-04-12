@@ -86,7 +86,9 @@ make_parameters <- function(MARSdata, start = list(), silent = FALSE, ...) {
     p$R0_s <- NULL
   } else if (is.null(start$t_R0_s)) {
     p$t_R0_s <- rep(3, ns)
+    if (!silent) message_info("Setting parameter t_R0_s to 3 for all stocks")
   }
+  if (!silent) message_info("From t_R0_s, starting R0 = ", paste(signif(exp(p$t_R0_s) * scale_s, 4), collapse = ", "))
 
   if (is.null(start$h_s)) {
     start$h_s <- rep(0.8, ns)
@@ -94,6 +96,7 @@ make_parameters <- function(MARSdata, start = list(), silent = FALSE, ...) {
     p$h_s <- NULL
   }
   p$t_h_s <- ifelse(MARSdata@Dstock@SRR_s == "BH", qlogis((start$h_s - 0.2)/0.8), log(start$h_s - 0.2))
+  if (!silent) message_info("From t_h_s, starting steepness = ", paste(signif(start$h_s, 4), collapse = ", "))
 
   if (is.null(p$mat_ps)) {
     p$mat_ps <- sapply(1:ns, function(s) {
@@ -108,6 +111,7 @@ make_parameters <- function(MARSdata, start = list(), silent = FALSE, ...) {
   if (is.null(p$log_M_s)) p$log_M_s <- rep(log(-log(0.05)/na), ns)
   if (is.null(p$log_rdev_ys)) p$log_rdev_ys <- matrix(0, ny, ns)
   if (is.null(p$log_sdr_s)) p$log_sdr_s <- rep(log(0.4), ns)
+  if (!silent) message_info("Starting sigma_R = ", paste(signif(exp(p$log_sdr_s), 4), collapse = ", "))
 
   if (is.null(p$mov_x_marrs)) p$mov_x_marrs <- array(0, c(nm, na, nr, nr, ns))
   if (is.null(p$mov_g_ymars)) p$mov_g_ymars <- array(0, c(ny, nm, na, nr, ns))
@@ -178,6 +182,7 @@ make_parameters <- function(MARSdata, start = list(), silent = FALSE, ...) {
 #' @rdname make_parameters
 #' @aliases make_map
 #' @param p List of parameters, e.g., returned by [make_parameters()]
+#' @param map List of mapped parameters. Overrides following `est_*` arguments
 #' @param est_M Logical, estimate natural mortality?
 #' @param est_h Logical, estimate steepness?
 #' @param est_mat Logical, estimate maturity?
@@ -198,7 +203,7 @@ make_parameters <- function(MARSdata, start = list(), silent = FALSE, ...) {
 #' @return
 #' [make_map()] returns a named list containing parameter mappings (`"map"`) and a character vector of random effects (`"random"`).
 #' @export
-make_map <- function(p, MARSdata,
+make_map <- function(p, MARSdata, map = list(),
                      est_M = FALSE, est_h = FALSE, est_mat = FALSE, est_sdr = FALSE,
                      est_mov = c("none", "dist_random", "gravity_fixed"),
                      est_qfs = FALSE,
@@ -211,95 +216,110 @@ make_map <- function(p, MARSdata,
   nf <- MARSdata@Dfishery@nf
 
   random <- NULL
-  map <- list()
+  #map <- list()
 
   # Stock parameters ----
-  if (est_M) {
-    if (!silent) message_info("Estimating natural mortality")
-  } else {
-    map$log_M_s <- factor(rep(NA, ns))
-    if (!length(Dstock@Md_yas)) stop("Natural mortality is not estimated. Need M values in the Dstock data object.")
-  }
-  if (est_h) {
-    if (!silent) message_info("Estimating steepness")
-  } else {
-    map$t_h_s <- factor(rep(NA, ns))
-  }
-  if (est_mat) {
-    if (!silent) message_info("Estimating maturity ogive")
-  } else {
-    map$mat_ps <- factor(array(NA, dim(p$mat_ps)))
-    if (!length(Dstock@matd_yas)) stop("Maturity ogive is not estimated. Need maturity at age values in the Dstock data object.")
+  if (is.null(map$log_M_s)) {
+    if (est_M) {
+      if (!silent) message_info("Estimating natural mortality")
+    } else {
+      map$log_M_s <- factor(rep(NA, ns))
+      if (!length(Dstock@Md_yas)) stop("Natural mortality is not estimated. Need M values in the Dstock data object.")
+    }
   }
 
-  if (est_sdr) {
-    if (!silent) message_info("Estimating sigma_R (SD of recruitment deviates)")
-  } else {
-    map$log_sdr_s <- factor(rep(NA, ns))
+  if (is.null(map$t_h_s)) {
+    if (est_h) {
+      if (!silent) message_info("Estimating steepness")
+    } else {
+      map$t_h_s <- factor(rep(NA, ns))
+    }
+  }
+
+  if (is.null(map$mat_ps)) {
+    if (est_mat) {
+      if (!silent) message_info("Estimating maturity ogive")
+    } else {
+      map$mat_ps <- factor(array(NA, dim(p$mat_ps)))
+      if (!length(Dstock@matd_yas)) stop("Maturity ogive is not estimated. Need maturity at age values in the Dstock data object.")
+    }
+  }
+
+  if (is.null(map$log_sdr_s)) {
+    if (est_sdr) {
+      if (!silent) message_info("Estimating sigma_R (SD of recruitment deviates)")
+    } else {
+      map$log_sdr_s <- factor(rep(NA, ns))
+    }
   }
 
   if (nr == 1 || est_mov == "none") {
-    map$mov_x_marrs <- factor(array(NA, dim(p$mov_x_marrs)))
-    map$mov_g_ymars <- factor(array(NA, dim(p$mov_g_ymars)))
-    map$mov_v_ymas <- factor(array(NA, dim(p$mov_v_ymas)))
+    if (is.null(map$mov_x_marrs)) map$mov_x_marrs <- factor(array(NA, dim(p$mov_x_marrs)))
+    if (is.null(map$mov_g_ymars)) map$mov_g_ymars <- factor(array(NA, dim(p$mov_g_ymars)))
+    if (is.null(map$mov_v_ymas)) map$mov_v_ymas <- factor(array(NA, dim(p$mov_v_ymas)))
 
-    map$log_sdg_rs <- factor(array(NA, dim(p$log_sdg_rs)))
-    map$t_corg_ps <- factor(array(NA, dim(p$t_corg_ps)))
+    if (is.null(map$log_sdg_rs)) map$log_sdg_rs <- factor(array(NA, dim(p$log_sdg_rs)))
+    if (is.null(map$t_corg_ps)) map$t_corg_ps <- factor(array(NA, dim(p$t_corg_ps)))
 
     #if (!silent) message_info("No movement parameters are estimated")
 
   } else if (est_mov == "dist_random") {
 
-    map$mov_x_marrs <- factor(array(NA, dim(p$mov_x_marrs)))
+    if (is.null(map$mov_x_marrs)) map$mov_x_marrs <- factor(array(NA, dim(p$mov_x_marrs)))
 
-    gval <- expand.grid(r = 2:nr, y = 1:ny, m = 1:nm, a = 1:na, s = 1:ns)
-    gval$g <- seq(1, nrow(gval))
-    map$mov_g_ymars <- sapply2(1:ns, function(s) {
-      sapply2(1:na, function(a) {
-        sapply2(1:nm, function(m) {
-          sapply(1:ny, function(y) {
-            gval_ymas <- filter(gval,
-              .data$y == .env$y, .data$m == .env$m, .data$a == .env$a, .data$s == .env$s
-            )
-            g <- rep(NA, nr)
-            g[gval_ymas$r] <- gval_ymas$g
+    if (is.null(map$mov_g_ymars)) {
+      gval <- expand.grid(r = 2:nr, y = 1:ny, m = 1:nm, a = 1:na, s = 1:ns)
+      gval$g <- seq(1, nrow(gval))
+      map$mov_g_ymars <- sapply2(1:ns, function(s) {
+        sapply2(1:na, function(a) {
+          sapply2(1:nm, function(m) {
+            sapply(1:ny, function(y) {
+              gval_ymas <- filter(
+                gval, .data$y == .env$y, .data$m == .env$m, .data$a == .env$a, .data$s == .env$s
+              )
+              g <- rep(NA, nr)
+              g[gval_ymas$r] <- gval_ymas$g
+            })
           })
         })
-      })
-    }) %>%
-      aperm(c(2, 3, 4, 1, 5)) %>%
-      factor()
+      }) %>%
+        aperm(c(2, 3, 4, 1, 5)) %>%
+        factor()
+    }
 
-    map$mov_v_ymas <- factor(array(NA, dim(p$mov_v_ymas)))
+    if (is.null(map$mov_v_ymas)) map$mov_v_ymas <- factor(array(NA, dim(p$mov_v_ymas)))
     random <- c(random, "mov_g_ymars")
 
-    if (!silent) message_info("Stock distribution is estimated as a random effect")
+    if (!silent) message_info("Stock distribution is estimated as random effects")
 
   } else {
-    map$mov_x_marrs <- factor(array(NA, dim(p$mov_x_marrs)))
 
-    gval <- expand.grid(r = 2:nr, y = 1:ny, m = 1:nm, a = 1:na, s = 1:ns)
-    gval$g <- seq(1, nrow(gval))
-    map$mov_g_ymars <- sapply2(1:ns, function(s) {
-      sapply2(1:na, function(a) {
-        sapply2(1:nm, function(m) {
-          sapply(1:ny, function(y) {
-            gval_ymas <- filter(
-              gval, .data$y == .env$y, .data$m == .env$m, .data$a == .env$a, .data$s == .env$s
-            )
-            g <- rep(NA, nr)
-            g[gval_ymas$r] <- gval_ymas$g
+    if (is.null(map$mov_x_marrs)) map$mov_x_marrs <- factor(array(NA, dim(p$mov_x_marrs)))
+
+    if (is.null(map$mov_g_ymars)) {
+      gval <- expand.grid(r = 2:nr, y = 1:ny, m = 1:nm, a = 1:na, s = 1:ns)
+      gval$g <- seq(1, nrow(gval))
+      map$mov_g_ymars <- sapply2(1:ns, function(s) {
+        sapply2(1:na, function(a) {
+          sapply2(1:nm, function(m) {
+            sapply(1:ny, function(y) {
+              gval_ymas <- filter(
+                gval, .data$y == .env$y, .data$m == .env$m, .data$a == .env$a, .data$s == .env$s
+              )
+              g <- rep(NA, nr)
+              g[gval_ymas$r] <- gval_ymas$g
+            })
           })
         })
-      })
-    }) %>%
-      aperm(c(2, 3, 4, 1, 5)) %>%
-      factor()
+      }) %>%
+        aperm(c(2, 3, 4, 1, 5)) %>%
+        factor()
+    }
 
-    map$log_sdg_rs <- factor(array(NA, dim(p$log_sdg_rs)))
-    map$t_corg_ps <- factor(array(NA, dim(p$t_corg_ps)))
+    if (is.null(map$log_sdg_rs)) map$log_sdg_rs <- factor(array(NA, dim(p$log_sdg_rs)))
+    if (is.null(map$t_corg_ps)) map$t_corg_ps <- factor(array(NA, dim(p$t_corg_ps)))
 
-    if (!silent) message_info("Stock movement is estimated as a fixed effect")
+    if (!silent) message_info("Stock movement is estimated as fixed effects")
   }
 
   # Fleet parameters ----
@@ -389,14 +409,34 @@ check_parameters <- function(p = list(), map, MARSdata, silent = FALSE) {
         nparam <- length(unique(m_x[!is.na(m_x)]))
       }
       if (nparam) {
-        data.frame(Variable = x, Parameters = nparam)
+        data.frame(Parameter = par_df[x], Number = nparam)
       } else {
         NULL
       }
     })
     message_info("Estimated parameters:")
+    output <- do.call(rbind, npar)
     print(do.call(rbind, npar))
   }
 
   return(invisible(p))
 }
+
+par_df = c(
+  "t_R0_s" = "Unfished recruitment",
+  "t_h_s" = "Steepness",
+  "mat_ps" = "Maturity ogive",
+  "log_M_s" = "Natural mortality",
+  "log_rdev_ys" = "Recruitment deviations",
+  "log_sdr_s" = "Recruitment deviation standard deviation",
+  "mov_x_marrs" = "Base movement",
+  "mov_g_ymars" = "Movement, gravity to regions",
+  "mov_v_ymas" = "Movement, region viscosity/retention",
+  "t_corg_ps" = "Region distribution correlation matrix",
+  "log_q_fs" = "Relative catchability of stocks by fleet",
+  "log_Fdev_ymfr" = "F deviations",
+  "sel_pf" = "Fishery selectivity",
+  "sel_pi" = "Index selectivity",
+  "log_initF_mfr" = "Equilibrium (year 1) F",
+  "log_initrdev_as" = "Initial (year 1) recruitment deviations"
+)
