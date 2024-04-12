@@ -180,7 +180,7 @@ calc_population <- function(ny = 10, nm = 4, na = 20, nf = 1, nr = 4, ns = 2,
         N = N_ymars[y, m, , , ], surv = exp(-Z_ymars[y, m, , , ]),
         na = na, nr = nr, ns = ns,
         advance_age = mnext == m_rec,
-        R = R_ys[y_spawn, ],
+        R = if (y_spawn < 1) colSums(initN_ars[1, , ]) else R_ys[y_spawn, ], # For year 1, no recruitment
         mov = mov_ymarrs[ylast, mnext, , , , ]
       )
     }
