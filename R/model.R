@@ -247,8 +247,8 @@ update_report <- function(r, MARSdata) {
 
   initZ_mars <- array(NA_real_, c(nm, na, nr, ns))
 
-  initCN_mafrs <- array(NA_real_, c(na, nf, nr, ns))
-  initCB_mfrs <- array(NA_real_, c(nf, nr, ns))
+  initCN_mafrs <- array(NA_real_, c(nm, na, nf, nr, ns))
+  initCB_mfrs <- array(NA_real_, c(nm, nf, nr, ns))
 
   if (all(Cinit_mfr < 1e-8)) {
     initNPR_yars[] <- initNPR0_yars
@@ -259,7 +259,7 @@ update_report <- function(r, MARSdata) {
     NPR_init <- calc_phi_project( #nyinit = 1 if nm == 1 && nr == 1
       nyinit, nm, na, nf, nr, ns, F_mfr = initF_mfr, sel_mafs = sel_ymafs[1, , , , ],
       fwt_mafs = fwt_ymafs[1, , , , ], q_fs = q_fs,
-      M_as = M_yas[1, , ], mov_marrs = mov_ymarrs[y_phi, , , , ],
+      M_as = M_yas[1, , ], mov_marrs = mov_ymarrs[y_phi, , , , , ],
       mat_as = mat_yas[1, , ], fec_as = fec_yas[1, , ], m_spawn = m_spawn, m_rec = m_rec,
       delta_s = delta_s, natal_rs = natal_rs
     )
@@ -541,7 +541,7 @@ update_report <- function(r, MARSdata) {
   }
 
   if (any(tag_ymars > 0, na.rm = TRUE)) {
-    logprior_dist_ymas <- sapply2(1:ns, function(s) {
+    loglike_tag_dist_ymas <- sapply2(1:ns, function(s) {
       sapply2(1:nrow(tag_aa), function(aa) { # Aggregate over age classes SC_aa
         sapply(1:nm, function(m) {
           sapply(1:nrow(tag_yy), function(yy) {
