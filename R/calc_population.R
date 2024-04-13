@@ -114,33 +114,32 @@ calc_population <- function(ny = 10, nm = 4, na = 20, nf = 1, nr = 4, ns = 2,
         CB_ymfrs[y, m, , , ] <- Fsearch[["CB_frs"]]
         VB_ymfrs[y, m, , , ] <- apply(Fsearch[["VB_afrs"]], 2:4, sum)
       } else {
-        F_ymafrs[y, m, , , , ] <- sapply2(1:ns, function(s) {
-          sapply2(1:nr, function(r) {
-            sapply(1:nf, function(f) q_fs[f, s] * F_ymfr[y, m, f, r] * sel_ymafs[y, m, , f, s])
-          })
-        })
-        F_ymars[y, m, , , ] <- apply(F_ymafrs[y, m, , , , , drop = FALSE], c(3, 5:6), sum)
-        Z_ymars[y, m, , , ] <- sapply2(1:ns, function(s) {
-          sapply(1:nr, function(r) F_ymars[y, m, , r, s] + delta_m * M_yas[y, , s])
-        })
 
-        CN_ymafrs[y, m, , , , ] <- sapply2(1:ns, function(s) {
-          sapply2(1:nr, function(r) {
-            sapply(1:nf, function(f) {
-              calc_Baranov(F_ymafrs[y, m, , f, r, s], Z_ymars[y, m, , r, s], N_ymars[y, m, , r, s])
-            })
-          })
-        })
-        CB_ymfrs[y, m, , , ] <- sapply2(1:ns, function(s) {
-          sapply2(1:nr, function(r) {
-            sapply(1:nf, function(f) sum(CN_ymafrs[y, m, , f, r, s] * fwt_ymafs[y, m, , f, s]))
-          })
-        })
-        VB_ymfrs[y, m, , , ] <- sapply2(1:ns, function(s) {
-          sapply2(1:nr, function(r) {
-            sapply(1:nf, function(f) sum(sel_ymafs[y, m, , f, s] * fwt_ymafs[y, m, , f, s] * N_ymars[y, m, , r, s]))
-          })
-        })
+        ind_afrs <- as.matrix(expand.grid(y = y, m = m, a = 1:na, f = 1:nf, r = 1:nr, s = 1:ns))
+        fs_afrs <- ind_afrs[, c("f", "s")]
+        ymfr_afrs <- ind_afrs[, c("y", "m", "f", "r")]
+        ymafs_afrs <- ind_afrs[, c("y", "m", "a", "f", "s")]
+        ymars_afrs <- ind_afrs[, c("y", "m", "a", "r", "s")]
+
+        F_ymafrs[y, m, , , , ] <- q_fs[fs_afrs] * F_ymfr[ymfr_afrs] * sel_ymafs[ymafs_afrs]
+        F_ymars[y, m, , , ] <- apply(F_ymafrs[y, m, , , , , drop = FALSE], c(3, 5:6), sum)
+
+        ind_ars <- as.matrix(expand.grid(y = y, m = m, a = 1:na, r = 1:nr, s = 1:ns))
+        yas_ars <- ind_ars[, c("y", "a", "s")]
+
+        Z_ymars[y, m, , , ] <- F_ymars[y, m, , , ] + delta_m * M_yas[yas_ars]
+        CN_ymafrs[y, m, , , , ] <- F_ymafrs[y, m, , , , ] * (1 - exp(-Z_ymars[ymars_afrs])) * N_ymars[ymars_afrs] / Z_ymars[ymars_afrs]
+
+        ymafs_afrs <- ind_afrs[, c("y", "m", "a", "f", "s")]
+
+        CB_ymfrs[y, m, , , ] <- array(CN_ymafrs[ind_afrs] * fwt_ymafs[ymafs_afrs], c(na, nf, nr, ns)) %>%
+          apply(2:4, sum)
+
+        VB_ymfrs[y, m, , , ] <- array(
+          sel_ymafs[ymafs_afrs] * fwt_ymafs[ymafs_afrs] * N_ymars[ymars_afrs],
+          c(na, nf, nr, ns)
+        ) %>%
+          apply(2:4, sum)
       }
 
       ## This year's spawning and recruitment ----
@@ -171,16 +170,25 @@ calc_population <- function(ny = 10, nm = 4, na = 20, nf = 1, nr = 4, ns = 2,
 
       if (nr > 1 && mnext == m_rec) {
         # Distribution of recruits is proportional to regional abundance of spawners
-        mov_ymarrs[ylast, mnext, 1, , , ] <- sapply2(1:ns, function(s) {
-          matrix(S_yrs[y_spawn, , s]/sum(S_yrs[y_spawn, , s]), nr, nr, byrow = TRUE)
-        })
+        if (y_spawn > 0) {
+          mov_ymarrs[ylast, mnext, 1, , , ] <- sapply2(1:ns, function(s) {
+            matrix(S_yrs[y_spawn, , s]/sum(S_yrs[y_spawn, , s]), nr, nr, byrow = TRUE)
+          })
+        } else {
+          mov_ymarrs[ylast, mnext, 1, , , ] <- sapply2(1:ns, function(s) {
+            Npsp_ar <- initN_ars[, , s] * mat_yas[1, , s]
+            Nsp_ra <- t(Npsp_ar) * natal_rs[, s]
+            S_r <- colSums(t(Nsp_ra) * fec_yas[1, , s])
+            matrix(S_r/sum(S_r), nr, nr, byrow = TRUE)
+          })
+        }
       }
 
       N_ymars[ynext, mnext, , , ] <- calc_nextN(
         N = N_ymars[y, m, , , ], surv = exp(-Z_ymars[y, m, , , ]),
         na = na, nr = nr, ns = ns,
         advance_age = mnext == m_rec,
-        R = if (y_spawn < 1) colSums(initN_ars[1, , ]) else R_ys[y_spawn, ], # For year 1, no recruitment
+        R = if (y_spawn > 0) R_ys[y_spawn, ] else colSums(initN_ars[1, , ]), # For year 1, no recruitment
         mov = mov_ymarrs[ylast, mnext, , , , ]
       )
     }

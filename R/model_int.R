@@ -88,13 +88,19 @@ calc_F <- function(Cobs, N, sel, wt, M, q_fs, delta = 1,
 
   # Initialize search ----
   fn <- gr <- x_loop <- list()
-  #matrix(NA_real_, nitF + 1, nf)
 
-  VB_afrs <- sapply2(1:ns, function(s) {
-    sapply2(1:nr, function(r) {
-      sapply(1:nf, function(f) N[, r, s] * sel[, f, s] * wt[, f, s])
-    })
-  })
+  ind_afrs <- as.matrix(expand.grid(a = 1:na, f = 1:nf, r = 1:nr, s = 1:ns))
+  ind_ars <- as.matrix(expand.grid(a = 1:na, r = 1:nr, s = 1:ns))
+
+  frs_afrs <- ind_afrs[, c("f", "r", "s")]
+  afs_afrs <- ind_afrs[, c("a", "f", "s")]
+  ars_afrs <- ind_afrs[, c("a", "r", "s")]
+  fr_afrs <- ind_afrs[, c("f", "r")]
+  fs_afrs <- ind_afrs[, c("f", "s")]
+
+  as_ars <- ind_ars[, c("a", "s")]
+
+  VB_afrs <- array(N[ars_afrs] * sel[afs_afrs] * wt[afs_afrs], c(na, nf, nr, ns))
   VB_fr <- apply(VB_afrs, c(2, 3), sum)
   Cobs_loop <- ifelse(Cobs < 1e-8, 1e-9, Cobs)
   F_init <- Cobs_loop/(Cobs_loop + VB_fr)
@@ -106,6 +112,7 @@ calc_F <- function(Cobs, N, sel, wt, M, q_fs, delta = 1,
   }
 
   # Run search for Findex ----
+
   penalty <- 0 # posfun penalty if F_index > Fmax
   ln_Fmax <- log(Fmax)
   for(i in seq(1, nitF + 1)) {
@@ -122,25 +129,13 @@ calc_F <- function(Cobs, N, sel, wt, M, q_fs, delta = 1,
     }
 
     F_frs <- sapply2(1:ns, function(s) q_fs[, s] * F_loop) %>% array(c(nf, nr, ns))
-    F_afrs <- sapply2(1:ns, function(s) {
-      sapply2(1:nr, function(r) {
-        sapply(1:nf, function(f) F_frs[f, r, s] * sel[, f, s])
-      })
-    })
+    F_afrs <- array(F_frs[frs_afrs] * sel[afs_afrs], c(na, nf, nr, ns))
     F_ars <- apply(F_afrs, c(1, 3, 4), sum)
-    Z_ars <- sapply2(1:nr, function(r) F_ars[, r, ] + delta * M) %>%
-      array(c(na, ns, nr)) %>%
-      aperm(c(1, 3, 2))
+    Z_ars <- array(F_ars + delta * M[as_ars], c(na, nr, ns))
     .gamma_ars <- 1 - exp(-Z_ars)
 
-    CN_afrs <- sapply2(1:ns, function(s) {
-      sapply2(1:nr, function(r) {
-        sapply(1:nf, function(f) calc_Baranov(F_afrs[, f, r, s], Z_ars[, r, s], N[, r, s]))
-      })
-    })
-    CB_afrs <- sapply2(1:ns, function(s) {
-      sapply2(1:nr, function(r) CN_afrs[, , r, s] * wt[, , s])
-    }) %>% array(c(na, nf, nr, ns))
+    CN_afrs <- array(F_afrs * .gamma_ars[ars_afrs] * N[ars_afrs]/ Z_ars[ars_afrs], c(na, nf, nr, ns))
+    CB_afrs <- array(CN_afrs * wt[afs_afrs], c(na, nf, nr, ns))
     CB_fr <- apply(CB_afrs, 2:3, sum)
 
     fn[[i]] <- CB_fr - Cobs
@@ -150,32 +145,22 @@ calc_F <- function(Cobs, N, sel, wt, M, q_fs, delta = 1,
     } else {
       deriv_F <- Fmax * exp(-x_loop[[i]])/(1 + exp(-x_loop[[i]]))/(1 + exp(-x_loop[[i]]))
     }
-    deriv_Z_fars <- sapply2(1:ns, function(s) {
-      sapply2(1:nr, function(r) q_fs[, s] * deriv_F[, r] * t(sel[, , s]))
-    })
-    deriv_gamma_afrs <- sapply2(1:ns, function(s) {
-      sapply2(1:nr, function(r) exp(-Z_ars[, r, s]) * t(deriv_Z_fars[, , r, s]))
-    }) %>%
-      array(c(na, nf, nr, ns))
 
-    constants_afrs <- sapply2(1:ns, function(s) {
-      sapply2(1:nr, function(r) {
-        sapply(1:nf, function(f) q_fs[f, s] * sel[, f, s] * N[, r, s] * wt[, f, s])
-      })
-    })
+    deriv_Z_afrs <- array(q_fs[fs_afrs] * deriv_F[fr_afrs] * sel[afs_afrs], c(na, nf, nr, ns))
+    deriv_gamma_afrs <- array(exp(-Z_ars[ars_afrs]) * deriv_Z_afrs, c(na, nf, nr, ns))
 
-    deriv_afrs <- sapply2(1:ns, function(s) {
-      sapply2(1:nr, function(r) {
-        sapply(1:nf, function(f) {
-          deriv1_a <- deriv_F[f, r] * .gamma_ars[, r, s] + F_loop[f, r] * deriv_gamma_afrs[, f, r, s]
-          deriv2_a <- deriv1_a * Z_ars[, r, s]
-          deriv3_a <- deriv2_a - .gamma_ars[, r, s] * F_loop[f, r] * deriv_Z_fars[f, , r, s]
-          deriv4_a <- deriv3_a/Z_ars[, r, s]/Z_ars[, r, s]
-          return(deriv4_a)
-        })
-      })
-    }) %>%
-      array(c(na, nf, nr, ns))
+    constants_afrs <- array(q_fs[fs_afrs] * sel[afs_afrs] * N[ars_afrs] * wt[afs_afrs], c(na, nf, nr, ns))
+
+    deriv1_afrs <- array(
+      deriv_F[fr_afrs] * .gamma_ars[ars_afrs] + F_loop[fr_afrs] * deriv_gamma_afrs,
+      c(na, nf, nr, ns)
+    )
+    deriv2_afrs <- array(deriv1_afrs * Z_ars[ars_afrs], c(na, nf, nr, ns))
+    deriv3_afrs <- array(
+      deriv2_afrs - .gamma_ars[ars_afrs] * F_loop[fr_afrs] * deriv_Z_afrs,
+      c(na, nf, nr, ns)
+    )
+    deriv_afrs <- array(deriv3_afrs/Z_ars[ars_afrs]/Z_ars[ars_afrs], c(na, nf, nr, ns))
 
     gr[[i]] <- apply(constants_afrs * deriv_afrs, c(2, 3), sum)
 
@@ -387,7 +372,6 @@ calc_nextN <- function(N, surv, na = dim(N)[1], nr = dim(N)[2], ns = dim(N)[3],
   } else {
     Nnext_ars <- Nsurv_ars
   }
-
 
   return(Nnext_ars)
 }

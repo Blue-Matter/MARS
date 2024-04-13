@@ -299,13 +299,11 @@ update_report <- function(r, MARSdata) {
   R_ys[] <- pop$R_ys
   penalty <- penalty + pop$penalty
 
-  B_ymrs[] <- sapply2(1:ns, function(s) {
-    sapply2(1:nr, function(r) {
-      sapply(1:nm, function(m) {
-        sapply(1:ny, function(y) sum(N_ymars[y, m, , r, s] * swt_ymas[y, m, , s]))
-      })
-    })
-  })
+  ind_ymars <- as.matrix(expand.grid(y = 1:ny, m = 1:nm, a = 1:na, r = 1:nr, s = 1:ns))
+  ymas_ymars <- ind_ymars[, c("y", "m", "a", "s")]
+
+  B_ymrs[] <- array(N_ymars[ind_ymars] * swt_ymas[ymas_ymars], c(ny, nm, na, nr, ns)) %>%
+    apply(c(1, 2, 4, 5), sum)
 
   # Likelihoods ----
   ## Initial catch ----
