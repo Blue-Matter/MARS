@@ -26,6 +26,15 @@ sapply2 <- function(X, FUN, ..., USE.NAMES = TRUE) {
   sapply(X, FUN, ..., simplify = "array", USE.NAMES = USE.NAMES)
 }
 
+#' @name matmul
+#' @title Matrix multiplication
+#'
+#' @description Matrix product function implemented for mixed AD and non-AD objects. See \link[RTMB]{ADmatrix}.
+#'
+#' @param x AD object
+#' @param y Matrix
+#' @aliases %*%,ad,matrix-method
+#' @keywords internal
 setMethod("%*%",
           signature("ad", "matrix"),
           function(x, y) {
