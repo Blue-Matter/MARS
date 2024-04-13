@@ -8,7 +8,7 @@ Dmodel, Dstock, Dfishery, Dsurvey DCKMR, and Dtag, where the D- prefix denotes a
     <a href="#main" class="visually-hidden-focusable">Skip to contents</a>
     
 
-    <nav class="navbar fixed-top navbar-light navbar-expand-lg bg-light"><div class="container">
+    <nav class="navbar fixed-top navbar-light navbar-expand-lg bg-light" data-bs-theme="light"><div class="container">
     
     <a class="navbar-brand me-2" href="../index.html">MARS</a>
 
@@ -69,15 +69,33 @@ observed catch with the dimension following the underscore, following this templ
     <h2 id="slots-inherited-from-dtag">Slots inherited from Dtag<a class="anchor" aria-label="anchor" href="#slots-inherited-from-dtag"></a></h2>
     
 
-<dl><dt><code>tag_ymrr</code></dt>
-<dd><p>Array. Number of tags that move between regions. Used to inform movement matrices between time steps.</p></dd>
+<dl><dt><code>tag_ymarrs</code></dt>
+<dd><p>Array. Number of tags that move between regions. Informs movement matrices of stocks between time steps.</p></dd>
 
-<dt><code>tag_ymr</code></dt>
-<dd><p>Array. Number of tags among regions. Used to inform stock distribution within time step.</p></dd>
+<dt><code>tag_ymars</code></dt>
+<dd><p>Array. Number of tags distributed among regions. Informs stock distribution (within time step).</p></dd>
+
+<dt><code>tag_yy</code></dt>
+<dd><p>Boolean matrix that aggregates years for the tag data. Only used for the tag movement array <code>tag_ymarrs</code>.</p></dd>
+
+<dt><code>tag_aa</code></dt>
+<dd><p>Boolean matrix that aggregates ages for the tag data.</p></dd>
 
 <dt><code>tag_like</code></dt>
-<dd><p>Character. Likelihood for the tagging data, either the vector of proportions by region of origin for <code>tag_ymrr</code>, or
-by region of stock presence for <code>tag_ymr</code>. See <code>type</code> argument of <code><a href="like_comp.html">like_comp()</a></code> for options</p></dd>
+<dd><p>Character. Likelihood for the tagging data, either the vector of proportions by region of origin for <code>tag_ymarrs</code>, or
+by region of stock distribution for <code>tag_ymars</code>. See <code>type</code> argument of <code><a href="like_comp.html">like_comp()</a></code> for options</p></dd>
+
+<dt><code>tagN_ymars</code></dt>
+<dd><p>Array. Sample size of the tag movement vectors if using the multinomial or Dirichlet-multinomial likelihoods.</p></dd>
+
+<dt><code>tagN_ymas</code></dt>
+<dd><p>Array. Sample size of the tag distribution vectors if using the multinomial or Dirichlet-multinomial likelihoods.</p></dd>
+
+<dt><code>tagtheta_s</code></dt>
+<dd><p>Array. Tag dispersion parameter (by stock) if using the Dirichlet-multinomial likelihoods. Default set to 1.</p></dd>
+
+<dt><code>tagstdev_s</code></dt>
+<dd><p>Array. Tag standard deviation (by stock) if using the lognormal likelihood. Default set to 0.1.</p></dd>
 
 
 </dl></div>
@@ -95,7 +113,7 @@ by region of stock presence for <code>tag_ymr</code>. See <code>type</code> argu
 </div>
 
 <div class="pkgdown-footer-right">
-  <p></p><p>Site built with <a href="https://pkgdown.r-lib.org/" class="external-link">pkgdown</a> 2.0.7.</p>
+  <p></p><p>Site built with <a href="https://pkgdown.r-lib.org/" class="external-link">pkgdown</a> 2.0.8.</p>
 </div>
 
     </footer></div>
