@@ -460,14 +460,15 @@ update_report <- function(r, MARSdata) {
   any_SC <- ns > 1 && length(SC_ymafrs)
   if (any_SC) {
     SC_ymafrs <- OBS(SC_ymafrs)
+    #SCpred_ymafrs <-
     loglike_SC_ymafr <- sapply2(1:nr, function(r) {
       sapply2(1:nrow(SC_ff), function(ff) { # Aggregate over fleets SC_ff
         sapply2(1:nrow(SC_aa), function(aa) { # Aggregate over age classes SC_aa
           sapply(1:nm, function(m) {
             sapply(1:ny, function(y) {
-              Cobs_test <- sum(Cobs_ymfr[y, m, SC_aa[aa, ], SC_ff[ff, ]] >= 1e-8)
               pred <- apply(CN_ymafrs[y, m, SC_aa[aa, ], SC_ff[ff, ], r, , drop = FALSE], 6, sum)
-              like_comp(obs = Cobs_test * SC_ymafrs[y, m, aa, ff, r, ],
+              any_catch <- sum(pred) > 0
+              like_comp(obs = any_catch * SC_ymafrs[y, m, aa, ff, r, ],
                         pred = pred, type = SC_like,
                         N = SCN_ymafr[y, m, aa, ff, r], theta = SCtheta_f[ff],
                         stdev = SCstdev_f[ff])
@@ -525,8 +526,9 @@ update_report <- function(r, MARSdata) {
           sapply(1:nm, function(m) {
             sapply(1:nrow(tag_yy), function(yy) {
               y <- c(1:ny)[tag_yy[yy, ]][1]
-              like_comp(obs = tag_ymarrs[yy, m, aa, r, , s],
-                        pred = mov_ymarrs[y, m, a, r, , s], type = tag_like,
+              pred <- mov_ymarrs[y, m, a, r, , s]
+              like_comp(obs = tag_ymarrs[yy, m, aa, r, , s][pred > 0],
+                        pred = pred[pred > 0], type = tag_like,
                         N = tagN_ymars[yy, m, aa, r, s], theta = tagtheta_s[s],
                         stdev = tagstdev_s[s])
             })
@@ -546,7 +548,7 @@ update_report <- function(r, MARSdata) {
             pred <- N_ymars[tag_yy[yy, ], m, tag_aa[aa, ], , s]
             like_comp(obs = tag_ymars[yy, m, aa, , s],
                       pred = pred, type = tag_like,
-                      N = tagN_ymas[yy, m, aa, r, s], theta = tagtheta_s[s],
+                      N = tagN_ymas[yy, m, aa, s], theta = tagtheta_s[s],
                       stdev = tagstdev_s[s])
           })
         })
