@@ -167,13 +167,13 @@ calc_isel_age <- function(sel_len, LAK, type, sel_par, fsel_age, maxage, mat, a 
   on.exit(options(warn = old_warn))
 
   ni <- length(type)
+  is_ad <- inherits(sel_par, "advector") || inherits(fsel_age, "advector")
 
   sel_ai <- sapply(1:ni, function(i) {
     ti <- type[i]
-    tii <- as.integer(type[i])
+    tii <- as.integer(ti)
 
     if (is.na(tii)) {
-
       if (grepl("length", ti)) {
         v <- sel_len[, i] %*% t(LAK)
       } else if (grepl("age", ti)) {
@@ -201,7 +201,9 @@ calc_isel_age <- function(sel_len, LAK, type, sel_par, fsel_age, maxage, mat, a 
     } else {
       v <- fsel_age[, tii]
     }
+    if (is_ad) v <- advector(v)
     return(v)
   })
+
   return(sel_ai)
 }
