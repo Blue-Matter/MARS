@@ -354,7 +354,10 @@ calc_nextN <- function(N, surv, na = dim(N)[1], nr = dim(N)[2], ns = dim(N)[3],
 
   # Apply survival and advance age class ----
   if (advance_age) {
-    `[<-` <- RTMB::ADoverload("[<-")
+    is_ad <- inherits(N, "advector") || inherits(surv, "advector") || inherits(R, "advector")
+    if (is_ad) {
+      `[<-` <- RTMB::ADoverload("[<-")
+    }
     Nsurv_ars <- array(0, c(na, nr, ns))
     Nsurv_ars[2:na, , ] <- N[2:na - 1, , ] * surv[2:na - 1, , ]
     if (plusgroup) Nsurv_ars[na, , ] <- Nsurv_ars[na, , ] + N[na, , ] * surv[na, , ]
@@ -365,10 +368,11 @@ calc_nextN <- function(N, surv, na = dim(N)[1], nr = dim(N)[2], ns = dim(N)[3],
 
   # Distribute stock ----
   if (nr > 1) {
-    Nnext_ars <- sapply2(1:ns, function(s) {
-      sapply(1:na, function(a) colSums(Nsurv_ars[a, , s] * mov[a, , , s])) %>% matrix(nr, na)
-    }) %>%
-      aperm(c(2, 1, 3))
+    ind_arrs <- as.matrix(expand.grid(a = 1:na, rf = 1:nr, rt = 1:nr, s = 1:ns))
+    arfs_arrs <- ind_arrs[, c("a", "rf", "s")]
+
+    Nnext_arrs <- array(Nsurv_ars[arfs_arrs] * mov, c(na, nr, nr, ns))
+    Nnext_ars <- apply(Nnext_arrs, c(1, 3, 4), sum)
   } else {
     Nnext_ars <- Nsurv_ars
   }
@@ -408,19 +412,31 @@ calc_index <- function(N, Z, sel, na = dim(N)[1], nr = dim(N)[2], ns = dim(N)[3]
   Z <- array(Z, c(na, nr, ns))
   sel <- array(sel, c(na, ni, ns))
 
-  N_ais <- sapply2(1:ns, function(s) {
-    sapply(1:ni, function(i) {
-      r_i <- samp[i, , s]
-      if (sum(r_i)) {
-        N_ars <- N[, r_i, s, drop = FALSE] * exp(-delta[i] * Z[, r_i, s, drop = FALSE])
-        N_a <- apply(N_ars, 1, sum)
-      } else {
-        N_a <- numeric(na)
-      }
-      return(N_a)
-    })
-  })
-  IN_ais <- N_ais * sel
+  ind_airs <- as.matrix(expand.grid(a = 1:na, i = 1:ni, r = 1:nr, s = 1:ns))
+  irs_airs <- ind_airs[, c("i", "r", "s")]
+  ars_airs <- ind_airs[, c("a", "r", "s")]
+  ais_airs <- ind_airs[, c("a", "i", "s")]
+  i_airs <- ind_airs[, "i"]
+
+  IN_airs <- array(
+    N[ars_airs] * samp[irs_airs] * sel[ais_airs] * exp(-delta[i_airs] * Z[ars_airs]),
+    c(na, ni, nr, ns)
+  )
+  IN_ais <- apply(IN_airs, c(1, 2, 4), sum)
+
+  #N_ais <- sapply2(1:ns, function(s) {
+  #  sapply(1:ni, function(i) {
+  #    r_i <- samp[i, , s]
+  #    if (sum(r_i)) {
+  #      N_ars <- N[, r_i, s, drop = FALSE] * exp(-delta[i] * Z[, r_i, s, drop = FALSE])
+  #      N_a <- apply(N_ars, 1, sum)
+  #    } else {
+  #      N_a <- numeric(na)
+  #    }
+  #    return(advector(N_a))
+  #  })
+  #})
+  #IN_ais2 <- N_ais * sel
   return(IN_ais)
 }
 
