@@ -471,8 +471,8 @@ update_report <- function(r, MARSdata) {
           sapply(1:nm, function(m) {
             sapply(1:ny, function(y) {
               pred <- apply(CN_ymafrs[y, m, SC_aa[aa, ], SC_ff[ff, ], r, , drop = FALSE], 6, sum)
-              any_catch <- sum(pred) > 0
-              like_comp(obs = any_catch * SC_ymafrs[y, m, aa, ff, r, ],
+              pred <- CondExpGt(pred, 1e-8, pred, 1e-8)
+              like_comp(obs = SC_ymafrs[y, m, aa, ff, r, ],
                         pred = pred, type = SC_like,
                         N = SCN_ymafr[y, m, aa, ff, r], theta = SCtheta_f[ff],
                         stdev = SCstdev_f[ff])
@@ -531,8 +531,9 @@ update_report <- function(r, MARSdata) {
             sapply(1:nrow(tag_yy), function(yy) {
               y <- c(1:ny)[tag_yy[yy, ]][1]
               pred <- mov_ymarrs[y, m, a, r, , s]
-              like_comp(obs = tag_ymarrs[yy, m, aa, r, , s][pred > 0],
-                        pred = pred[pred > 0], type = tag_like,
+              pred <- CondExpGt(pred, 1e-8, pred, 1e-8)
+              like_comp(obs = tag_ymarrs[yy, m, aa, r, , s],
+                        pred = pred, type = tag_like,
                         N = tagN_ymars[yy, m, aa, r, s], theta = tagtheta_s[s],
                         stdev = tagstdev_s[s])
             })
