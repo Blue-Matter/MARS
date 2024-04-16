@@ -124,11 +124,13 @@ calc_sel_len <- function(sel_par, lmid, type) {
 calc_fsel_age <- function(sel_len, LAK, type, sel_par, sel_block = seq(1, length(type)), mat, a = seq(1, nrow(LAK))) {
   nf <- length(sel_block)
 
+  is_ad <- inherits(sel_par, "advector")
+
   sel_af <- sapply(1:nf, function(ff) {
     f <- sel_block[ff]
     if (grepl("length", type[f])) {
       v <- sel_len[, f] %*% t(LAK)
-    } else if (grepl("age", type[f])){
+    } else if (grepl("age", type[f])) {
 
       ex_asc <- (a - sel_par[1, f])/sel_par[2, f]
       ex2_asc <- -1 * ex_asc^2
@@ -149,6 +151,7 @@ calc_fsel_age <- function(sel_len, LAK, type, sel_par, sel_block = seq(1, length
     } else if (type[f] == "free") {
       v <- plogis(sel_par[, f])
     }
+    if (is_ad) v <- advector(v)
     return(v)
   })
 
