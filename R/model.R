@@ -87,7 +87,10 @@ update_report <- function(r, MARSdata) {
 .MARS <- function(p = list(), d) {
 
   # Dispatch method for AD variables ----
-  `[<-` <- RTMB::ADoverload("[<-")
+  is_ad <- any(sapply(p, inherits, "advector"))
+  if (is_ad) {
+    `[<-` <- RTMB::ADoverload("[<-")
+  }
 
   # Assign data variables to environment, see OBS() for simulation ----
   getAllS4(d@Dmodel, d@Dstock, d@Dfishery, d@Dsurvey, d@DCKMR, d@Dtag)
@@ -105,6 +108,7 @@ update_report <- function(r, MARSdata) {
     Rdev_ys <- array(NA_real_, c(ny, ns))
   F_ymars <-
     Z_ymars <- array(NA_real_, c(ny, nm, na, nr, ns))
+  M_yas <- mat_yas <- array(NA_real_, c(ny, na, ns))
   if (length(HSP_s)) F_yas <- array(NA_real_, c(ny, na, ns))
   mov_ymarrs <- array(NA_real_, c(ny, nm, na, nr, nr, ns))
 
@@ -131,7 +135,7 @@ update_report <- function(r, MARSdata) {
   ## Maturity at age ogive ----
   if (is.null(map$mat_ps)) map$mat_ps <- matrix(TRUE, 2, ns)
   map$mat_ps <- matrix(map$mat_ps, 2, ns)
-  mat_yas <- sapply2(1:ns, function(s) {
+  mat_yas[] <- sapply2(1:ns, function(s) {
     if (all(is.na(map$mat_ps[, s]))) {
       matd_yas[1:ny, , s]
     } else {
@@ -145,13 +149,13 @@ update_report <- function(r, MARSdata) {
   })
 
   ## Natural mortality ----
-  M_yas <- sapply2(1:ns, function(s) {
+  for(s in 1:ns) {
     if (!is.null(map$log_M_s) && is.na(map$log_M_s[s])) {
-      Md_yas[1:ny, , s]
+      M_yas[, , s] <- Md_yas[1:ny, , s]
     } else {
-      matrix(exp(p$log_M_s[s]), ny, na)
+      M_yas[, , s] <- matrix(exp(p$log_M_s[s]), ny, na)
     }
-  })
+  }
 
   ## Fishery selectivity ----
   q_fs <- exp(p$log_q_fs)
