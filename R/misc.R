@@ -76,6 +76,24 @@ conv_Sigma <- function(sigma, lower_diag) {
   return(Sigma)
 }
 
+conv_steepness <- function(x, SRR = c("BH", "Ricker")) {
+  SRR <- match.arg(SRR)
+  switch(
+    SRR,
+    "BH" = 0.8 * plogis(x),
+    "Ricker" = exp(x)
+  ) + 0.2
+}
+
+conv_mat <- function(x, na) {
+  a50 <- na * plogis(x[1])
+  a95 <- a50 + exp(x[2])
+
+  a <- seq(1, na)
+  m <- 1/(1 + exp(-log(19) * (a - a50)/(a95 - a50)))
+  return(m)
+}
+
 
 #' Optimize RTMB model
 #'

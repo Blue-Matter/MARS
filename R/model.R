@@ -139,11 +139,7 @@ update_report <- function(r, MARSdata) {
     if (all(is.na(map$mat_ps[, s]))) {
       matd_yas[1:ny, , s]
     } else {
-      a50 <- na * plogis(p$mat_ps[1, s])
-      a95 <- a50 + exp(p$mat_ps[2, s])
-
-      a <- seq(1, na)
-      m <- 1/(1 + exp(-log(19) * (a - a50)/(a95 - a50)))
+      m <- conv_mat(p$mat_ps[, s], na)
       matrix(m, ny, na, byrow = TRUE)
     }
   })
@@ -212,7 +208,7 @@ update_report <- function(r, MARSdata) {
 
   ## Stock recruit parameters ----
   R0_s <- exp(p$t_R0_s) * scale_s
-  h_s <- ifelse(SRR_s == "BH", 0.8 * plogis(p$t_h_s), exp(p$t_h_s)) + 0.2
+  h_s <- sapply(1:ns, function(s) conv_steepness(p$t_h_s[s], SRR_s[s]))
   kappa_s <- sapply(1:ns, function(s) SRkconv(h_s[s], SRR = SRR_s[s]))
 
   if (nr == 1 && nm == 1) {

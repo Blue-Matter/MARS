@@ -6,7 +6,7 @@
 \alias{check_parameters}
 \title{Make list of parameters for RTMB}
 \usage{
-make_parameters(MARSdata, start = list(), silent = FALSE, ...)
+make_parameters(MARSdata, start = list(), map = list(), silent = FALSE, ...)
 
 make_map(
   p,
@@ -29,13 +29,13 @@ check_parameters(p = list(), map, MARSdata, silent = FALSE)
 \item{start}{An optional list of parameters. Named list of parameters with the associated dimensions and transformations below.
 Overrides default values created by \code{\link[=make_parameters]{make_parameters()}}.}
 
-\item{silent}{Logical, whether to report messages to the console}
+\item{map}{List of mapped parameters. Used by \code{\link[=check_parameters]{check_parameters()}} only to count parameters.}
+
+\item{silent}{Logical, whether \code{\link[=make_map]{make_map()}} reports messages to the console}
 
 \item{...}{Various arguments for \code{\link[=make_map]{make_map()}} (could be important!)}
 
 \item{p}{List of parameters, e.g., returned by \code{\link[=make_parameters]{make_parameters()}}}
-
-\item{map}{List of mapped parameters. Used by \code{\link[=check_parameters]{check_parameters()}} only to count parameters.}
 
 \item{est_M}{Logical, estimate natural mortality?}
 
@@ -132,6 +132,8 @@ season, age, and stock. \code{mov_g_ymars} are random effects.
 
 If \code{est_mov = "gravity_fixed"}: fix all values for \code{mov_x_marrs}. Fix \code{mov_g_ymars} for the first region for each year,
 season, age, and stock. Estimate all \code{mov_v_ymas}. Both \code{mov_g_ymars} and \code{mov_v_ymas} are fixed effects.
+
+By default \code{p$mov_x_marrs} is zero. Set to -1000 for areas for which there is no abundance of a particular stock.
 }
 
 \seealso{
