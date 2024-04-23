@@ -187,6 +187,8 @@ update_report <- function(r, MARSdata) {
   }
 
   ## Stock distribution and movement parameters ----
+  recdist_rs <- sapply(1:ns, function(s) softmax(p$log_recdist_rs[, s]))
+
   ## Fishery and index selectivity ----
   for(y in 1:ny) {
     for(m in 1:nm) {
@@ -222,7 +224,7 @@ update_report <- function(r, MARSdata) {
     NPR_unfished <- calc_phi_project(
       nyinit, nm, na, nf = 1, nr, ns, M_as = M_yas[y_phi, , ], mov_marrs = mov_ymarrs[y_phi, , , , , ],
       mat_as = mat_yas[y_phi, , ], fec_as = fec_yas[y_phi, , ], m_spawn = m_spawn, m_rec = m_rec,
-      delta_s = delta_s, natal_rs = natal_rs
+      delta_s = delta_s, natal_rs = natal_rs, recdist_rs = recdist_rs
     )
     initNPR0_yars <- array(NPR_unfished[["N_ymars"]][1:nyinit, 1, , , ], c(nyinit, na, nr ,ns))
     phi_s <- sapply(1:ns, function(s) sum(NPR_unfished[["S_yrs"]][nyinit, , s]))
@@ -261,7 +263,7 @@ update_report <- function(r, MARSdata) {
       fwt_mafs = fwt_ymafs[1, , , , ], q_fs = q_fs,
       M_as = M_yas[1, , ], mov_marrs = mov_ymarrs[y_phi, , , , , ],
       mat_as = mat_yas[1, , ], fec_as = fec_yas[1, , ], m_spawn = m_spawn, m_rec = m_rec,
-      delta_s = delta_s, natal_rs = natal_rs
+      delta_s = delta_s, natal_rs = natal_rs, recdist_rs = recdist_rs
     )
     initNPR_yars[] <- NPR_init[["N_ymars"]][1:nyinit, 1, , , ]
     initphi_s <- sapply(1:ns, function(s) sum(NPR_init[["S_yrs"]][nyinit, , s]))
@@ -280,7 +282,7 @@ update_report <- function(r, MARSdata) {
   # Run population model ----
   pop <- calc_population(
     ny, nm, na, nf, nr, ns, initN_ars, mov_ymarrs, M_yas, SRR_s, sralpha_s, srbeta_s,
-    mat_yas, fec_yas, Rdev_ys, m_rec, m_spawn, delta_s, natal_rs,
+    mat_yas, fec_yas, Rdev_ys, m_rec, m_spawn, delta_s, natal_rs, recdist_rs = recdist_rs,
     fwt_ymafs, q_fs, sel_ymafs,
     condition = condition, F_ymfr = F_ymfr, Cobs_ymfr = Cobs_ymfr, Fmax = Fmax, nitF = nitF
   )

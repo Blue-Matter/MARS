@@ -109,6 +109,8 @@ make_parameters <- function(MARSdata, start = list(), map = list(), silent = FAL
   if (is.null(p$log_rdev_ys)) p$log_rdev_ys <- matrix(0, ny, ns)
   if (is.null(p$log_sdr_s)) p$log_sdr_s <- rep(log(0.4), ns)
 
+  if (is.null(p$log_recdist_rs)) p$log_recdist_rs <- matrix(0, nr, ns)
+
   if (is.null(p$mov_x_marrs)) p$mov_x_marrs <- array(0, c(nm, na, nr, nr, ns))
   if (is.null(p$mov_g_ymars)) p$mov_g_ymars <- array(0, c(ny, nm, na, nr, ns))
   if (is.null(p$mov_v_ymas)) p$mov_v_ymas <- array(0, c(ny, nm, na, ns))
@@ -308,7 +310,9 @@ make_map <- function(p, MARSdata, map = list(),
     map$log_sdg_rs <- factor(array(NA, dim(p$log_sdg_rs)))
     map$t_corg_ps <- factor(array(NA, dim(p$t_corg_ps)))
 
-    if (!silent) message_info("No movement parameters are estimated")
+    map$log_recdist_rs <- factor(matrix(NA, nr, ns))
+
+    if (!silent) message_info("No stock movement or recruitment distribution parameters are estimated")
 
   } else {
 
@@ -331,6 +335,12 @@ make_map <- function(p, MARSdata, map = list(),
       if (is.null(map$t_corg_ps)) map$t_corg_ps <- factor(array(NA, dim(p$t_corg_ps)))
 
       if (!silent) message_info("Stock movement is estimated as fixed effects")
+    }
+  }
+
+  if (!silent && nr > 1) {
+    if (is.null(map$log_recdist_rs) || any(!is.na(map$log_recdist_rs))) {
+      message_info("Recruitment distribution will be estimated")
     }
   }
 
@@ -529,7 +539,9 @@ par_df = c(
   "mov_x_marrs" = "Base movement",
   "mov_g_ymars" = "Movement, gravity to regions",
   "mov_v_ymas" = "Movement, region viscosity/retention",
+  "log_sdg_rs" = "Region distribution standard deviation",
   "t_corg_ps" = "Region distribution correlation matrix",
+  "log_recdist_rs" = "Region distribution of recruitment",
   "log_q_fs" = "Relative catchability of stocks by fleet",
   "log_Fdev_ymfr" = "F deviations",
   "sel_pf" = "Fishery selectivity",

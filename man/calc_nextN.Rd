@@ -13,6 +13,7 @@ calc_nextN(
   advance_age = TRUE,
   R = numeric(ns),
   mov = array(1/nr, c(na, nr, nr, ns)),
+  recdist = matrix(1/nr, nr, ns),
   plusgroup = TRUE
 )
 }
@@ -29,9 +30,11 @@ calc_nextN(
 
 \item{advance_age}{Logical, whether the animals advance to their next age class}
 
-\item{R}{Incoming recruitment. Only assigned if \code{advance_age = TRUE}. Vector of \code{s}}
+\item{R}{Incoming total recruitment. Vector length \code{s}. Only assigned if \code{advance_age = TRUE}.}
 
 \item{mov}{Movement array in the next time step. Array \verb{[a, r, r, s]}. Rows denote region of origin and columns denote region of destination.}
+
+\item{recdist}{Distribution of incoming recruitment. Matrix \verb{[r, s]}. Only assigned if \code{advance_age = TRUE}.}
 
 \item{plusgroup}{Logical, whether the last age class is an accumulator plus group.}
 }

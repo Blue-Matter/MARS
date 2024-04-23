@@ -338,7 +338,8 @@ calc_growth <- function(Linf_s, K_s, t0_s, ns = length(Linf_s), nm = 4, ny = 20,
 #' @param nr Integer, number of regions
 #' @param ns Integer, number of stocks
 #' @param advance_age Logical, whether the animals advance to their next age class
-#' @param R Incoming recruitment. Only assigned if `advance_age = TRUE`. Vector of `s`
+#' @param R Incoming total recruitment. Vector length `s`. Only assigned if `advance_age = TRUE`.
+#' @param recdist Distribution of incoming recruitment. Matrix `[r, s]`. Only assigned if `advance_age = TRUE`.
 #' @param mov Movement array in the next time step. Array `[a, r, r, s]`. Rows denote region of origin and columns denote region of destination.
 #' @param plusgroup Logical, whether the last age class is an accumulator plus group.
 #' @return Abundance at the next time step. Array `[a, r, s]`
@@ -346,6 +347,7 @@ calc_growth <- function(Linf_s, K_s, t0_s, ns = length(Linf_s), nm = 4, ny = 20,
 calc_nextN <- function(N, surv, na = dim(N)[1], nr = dim(N)[2], ns = dim(N)[3],
                        advance_age = TRUE, R = numeric(ns),
                        mov = array(1/nr, c(na, nr, nr, ns)),
+                       recdist = matrix(1/nr, nr, ns),
                        plusgroup = TRUE) {
 
   N <- array(N, c(na, nr, ns))
@@ -361,7 +363,7 @@ calc_nextN <- function(N, surv, na = dim(N)[1], nr = dim(N)[2], ns = dim(N)[3],
     Nsurv_ars <- array(0, c(na, nr, ns))
     Nsurv_ars[2:na, , ] <- N[2:na - 1, , ] * surv[2:na - 1, , ]
     if (plusgroup) Nsurv_ars[na, , ] <- Nsurv_ars[na, , ] + N[na, , ] * surv[na, , ]
-    Nsurv_ars[1, 1, ] <- R
+    Nsurv_ars[1, , ] <- sapply(1:ns, function(s) recdist[, s] * R[s])
   } else {
     Nsurv_ars <- N * surv
   }

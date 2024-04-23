@@ -21,6 +21,7 @@
 #' @param delta_s Numeric vector by `s`. Fraction of season that elapses when spawning occurs, e.g., midseason spawning when `delta_s = 0.5`.
 #' @param natal_rs Matrix `[r, s]`. The fraction of the mature stock `s` in region `r` that spawns at
 #' time of spawning. See example in [Dstock-class].
+#' @param recdist_rs Matrix `[r, s]`. The fraction of the incoming recruitment of stock `s` that settles in region `r`.
 #' @param fwt_ymafs Fishery weight at age. Array `[y, m, a, f, s]`
 #' @param sel_ymafs Fishery selectivity. Array `[y, m, a, f, s]`
 #' @param condition Whether the fishing mortality is conditioned on the catch or specified F argument.
@@ -57,6 +58,7 @@ calc_population <- function(ny = 10, nm = 4, na = 20, nf = 1, nr = 4, ns = 2,
                             mat_yas = array(1, c(ny, na, ns)), fec_yas = array(1, c(ny, na, ns)),
                             Rdev_ys = matrix(1, ny, ns),
                             m_spawn = 1, m_rec = 1, delta_s = rep(0, ns), natal_rs = matrix(1, nr, ns),
+                            recdist_rs = matrix(1/nr, nr, ns),
                             fwt_ymafs = array(1, c(ny, nm, na, nf, ns)),
                             q_fs = matrix(1, nf, ns), sel_ymafs = array(1, c(ny, nm, na, nf, ns)),
                             condition = c("F", "catch"),
@@ -168,27 +170,18 @@ calc_population <- function(ny = 10, nm = 4, na = 20, nf = 1, nr = 4, ns = 2,
 
       y_spawn <- ifelse(m_rec > m_spawn, ynext, ynext-1) # If m_rec <= m_spawn in year 1, multiseason?
 
-      if (nr > 1 && mnext == m_rec) {
-        # Distribution of recruits is proportional to regional abundance of spawners
-        if (y_spawn > 0) {
-          mov_ymarrs[ylast, mnext, 1, , , ] <- sapply2(1:ns, function(s) {
-            matrix(S_yrs[y_spawn, , s]/sum(S_yrs[y_spawn, , s]), nr, nr, byrow = TRUE)
-          })
-        } else {
-          mov_ymarrs[ylast, mnext, 1, , , ] <- sapply2(1:ns, function(s) {
-            Npsp_ar <- initN_ars[, , s] * mat_yas[1, , s]
-            Nsp_ra <- t(Npsp_ar) * natal_rs[, s]
-            S_r <- colSums(t(Nsp_ra) * fec_yas[1, , s])
-            matrix(S_r/sum(S_r), nr, nr, byrow = TRUE)
-          })
-        }
+      Rnext <- if (y_spawn > 0) { # For year 1, no recruitment has been calculated yet
+        R_ys[y_spawn, ]
+      } else {
+        colSums(initN_ars[1, , ])
       }
 
       N_ymars[ynext, mnext, , , ] <- calc_nextN(
         N = N_ymars[y, m, , , ], surv = exp(-Z_ymars[y, m, , , ]),
         na = na, nr = nr, ns = ns,
         advance_age = mnext == m_rec,
-        R = if (y_spawn > 0) R_ys[y_spawn, ] else colSums(initN_ars[1, , ]), # For year 1, no recruitment
+        R = Rnext,
+        recdist = recdist_rs,
         mov = mov_ymarrs[ylast, mnext, , , , ]
       )
     }
@@ -244,7 +237,8 @@ calc_phi_project <- function(ny, nm, na, nf = 1, nr, ns = 1,
                              mat_as, fec_as,
                              m_spawn = 1, m_rec = 1,
                              delta_s = rep(0, ns),
-                             natal_rs = matrix(1, nr, ns)) {
+                             natal_rs = matrix(1, nr, ns),
+                             recdist_rs = matrix(1/nr, nr, ns)) {
   delta_m <- 1/nm
 
   if (missing(mov_marrs)) {

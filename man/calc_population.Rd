@@ -24,6 +24,7 @@ calc_population(
   m_rec = 1,
   delta_s = rep(0, ns),
   natal_rs = matrix(1, nr, ns),
+  recdist_rs = matrix(1/nr, nr, ns),
   fwt_ymafs = array(1, c(ny, nm, na, nf, ns)),
   q_fs = matrix(1, nf, ns),
   sel_ymafs = array(1, c(ny, nm, na, nf, ns)),
@@ -73,6 +74,8 @@ calc_population(
 
 \item{natal_rs}{Matrix \verb{[r, s]}. The fraction of the mature stock \code{s} in region \code{r} that spawns at
 time of spawning. See example in \linkS4class{Dstock}.}
+
+\item{recdist_rs}{Matrix \verb{[r, s]}. The fraction of the incoming recruitment of stock \code{s} that settles in region \code{r}.}
 
 \item{fwt_ymafs}{Fishery weight at age. Array \verb{[y, m, a, f, s]}}
 

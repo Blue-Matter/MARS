@@ -22,7 +22,8 @@ calc_phi_project(
   m_spawn = 1,
   m_rec = 1,
   delta_s = rep(0, ns),
-  natal_rs = matrix(1, nr, ns)
+  natal_rs = matrix(1, nr, ns),
+  recdist_rs = matrix(1/nr, nr, ns)
 )
 }
 \arguments{
@@ -63,6 +64,8 @@ calculate yield per recruit.}
 
 \item{natal_rs}{Matrix \verb{[r, s]}. The fraction of the mature stock \code{s} in region \code{r} that spawns at
 time of spawning. See example in \linkS4class{Dstock}.}
+
+\item{recdist_rs}{Matrix \verb{[r, s]}. The fraction of the incoming recruitment of stock \code{s} that settles in region \code{r}.}
 }
 \value{
 A named list returned by \code{\link[=calc_population]{calc_population()}}.
