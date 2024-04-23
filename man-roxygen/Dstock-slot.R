@@ -11,6 +11,8 @@
 #' \item{`Md_yas`}{Natural mortality. Ignored if M is estimated.}
 #' \item{`SRR_s`}{Character vector of stock-recruit relationship by stock. See `SRR` argument in [calc_recruitment()] for options.}
 #' \item{`delta_s`}{Fraction of season that elapses when spawning occurs, e.g., midseason spawning occurs when `delta_s = 0.5`. Default is zero.}
+#' \item{`presence_rs`}{Logical matrix indicating presence/absence of stock `s` in region `r`. Used to constrain movement matrix.
+#' Default is TRUE for all stocks and regions.}
 #' \item{`natal_rs`}{The fraction of the mature stock `s` in region `r` that spawns at
 #' time of spawning. See example. Default is 1 for all stocks and regions.}
 #' }

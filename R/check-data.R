@@ -164,6 +164,11 @@ check_Dstock <- function(Dstock, Dmodel, silent = FALSE) {
   } else if (length(delta_s) != ns) {
     stop("delta_s needs to be length ", ns)
   }
+  if (!length(presence_rs)) {
+    Dstock@presence_rs <- matrix(TRUE, nr, ns)
+  } else if (any(dim(presence_rs) != c(nr, ns))) {
+    stop("dim(presence_rs) needs to be: ", c(nr, ns) %>% paste(collapse = ", "))
+  }
   if (!length(natal_rs)) {
     Dstock@natal_rs <- matrix(1, nr, ns)
   } else if (any(dim(natal_rs) != c(nr, ns))) {

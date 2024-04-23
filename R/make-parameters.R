@@ -111,7 +111,15 @@ make_parameters <- function(MARSdata, start = list(), map = list(), silent = FAL
 
   if (is.null(p$log_recdist_rs)) p$log_recdist_rs <- matrix(0, nr, ns)
 
-  if (is.null(p$mov_x_marrs)) p$mov_x_marrs <- array(0, c(nm, na, nr, nr, ns))
+  if (is.null(p$mov_x_marrs)) {
+    p$mov_x_marrs <- array(0, c(nm, na, nr, nr, ns))
+    if (any(!MARSdata@Dstock@presence_rs)) {
+      for(s in 1:ns) {
+        presence_r <- MARSdata@Dstock@presence_rs[, s]
+        if (any(!presence_r)) p$mov_x_marrs[, , presence_r, presence_r, s] <- -1000
+      }
+    }
+  }
   if (is.null(p$mov_g_ymars)) p$mov_g_ymars <- array(0, c(ny, nm, na, nr, ns))
   if (is.null(p$mov_v_ymas)) p$mov_v_ymas <- array(0, c(ny, nm, na, ns))
   if (is.null(p$log_sdg_rs)) p$log_sdg_rs <- array(log(0.1), c(nr, ns))
@@ -318,19 +326,107 @@ make_map <- function(p, MARSdata, map = list(),
 
     if (is.null(map$mov_x_marrs)) map$mov_x_marrs <- factor(array(NA, dim(p$mov_x_marrs)))
 
-    if (is.null(map$mov_g_ymars)) { # Estimate g for r = 2, ..., nr (softmax transformation)
-      gind <- as.matrix(expand.grid(r = 2:nr, y = 1:ny, m = 1:nm, a = 1:na, s = 1:ns))
-      gpar <- seq(1, nrow(gind))
+    if (is.null(map$mov_g_ymars)) {
       map$mov_g_ymars <- array(NA, c(ny, nm, na, nr, ns))
-      map$mov_g_ymars[gind] <- factor(gpar)
-    }
 
-    if (is.null(map$mov_v_ymas)) map$mov_v_ymas <- factor(array(NA, dim(p$mov_v_ymas)))
+      # Group parameters based on data stratification
+      if (length(MARSdata@Dtag@tag_yy) && length(MARSdata@Dtag@tag_aa)) {
+        for (s in 1:ns) { # Estimate parameters for r = 2, ..., nr (softmax transformation)
+          r_eff <- which(MARSdata@Dstock@presence_rs[, s])[-1]
+          if (length(r_eff)) {
+            for (i in 1:nrow(MARSdata@Dtag@tag_yy)) {
+              yy <- which(MARSdata@Dtag@tag_yy[i, ] > 0)
+              for (j in 1:nrow(MARSdata@Dtag@tag_aa)) {
+                aa <- which(MARSdata@Dtag@tag_aa[j, ] > 0)
+
+                gind_strat <- expand.grid(m = 1:nm, r = r_eff, s = s, yc = i, ac = j)
+                gind_strat$par_no <- 1:nrow(gind_strat)
+
+                gind <- expand.grid(y = yy, m = 1:nm, a = aa, r = r_eff, s = s, yc = i, ac = j) %>%
+                  merge(gind_strat) %>%
+                  as.matrix()
+
+                if (all(is.na(map$mov_g_ymars))) {
+                  parmin <- 0
+                } else {
+                  parmin <- max(map$mov_g_ymars, na.rm = TRUE)
+                }
+                map$mov_g_ymars[gind[, c("y", "m", "a", "r", "s")]] <- parmin + gind[, "par_no"]
+              }
+            }
+          }
+        }
+      } else {
+        for (s in 1:ns) { # Estimate parameters for r = 2, ..., nr (softmax transformation)
+          r_eff <- which(MARSdata@Dstock@presence_rs[, s])[-1]
+          if (length(r_eff)) {
+            gind <- as.matrix(expand.grid(y = 1:ny, m = 1:nm, a = 1:na, r = r_eff, s = s))
+            if (all(is.na(map$mov_g_ymars))) {
+              parmin <- 0
+            } else {
+              parmin <- max(map$mov_g_ymars, na.rm = TRUE)
+            }
+            map$mov_g_ymars[gind] <- parmin + seq(1, nrow(gind))
+          }
+        }
+      }
+      map$mov_g_ymars <- factor(map$mov_g_ymars)
+    }
 
     if (est_mov == "dist_random") {
       random <- c(random, "mov_g_ymars")
+      map$mov_v_ymas <- factor(array(NA, dim(p$mov_v_ymas)))
       if (!silent) message_info("Movement estimated as random effects")
     } else {
+
+      if (is.null(map$mov_v_ymas)) {
+        map$mov_v_ymas <- array(NA, dim(p$mov_v_ymas))
+
+        # Group parameters based on data stratification
+        if (length(MARSdata@Dtag@tag_yy) && length(MARSdata@Dtag@tag_aa)) {
+          for (s in 1:ns) { # Estimate parameters for r = 2, ..., nr (softmax transformation)
+            nr_eff <- sum(MARSdata@Dstock@presence_rs[, s])
+            if (nr_eff > 1) {
+              for (i in 1:nrow(MARSdata@Dtag@tag_yy)) {
+                yy <- which(MARSdata@Dtag@tag_yy[i, ] > 0)
+                for (j in 1:nrow(MARSdata@Dtag@tag_aa)) {
+                  aa <- which(MARSdata@Dtag@tag_aa[j, ] > 0)
+
+                  vind_strat <- expand.grid(m = 1:nm, yc = i, ac = j)
+                  vind_strat$par_no <- 1:nrow(vind_strat)
+
+                  vind <- expand.grid(y = yy, m = 1:nm, a = aa, s = s, yc = i, ac = j) %>%
+                    merge(vind_strat) %>%
+                    as.matrix()
+
+                  if (all(is.na(map$mov_v_ymas))) {
+                    parmin <- 0
+                  } else {
+                    parmin <- max(map$mov_v_ymas, na.rm = TRUE)
+                  }
+                  map$mov_v_ymas[vind[, c("y", "m", "a", "s")]] <- parmin + vind[, "par_no"]
+                }
+              }
+            }
+          }
+        } else {
+          for (s in 1:ns) {  # Estimate parameters if nr_effective > 1
+            nr_eff <- sum(MARSdata@Dstock@presence_rs[, s])
+            if (nr_eff > 1) {
+              vind <- as.matrix(expand.grid(y = 1:ny, m = 1:nm, a = 1:na, s = s))
+              if (all(is.na(map$mov_v_ymas))) {
+                parmin <- 0
+              } else {
+                parmin <- max(map$mov_v_ymas, na.rm = TRUE)
+              }
+              map$mov_v_ymas[vind] <- parmin + seq(1, nrow(vind))
+            }
+          }
+        }
+
+        map$mov_v_ymas <- factor(map$mov_v_ymas)
+      }
+
       if (is.null(map$log_sdg_rs)) map$log_sdg_rs <- factor(array(NA, dim(p$log_sdg_rs)))
       if (is.null(map$t_corg_ps)) map$t_corg_ps <- factor(array(NA, dim(p$t_corg_ps)))
 
@@ -467,7 +563,6 @@ make_map <- function(p, MARSdata, map = list(),
       rtext <- paste("region", paste(r, collapse = ", "))
       s <- which(apply(Dsurvey@samp_irs[i, , , drop = FALSE], 3, sum) > 0)
       stext <- paste("stock", paste(s, collapse = ", "))
-
 
       if (!is.na(as.integer(sel_i))) {
         message_info("Index ", i, iname, ": fleet ", sel_i, " in ", rtext, "; ", stext)

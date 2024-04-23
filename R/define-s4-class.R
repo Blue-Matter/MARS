@@ -36,7 +36,7 @@ setClass(
             len_ymas = "array", sdlen_ymas = "array",
             LAK_ymals = "array", matd_yas = "array", swt_ymas = "array", fec_yas = "array",
             Md_yas = "array", SRR_s = "character",
-            delta_s = "numeric", natal_rs = "matrix")
+            delta_s = "numeric", presence_rs = "matrix", natal_rs = "matrix")
 )
 
 #' Dfishery S4 object

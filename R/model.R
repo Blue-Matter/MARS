@@ -193,7 +193,11 @@ update_report <- function(r, MARSdata) {
   for(y in 1:ny) {
     for(m in 1:nm) {
       mov_ymarrs[y, m, , , , ] <- sapply2(1:ns, function(s) {
-        conv_mov(p$mov_x_marrs[m, , , , s], p$mov_g_ymars[y, m, , , s], p$mov_v_ymas[y, m, , s], na, nr)
+        mov_arr <- array(0, c(na, nr, nr))
+        r_eff <- presence_rs[, s]
+        nr_eff <- sum(presence_rs[, s])
+        mov_arr[, r_eff, r_eff] <- conv_mov(
+          p$mov_x_marrs[m, , r_eff, r_eff, s], p$mov_g_ymars[y, m, , r_eff, s], p$mov_v_ymas[y, m, , s], na, nr_eff)
       })
       sel_ymafs[y, m, , , ] <- sapply2(1:ns, function(s) {
         calc_fsel_age(sel_lf, LAK_ymals[y, m, , , s], sel_f, selconv_pf, sel_block_yf[y, ],
