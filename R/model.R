@@ -186,31 +186,120 @@ update_report <- function(r, MARSdata) {
     sel_li <- calc_sel_len(selconv_pi, lmid, type = sel_i)
   }
 
+  ## Fishery and index selectivity ----
+  # Check for fishery selectivity blocks
+  tv_flensel <- any(
+    sapply(1:nf, function(f) length(unique(sel_block_yf[, f])) > 1)
+  )
+  if (ni > 0) { # Check for length selectivity blocks
+    ilensel <- any(sapply(1:ni, function(i) grepl("length", sel_i[i])))
+  }
+
+  for (s in 1:ns) {
+    # Fishery selectivity
+
+    # Check for time-varying growth
+    tv_growth <- any(sapply(2:ny, function(y) max(LAK_ymals[y, , , , s] - LAK_ymals[1, , , , s])) > 0)
+    tv_fagesel_growth <- tv_growth || tv_flensel
+
+    # Check for time-varying maturity
+    tv_mat <- any(sapply(2:ny, function(y) max(mat_yas[y, , s] - mat_yas[1, , s])) > 0)
+    tv_fsel_mat <- tv_mat && any(sel_f == "SB")
+
+    if (tv_fagesel_growth || tv_fsel_mat) {
+      for (y in 1:ny) {
+        for (m in 1:nm) {
+          sel_ymafs[y, m, , , s] <- calc_fsel_age(
+            sel_lf, LAK_ymals[y, m, , , s], sel_f, selconv_pf, sel_block_yf[y, ], mat = mat_yas[y, , s], a = seq(1, na)
+          )
+        }
+      }
+    } else {
+      for (m in 1:nm) {
+        sel_ymafs[1, m, , , s] <- calc_fsel_age(
+          sel_lf, LAK_ymals[1, m, , , s], sel_f, selconv_pf, sel_block_yf[1, ], mat = mat_yas[1, , s], a = seq(1, na)
+        )
+      }
+      fsel_ind <- fsel1_ind <- as.matrix(expand.grid(y = 2:ny, m = 1:m, a = 1:na, f = 1:nf, s = s))
+      fsel1_ind[, "y"] <- 1
+      sel_ymafs[fsel_ind] <- sel_ymafs[fsel1_ind]
+    }
+
+    # Survey selectivity
+    if (ni > 0) {
+      tv_iagesel_growth <- ilensel && tv_growth
+      tv_isel_mat <- tv_mat && any(sel_i == "SB")
+      if (tv_iagesel_growth || tv_isel_mat) {
+        for (y in 1:ny) {
+          for (m in 1:nm) {
+            sel_ymais[y, m, , , s] <- calc_isel_age(
+              sel_li, LAK_ymals[y, m, , , s], sel_i, selconv_pi, sel_ymafs[y, m, , , s], mat = mat_yas[y, , s], a = seq(1, na)
+            )
+          }
+        }
+      } else {
+        for (m in 1:nm) {
+          sel_ymais[1, m, , , s] <- calc_isel_age(
+            sel_li, LAK_ymals[1, m, , , s], sel_i, selconv_pi, sel_ymafs[1, m, , , s], mat = mat_yas[1, , s], a = seq(1, na)
+          )
+        }
+        isel_ind <- isel1_ind <- as.matrix(expand.grid(y = 2:ny, m = 1:m, a = 1:na, i = 1:ni, s = s))
+        isel1_ind[, "y"] <- 1
+        sel_ymais[isel_ind] <- sel_ymais[isel1_ind]
+      }
+    }
+  }
+
   ## Stock distribution and movement parameters ----
   recdist_rs <- sapply(1:ns, function(s) softmax(p$log_recdist_rs[, s]))
 
-  ## Fishery and index selectivity ----
-  for(y in 1:ny) {
-    for(m in 1:nm) {
-      mov_ymarrs[y, m, , , , ] <- sapply2(1:ns, function(s) {
+  # Movement
+  for (yy in 1:nrow(tag_yy)) {
+    yvec <- tag_yy[yy, ]
+    yvec <- yvec[yvec > 0]
+    y1 <- yvec[1]
+
+    for (m in 1:nm) {
+      mov_ymarrs[y1, m, , , , ] <- sapply2(1:ns, function(s) {
         mov_arr <- array(0, c(na, nr, nr))
         r_eff <- presence_rs[, s]
         nr_eff <- sum(presence_rs[, s])
         mov_arr[, r_eff, r_eff] <- conv_mov(
-          p$mov_x_marrs[m, , r_eff, r_eff, s], p$mov_g_ymars[y, m, , r_eff, s], p$mov_v_ymas[y, m, , s], na, nr_eff)
+          p$mov_x_marrs[m, , r_eff, r_eff, s], p$mov_g_ymars[y1, m, , r_eff, s], p$mov_v_ymas[y1, m, , s], na, nr_eff
+        )
+        return(mov_arr)
       })
-      sel_ymafs[y, m, , , ] <- sapply2(1:ns, function(s) {
-        calc_fsel_age(sel_lf, LAK_ymals[y, m, , , s], sel_f, selconv_pf, sel_block_yf[y, ],
-                      mat = mat_yas[y, , s], a = seq(1, na))
-      })
-      if (ni > 0) {
-        sel_ymais[y, m, , , ] <- sapply2(1:ns, function(s) {
-          calc_isel_age(sel_li, LAK_ymals[y, m, , , s], sel_i, selconv_pi, sel_ymafs[y, m, , , s],
-                        mat = mat_yas[y, , s], a = seq(1, na))
-        })
-      }
+    }
+
+    if (length(yvec) > 1) {
+      mov_ind <- mov1_ind <- as.matrix(expand.grid(y = yvec[-1], m = 1:m, a = 1:na, rf = 1:nr, rt = 1:nr, s = 1:ns))
+      mov1_ind[, "y"] <- yvec[1]
+      mov_ymarrs[mov_ind] <- mov_ymarrs[mov1_ind]
     }
   }
+
+  #for(y in 1:ny) {
+  #  for(m in 1:nm) {
+  #    mov_ymarrs[y, m, , , , ] <- sapply2(1:ns, function(s) {
+  #      mov_arr <- array(0, c(na, nr, nr))
+  #      r_eff <- presence_rs[, s]
+  #      nr_eff <- sum(presence_rs[, s])
+  #      mov_arr[, r_eff, r_eff] <- conv_mov(
+  #        p$mov_x_marrs[m, , r_eff, r_eff, s], p$mov_g_ymars[y, m, , r_eff, s], p$mov_v_ymas[y, m, , s], na, nr_eff)
+  #      return(mov_arr)
+  #    })
+  #    sel_ymafs[y, m, , , ] <- sapply2(1:ns, function(s) {
+  #      calc_fsel_age(sel_lf, LAK_ymals[y, m, , , s], sel_f, selconv_pf, sel_block_yf[y, ],
+  #                    mat = mat_yas[y, , s], a = seq(1, na))
+  #    })
+  #    if (ni > 0) {
+  #      sel_ymais[y, m, , , ] <- sapply2(1:ns, function(s) {
+  #        calc_isel_age(sel_li, LAK_ymals[y, m, , , s], sel_i, selconv_pi, sel_ymafs[y, m, , , s],
+  #                      mat = mat_yas[y, , s], a = seq(1, na))
+  #      })
+  #    }
+  #  }
+  #}
 
   ## Stock recruit parameters ----
   R0_s <- exp(p$t_R0_s) * scale_s
@@ -466,16 +555,23 @@ update_report <- function(r, MARSdata) {
   any_SC <- ns > 1 && length(SC_ymafrs)
   if (any_SC) {
     SC_ymafrs <- OBS(SC_ymafrs)
-    #SCpred_ymafrs <-
+    SCpred_ymafrs <- sapply2(1:nrow(SC_ff), function(ff) {
+      fvec <- SC_ff[ff, ]
+      sapply2(1:nrow(SC_aa), function(aa) {
+        avec <- SC_aa[aa, ]
+        apply(CN_ymafrs[, , avec, fvec, , , drop = FALSE], c(1, 2, 5, 6), sum)
+      })
+    }) %>%
+      aperm(c(1, 2, 5, 6, 3, 4))
+
     loglike_SC_ymafr <- sapply2(1:nr, function(r) {
-      sapply2(1:nrow(SC_ff), function(ff) { # Aggregate over fleets SC_ff
-        sapply2(1:nrow(SC_aa), function(aa) { # Aggregate over age classes SC_aa
+      sapply2(1:nrow(SC_ff), function(ff) {
+        sapply2(1:nrow(SC_aa), function(aa) {
           sapply(1:nm, function(m) {
             sapply(1:ny, function(y) {
-              pred <- apply(CN_ymafrs[y, m, SC_aa[aa, ], SC_ff[ff, ], r, , drop = FALSE], 6, sum)
-              pred <- CondExpGt(pred, 1e-8, pred, 1e-8)
+              pred <- SCpred_ymafrs[y, m, aa, ff, r, ]
               like_comp(obs = SC_ymafrs[y, m, aa, ff, r, ],
-                        pred = pred, type = SC_like,
+                        pred = CondExpGt(pred, 1e-8, pred, 1e-8), type = SC_like,
                         N = SCN_ymafr[y, m, aa, ff, r], theta = SCtheta_f[ff],
                         stdev = SCstdev_f[ff])
             })
@@ -524,19 +620,19 @@ update_report <- function(r, MARSdata) {
 
   ## Tag
   if (any(tag_ymarrs > 0, na.rm = TRUE)) {
-    loglike_tag_mov_ymars <- sapply2(1:ns, function(s) {
-      sapply2(1:nr, function(r) {
-        sapply2(1:nrow(tag_aa), function(aa) { # Aggregate over age classes SC_aa
-          avec <- c(1:na)[tag_aa[aa, ]]
-          a <- avec[length(avec)]
+    loglike_tag_mov_ymars <- sapply2(1:ns, function(s) { # Likelihood of where the fish are going
+      sapply2(1:nr, function(rf) {
+        sapply2(1:nrow(tag_aa), function(aa) {
+          a1 <- which(tag_aa[aa, ] > 0)[1]
           sapply(1:nm, function(m) {
+            mprev <- ifelse(m == 1, nm, m - 1)
             sapply(1:nrow(tag_yy), function(yy) {
-              y <- c(1:ny)[tag_yy[yy, ]][1]
-              pred <- mov_ymarrs[y, m, a, r, , s]
-              pred <- CondExpGt(pred, 1e-8, pred, 1e-8)
-              like_comp(obs = tag_ymarrs[yy, m, aa, r, , s],
-                        pred = pred, type = tag_like,
-                        N = tagN_ymars[yy, m, aa, r, s], theta = tagtheta_s[s],
+              y1 <- which(tag_yy[yy, ] > 0)[1]
+              yprev <- ifelse(y1 == 1, 1, y1 - 1)
+              pred <- mov_ymarrs[yprev, mprev, a1, rf, , s]
+              like_comp(obs = tag_ymarrs[yy, m, aa, rf, , s],
+                        pred = CondExpGt(pred, 1e-8, pred, 1e-8), type = tag_like,
+                        N = tagN_ymars[yy, m, aa, rf, s], theta = tagtheta_s[s],
                         stdev = tagstdev_s[s])
             })
           })
@@ -548,13 +644,15 @@ update_report <- function(r, MARSdata) {
   }
 
   if (any(tag_ymars > 0, na.rm = TRUE)) {
-    loglike_tag_dist_ymas <- sapply2(1:ns, function(s) {
-      sapply2(1:nrow(tag_aa), function(aa) { # Aggregate over age classes SC_aa
+    loglike_tag_dist_ymas <- sapply2(1:ns, function(s) { # Likelihood of where the fish are present
+      sapply2(1:nrow(tag_aa), function(aa) {
+        avec <- tag_aa[aa, ]
         sapply(1:nm, function(m) {
           sapply(1:nrow(tag_yy), function(yy) {
-            pred <- N_ymars[tag_yy[yy, ], m, tag_aa[aa, ], , s]
+            yvec <- tag_yy[yy, ]
+            pred <- apply(N_ymars[yvec, m, avec, , s, drop = FALSE], 3, sum)
             like_comp(obs = tag_ymars[yy, m, aa, , s],
-                      pred = pred, type = tag_like,
+                      pred = CondExpGt(pred, 1e-8, pred, 1e-8), type = tag_like,
                       N = tagN_ymas[yy, m, aa, s], theta = tagtheta_s[s],
                       stdev = tagstdev_s[s])
           })
@@ -673,6 +771,7 @@ update_report <- function(r, MARSdata) {
   if (any_CAL) REPORT(CN_ymlfrs)
   REPORT(CB_ymfrs)
   REPORT(VB_ymfrs)
+  if (any_SC) REPORT(SCpred_ymafrs)
 
   ## Index of abundance arrays ----
   if (ni > 0) {
