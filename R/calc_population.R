@@ -36,6 +36,7 @@
 #'
 #' * `N_ymars` Stock abundance
 #' * `F_ymars` Fishing mortality (summed across fleets)
+#' * `F_ymfr` Fishing mortality (by fleet and region)
 #' * `Z_ymars` Total mortality
 #' * `F_ymafrs` Fishing mortality (disaggregated by fleet)
 #' * `CN_ymafrs` Catch at age (abundance)
@@ -85,6 +86,9 @@ calc_population <- function(ny = 10, nm = 4, na = 20, nf = 1, nr = 4, ns = 2,
   }
 
   # Fishery arrays ----
+  if (condition == "catch") {
+    F_ymfr <- array(NA_real_, c(ny, nm, nf, nr))
+  }
   F_ymafrs <-
     CN_ymafrs <- array(NA_real_, c(ny, nm, na, nf, nr, ns))
   CB_ymfrs <-
@@ -110,6 +114,7 @@ calc_population <- function(ny = 10, nm = 4, na = 20, nf = 1, nr = 4, ns = 2,
         F_ymafrs[y, m, , , , ] <- Fsearch[["F_afrs"]]
         F_ymars[y, m, , , ] <- Fsearch[["F_ars"]]
         Z_ymars[y, m, , , ] <- Fsearch[["Z_ars"]]
+        F_ymfr[y, m, , ] <- Fsearch[["F_index"]]
 
         ## This season's fishery catch, vulnerable biomass, and total biomass ----
         CN_ymafrs[y, m, , , , ] <- Fsearch[["CN_afrs"]]
@@ -192,6 +197,7 @@ calc_population <- function(ny = 10, nm = 4, na = 20, nf = 1, nr = 4, ns = 2,
   out <- list(
     N_ymars = N_ymars,
     F_ymars = F_ymars,
+    F_ymfr = F_ymfr,
     Z_ymars = Z_ymars,
     F_ymafrs = F_ymafrs,
     CN_ymafrs = CN_ymafrs,

@@ -398,6 +398,8 @@ update_report <- function(r, MARSdata) {
   R_ys[] <- pop$R_ys
   penalty <- penalty + pop$penalty
 
+  if (condition == "catch") F_ymfr[] <- pop$F_ymfr
+
   ind_ymars <- as.matrix(expand.grid(y = 1:ny, m = 1:nm, a = 1:na, r = 1:nr, s = 1:ns))
   ymas_ymars <- ind_ymars[, c("y", "m", "a", "s")]
 
@@ -740,7 +742,7 @@ update_report <- function(r, MARSdata) {
     ADREPORT(q_i)
   }
 
-  if (condition == "F") REPORT(F_ymfr)
+  REPORT(F_ymfr)
 
   REPORT(M_yas)
   REPORT(mat_yas)
