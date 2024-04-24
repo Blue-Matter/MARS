@@ -72,6 +72,7 @@
 #' @param ... Various arguments for [make_map()] (could be important!)
 #' @return
 #' [make_parameters()] returns a list of parameters (`"p"`) concatenated with the output of [make_map()].
+#' @importFrom stats approx
 #' @export
 make_parameters <- function(MARSdata, start = list(), map = list(), silent = FALSE, ...) {
 
@@ -154,23 +155,71 @@ make_parameters <- function(MARSdata, start = list(), map = list(), silent = FAL
   }
 
   if (is.null(p$sel_pf)) {
-    p$sel_pf <- local({
-      sel <- matrix(NA, 3, max(MARSdata@Dfishery@sel_block_yf))
-      sel[1, ] <- 0 # Apical sel between 0 and max age/length
-      sel[2, ] <- log(0.5) # Knife edge ascending selectivity
-      sel[3, ] <- log(2) # More sloping descending limb of selectivity
-      sel
+    p$sel_pf <- sapply(unique(MARSdata@Dfishery@sel_block_yf), function(b) {
+      sel_b <- MARSdata@Dfishery@sel_f[b]
+      val <- numeric(3)
+      if (grepl("length", sel_b) && length(MARSdata@Dfishery@CALobs_ymlfr)) {
+        f_yb <- MARSdata@Dfishery@sel_block_yf == b
+
+        CAL <- sapply2(1:nf, function(f) {
+          sapply(1:MARSdata@Dmodel@ny, function(y) {
+            if (f_yb[y, f]) {
+              apply(MARSdata@Dfishery@CALobs_ymlfr[y, , , f, , drop = FALSE], 3, sum)
+            } else {
+              rep(0,  MARSdata@Dmodel@nl)
+            }
+          })
+        }) %>% apply(1, sum)
+
+        if (sum(CAL)) {
+          LFS <- min(MARSdata@Dmodel@lmid[which.max(CAL)], 0.75 * max(MARSdata@Dmodel@lmid))
+          L5 <- approx(cumsum(CAL)/sum(CAL), MARSdata@Dmodel@lmid, 0.05)$y
+
+          if (L5 < LFS) {
+            sigma_asc <- min((LFS - L5)/sqrt(-log(0.05, 2)), 0.25 * diff(range(MARSdata@Dmodel@lmid)))
+            val[2:3] <- log(sigma_asc)
+            val[1] <- qlogis(LFS/max(0.95 * MARSdata@Dmodel@lmid))
+          }
+        }
+      }
+      if (all(!val)) {
+        # Apical sel between 0 and max age/length
+        # Knife edge ascending selectivity, ascend SD = 0.1
+        # More sloping descending limb of selectivity, descend SD = 2
+        val[] <- c(0, log(0.1), log(2))
+      }
+      return(val)
     })
   }
 
   # Index parameters ----
-  if (is.null(p$sel_pi)) {
-    p$sel_pi <- local({
-      sel <- matrix(NA, 3, MARSdata@Dsurvey@ni)
-      sel[1, ] <- 0 # Apical sel between 0 and max age/length
-      sel[2, ] <- log(0.5) # Knife edge ascending selectivity
-      sel[3, ] <- log(2) # More sloping descending limb of selectivity
-      sel
+  ni <- MARSdata@Dsurvey@ni
+  if (ni > 0 && is.null(p$sel_pi)) {
+    p$sel_pi <- sapply(1:ni, function(i) {
+      sel_i <- MARSdata@Dsurvey@sel_i[i]
+      val <- numeric(3)
+      if (grepl("length", sel_i) && length(MARSdata@Dsurvey@IALobs_ymli)) {
+
+        IAL <- apply(MARSdata@Dsurvey@IALobs_ymli[, , , i, drop = FALSE], 3, sum)
+
+        if (sum(IAL)) {
+          LFS <- min(MARSdata@Dmodel@lmid[which.max(IAL)], 0.75 * max(MARSdata@Dmodel@lmid))
+          L5 <- approx(cumsum(IAL)/sum(IAL), MARSdata@Dmodel@lmid, 0.05)$y
+
+          if (L5 < LFS) {
+            sigma_asc <- min((LFS - L5)/sqrt(-log(0.05, 2)), 0.25 * diff(range(MARSdata@Dmodel@lmid)))
+            val[2:3] <- log(sigma_asc)
+            val[1] <- qlogis(LFS/max(0.95 * MARSdata@Dmodel@lmid))
+          }
+        }
+      }
+      if (all(!val)) {
+        # Apical sel between 0 and max age/length
+        # Knife edge ascending selectivity, ascend SD = 0.1
+        # More sloping descending limb of selectivity, descend SD = 2
+        val[] <- c(0, log(0.1), log(2))
+      }
+      return(val)
     })
   }
 
@@ -482,6 +531,8 @@ make_map <- function(p, MARSdata, map = list(),
 
   if (!silent) {
     message_info("Fishery selectivity setup:")
+
+    fsel_start <- conv_selpar(p$sel_pf, type = Dfishery@sel_f, maxage = Dmodel@na, maxL = 0.95 * max(lmid))
     y <- if (length(Dlabel@year)) {
       Dlabel@year
     } else {
@@ -525,9 +576,19 @@ make_map <- function(p, MARSdata, map = list(),
             NULL
           }
         })
-        message_info("Block ", bb, " (", Dfishery@sel_f[bb], ") assigned to fleet:\n", do.call(c, fleet) %>% paste(collapse = "\n"),
-                     ifelse(bb == max(Dfishery@sel_block_yf), "\n\n", ""))
+        message_info("Block ", bb, " (", Dfishery@sel_f[bb], ") assigned to fleet:\n", do.call(c, fleet) %>% paste(collapse = "\n"))
       }
+
+      if (grepl("logistic", Dfishery@sel_f[bb])) {
+        message_info("   Selectivity start values: full sel = ", round(fsel_start[1, bb], 2),
+                     ", ascending limb SD = ", round(fsel_start[2, bb], 2))
+      }
+      if (grepl("dome", Dfishery@sel_f[bb])) {
+        message_info("   Selectivity start values: full sel = ", round(fsel_start[1, bb], 2),
+                     ", ascending limb SD = ", round(fsel_start[2, bb], 2),
+                     ", descending limb SD = ", round(fsel_start[3, bb], 2))
+      }
+      message_info("\n")
     }
   }
 
@@ -552,6 +613,7 @@ make_map <- function(p, MARSdata, map = list(),
 
   if (!silent) {
     message_info("Index selectivity setup:")
+    isel_start <- conv_selpar(p$sel_pi, type = Dsurvey@sel_i, maxage = Dmodel@na, maxL = 0.95 * max(lmid))
     for (i in 1:Dsurvey@ni) {
       sel_i <- Dsurvey@sel_i[i]
       if (length(Dlabel@index)) {
@@ -569,6 +631,16 @@ make_map <- function(p, MARSdata, map = list(),
       } else {
         s <-
         message_info("Index ", i, iname, ": ", sel_i, " in ", rtext, "; ", stext)
+      }
+
+      if (grepl("logistic", sel_i)) {
+        message_info("   Selectivity start values: full sel = ", round(isel_start[1, i], 2),
+                     ", ascending limb SD = ", round(isel_start[2, i], 2))
+      }
+      if (grepl("dome", sel_i)) {
+        message_info("   Selectivity start values: full sel = ", round(isel_start[1, i], 2),
+                     ", ascending limb SD = ", round(isel_start[2, i], 2),
+                     ", descending limb SD = ", round(isel_start[3, i], 2))
       }
     }
   }
