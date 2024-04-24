@@ -177,8 +177,14 @@ calc_Baranov <- function(FM, Z, N) FM/Z * (1 - exp(-Z)) * N
 #' @importFrom stats uniroot
 .calc_summary_F <- function(FM, M, N, CN) calc_Baranov(FM, FM + M, N) - CN
 calc_summary_F <- function(M, N, CN, Fmax) {
-  out <- uniroot(.calc_summary_F, interval = c(0, Fmax), M = M, N = N, CN = CN)
-  out$root
+
+  if (CN > N) {
+    warning("Catch-at-age exceeds abundance-at-age")
+    out <- Inf
+  } else {
+    out <- uniroot(.calc_summary_F, interval = c(0, Fmax), M = M, N = N, CN = CN)$root
+  }
+  return(out)
 }
 
 #' Calculate recruitment from stock-recruit function
