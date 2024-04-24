@@ -70,6 +70,7 @@ age classes, re-distributes the stock, and adds recruitment.</p>
 <span>  advance_age <span class="op">=</span> <span class="cn">TRUE</span>,</span>
 <span>  R <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/numeric.html" class="external-link">numeric</a></span><span class="op">(</span><span class="va">ns</span><span class="op">)</span>,</span>
 <span>  mov <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/array.html" class="external-link">array</a></span><span class="op">(</span><span class="fl">1</span><span class="op">/</span><span class="va">nr</span>, <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="va">na</span>, <span class="va">nr</span>, <span class="va">nr</span>, <span class="va">ns</span><span class="op">)</span><span class="op">)</span>,</span>
+<span>  recdist <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/matrix.html" class="external-link">matrix</a></span><span class="op">(</span><span class="fl">1</span><span class="op">/</span><span class="va">nr</span>, <span class="va">nr</span>, <span class="va">ns</span><span class="op">)</span>,</span>
 <span>  plusgroup <span class="op">=</span> <span class="cn">TRUE</span></span>
 <span><span class="op">)</span></span></code></pre></div>
     </div>
@@ -101,11 +102,15 @@ age classes, re-distributes the stock, and adds recruitment.</p>
 
 
 <dt>R</dt>
-<dd><p>Incoming recruitment. Only assigned if <code>advance_age = TRUE</code>. Vector of <code>s</code></p></dd>
+<dd><p>Incoming total recruitment. Vector length <code>s</code>. Only assigned if <code>advance_age = TRUE</code>.</p></dd>
 
 
 <dt>mov</dt>
 <dd><p>Movement array in the next time step. Array <code>[a, r, r, s]</code>. Rows denote region of origin and columns denote region of destination.</p></dd>
+
+
+<dt>recdist</dt>
+<dd><p>Distribution of incoming recruitment. Matrix <code>[r, s]</code>. Only assigned if <code>advance_age = TRUE</code>.</p></dd>
 
 
 <dt>plusgroup</dt>

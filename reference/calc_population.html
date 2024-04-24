@@ -84,6 +84,7 @@ due to seasonal movement.</p>
 <span>  m_rec <span class="op">=</span> <span class="fl">1</span>,</span>
 <span>  delta_s <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/rep.html" class="external-link">rep</a></span><span class="op">(</span><span class="fl">0</span>, <span class="va">ns</span><span class="op">)</span>,</span>
 <span>  natal_rs <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/matrix.html" class="external-link">matrix</a></span><span class="op">(</span><span class="fl">1</span>, <span class="va">nr</span>, <span class="va">ns</span><span class="op">)</span>,</span>
+<span>  recdist_rs <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/matrix.html" class="external-link">matrix</a></span><span class="op">(</span><span class="fl">1</span><span class="op">/</span><span class="va">nr</span>, <span class="va">nr</span>, <span class="va">ns</span><span class="op">)</span>,</span>
 <span>  fwt_ymafs <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/array.html" class="external-link">array</a></span><span class="op">(</span><span class="fl">1</span>, <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="va">ny</span>, <span class="va">nm</span>, <span class="va">na</span>, <span class="va">nf</span>, <span class="va">ns</span><span class="op">)</span><span class="op">)</span>,</span>
 <span>  q_fs <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/matrix.html" class="external-link">matrix</a></span><span class="op">(</span><span class="fl">1</span>, <span class="va">nf</span>, <span class="va">ns</span><span class="op">)</span>,</span>
 <span>  sel_ymafs <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/array.html" class="external-link">array</a></span><span class="op">(</span><span class="fl">1</span>, <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="va">ny</span>, <span class="va">nm</span>, <span class="va">na</span>, <span class="va">nf</span>, <span class="va">ns</span><span class="op">)</span><span class="op">)</span>,</span>
@@ -172,6 +173,10 @@ due to seasonal movement.</p>
 <dt>natal_rs</dt>
 <dd><p>Matrix <code>[r, s]</code>. The fraction of the mature stock <code>s</code> in region <code>r</code> that spawns at
 time of spawning. See example in <a href="Dstock-class.html">Dstock</a>.</p></dd>
+
+
+<dt>recdist_rs</dt>
+<dd><p>Matrix <code>[r, s]</code>. The fraction of the incoming recruitment of stock <code>s</code> that settles in region <code>r</code>.</p></dd>
 
 
 <dt>fwt_ymafs</dt>

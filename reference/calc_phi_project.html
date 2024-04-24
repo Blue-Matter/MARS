@@ -82,7 +82,8 @@ mortality among fleets and stocks remain linked by matrix <code>q_fs</code>.</p>
 <span>  m_spawn <span class="op">=</span> <span class="fl">1</span>,</span>
 <span>  m_rec <span class="op">=</span> <span class="fl">1</span>,</span>
 <span>  delta_s <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/rep.html" class="external-link">rep</a></span><span class="op">(</span><span class="fl">0</span>, <span class="va">ns</span><span class="op">)</span>,</span>
-<span>  natal_rs <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/matrix.html" class="external-link">matrix</a></span><span class="op">(</span><span class="fl">1</span>, <span class="va">nr</span>, <span class="va">ns</span><span class="op">)</span></span>
+<span>  natal_rs <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/matrix.html" class="external-link">matrix</a></span><span class="op">(</span><span class="fl">1</span>, <span class="va">nr</span>, <span class="va">ns</span><span class="op">)</span>,</span>
+<span>  recdist_rs <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/matrix.html" class="external-link">matrix</a></span><span class="op">(</span><span class="fl">1</span><span class="op">/</span><span class="va">nr</span>, <span class="va">nr</span>, <span class="va">ns</span><span class="op">)</span></span>
 <span><span class="op">)</span></span></code></pre></div>
     </div>
 
@@ -160,6 +161,10 @@ calculate yield per recruit.</p></dd>
 <dt>natal_rs</dt>
 <dd><p>Matrix <code>[r, s]</code>. The fraction of the mature stock <code>s</code> in region <code>r</code> that spawns at
 time of spawning. See example in <a href="Dstock-class.html">Dstock</a>.</p></dd>
+
+
+<dt>recdist_rs</dt>
+<dd><p>Matrix <code>[r, s]</code>. The fraction of the incoming recruitment of stock <code>s</code> that settles in region <code>r</code>.</p></dd>
 
 </dl></div>
     <div class="section level2">

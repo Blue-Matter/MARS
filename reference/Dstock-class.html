@@ -102,6 +102,10 @@ observed catch with the dimension following the underscore, following this templ
 <dt><code>delta_s</code></dt>
 <dd><p>Fraction of season that elapses when spawning occurs, e.g., midseason spawning occurs when <code>delta_s = 0.5</code>. Default is zero.</p></dd>
 
+<dt><code>presence_rs</code></dt>
+<dd><p>Logical matrix indicating presence/absence of stock <code>s</code> in region <code>r</code>. Used to constrain movement matrix.
+Default is TRUE for all stocks and regions.</p></dd>
+
 <dt><code>natal_rs</code></dt>
 <dd><p>The fraction of the mature stock <code>s</code> in region <code>r</code> that spawns at
 time of spawning. See example. Default is 1 for all stocks and regions.</p></dd>
