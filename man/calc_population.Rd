@@ -98,6 +98,7 @@ A named list containing:
 \itemize{
 \item \code{N_ymars} Stock abundance
 \item \code{F_ymars} Fishing mortality (summed across fleets)
+\item \code{F_ymfr} Fishing mortality (by fleet and region)
 \item \code{Z_ymars} Total mortality
 \item \code{F_ymafrs} Fishing mortality (disaggregated by fleet)
 \item \code{CN_ymafrs} Catch at age (abundance)

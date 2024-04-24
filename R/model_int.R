@@ -412,7 +412,7 @@ calc_nextN <- function(N, surv, na = dim(N)[1], nr = dim(N)[2], ns = dim(N)[3],
 #' `samp[i, r, s] = 1` indicates that stock `s` in region `r` is sampled by index `i`.
 #' @export
 calc_index <- function(N, Z, sel, na = dim(N)[1], nr = dim(N)[2], ns = dim(N)[3], ni = dim(sel)[2],
-                       samp = array(1, c(ni, na, ns)), delta = rep(0, ni)) {
+                       samp = array(1, c(ni, nr, ns)), delta = rep(0, ni)) {
 
   N <- array(N, c(na, nr, ns))
   Z <- array(Z, c(na, nr, ns))
@@ -439,7 +439,7 @@ calc_index <- function(N, Z, sel, na = dim(N)[1], nr = dim(N)[2], ns = dim(N)[3]
   #    } else {
   #      N_a <- numeric(na)
   #    }
-  #    return(advector(N_a))
+  #    return(N_a)
   #  })
   #})
   #IN_ais2 <- N_ais * sel

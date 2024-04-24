@@ -12,7 +12,7 @@ calc_index(
   nr = dim(N)[2],
   ns = dim(N)[3],
   ni = dim(sel)[2],
-  samp = array(1, c(ni, na, ns)),
+  samp = array(1, c(ni, nr, ns)),
   delta = rep(0, ni)
 )
 }
