@@ -244,12 +244,13 @@ plot_Fstock <- function(fit, s) {
     name <- Dlabel@stock
     ylab <- "Apical fishing mortality"
   } else {
-    x <- fit@report[[var]][, s, drop = FALSE]
+    x <- fit@report[[var]][, , s, drop = FALSE]
     name <- Dlabel@stock[s]
     ylab <- paste(name, "apical fishing mortality")
   }
 
   x <- apply(x, c(1, 3), max)
+  x[is.infinite(x)] <- NA
 
   color <- make_color(ncol(x), "stock")
   matplot(year, x, xlab = "Year", ylab = ylab, typ = "o", col = color, pch = 16,
@@ -278,7 +279,7 @@ plot_self <- function(fit, f = 1) {
   year <- dat@Dlabel@year
 
   if (all(grepl("length", sel_b))) {
-    lmid <- dat@Dstock@lmid
+    lmid <- dat@Dmodel@lmid
     x <- fit@report$sel_lf[, unique(sel_block), drop = FALSE]
 
     color <- make_color(ncol(x), "fleet")
@@ -346,7 +347,7 @@ plot_seli <- function(fit, i = 1) {
   if (!is.na(mirror_f)) {
     plot_self(fit, f = mirror_f)
   } else if (grepl("length", sel_i)) {
-    lmid <- dat@Dstock@lmid
+    lmid <- dat@Dmodel@lmid
     x <- fit@report$sel_li[, i]
 
     plot(lmid, x, xlab = "Length", ylab = paste(iname, "selectivity"),
