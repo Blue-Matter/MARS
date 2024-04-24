@@ -30,12 +30,16 @@ fit_MARS <- function(MARSdata, parameters, map = list(), random = NULL,
   func <- function(p) .MARS(p, d = MARSdata)
 
   if (!silent) message("Building model..")
-  obj <- MakeADFun(
+  obj <- RTMB::MakeADFun(
     func = func, parameters = parameters,
     map = map, random = random,
     silent = TRUE,
     ...
   )
+
+  if (any(!obj$gr())) {
+    warning("Gradients of zero at initial values, can be indicative of over-parameterization or non-identifiable parameters.")
+  }
 
   M <- new("MARSassess", obj = obj)
 
