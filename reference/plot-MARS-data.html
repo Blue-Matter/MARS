@@ -68,7 +68,9 @@
 <span></span>
 <span><span class="fu">plot_IAA</span><span class="op">(</span><span class="va">fit</span>, i <span class="op">=</span> <span class="fl">1</span><span class="op">)</span></span>
 <span></span>
-<span><span class="fu">plot_IAL</span><span class="op">(</span><span class="va">fit</span>, i <span class="op">=</span> <span class="fl">1</span><span class="op">)</span></span></code></pre></div>
+<span><span class="fu">plot_IAL</span><span class="op">(</span><span class="va">fit</span>, i <span class="op">=</span> <span class="fl">1</span><span class="op">)</span></span>
+<span></span>
+<span><span class="fu">plot_SC</span><span class="op">(</span><span class="va">fit</span>, ff <span class="op">=</span> <span class="fl">1</span>, aa <span class="op">=</span> <span class="fl">1</span>, r <span class="op">=</span> <span class="fl">1</span>, prop <span class="op">=</span> <span class="cn">FALSE</span><span class="op">)</span></span></code></pre></div>
     </div>
 
     <div class="section level2">
@@ -100,6 +102,14 @@
 <dt>r</dt>
 <dd><p>Integer, indexes the region</p></dd>
 
+
+<dt>ff</dt>
+<dd><p>Integer, indexes the aggregate fleet (for stock composition data)</p></dd>
+
+
+<dt>aa</dt>
+<dd><p>Integer, indexes the aggregate age class (for stock composition and tag data)</p></dd>
+
 </dl></div>
     <div class="section level2">
     <h2 id="value">Value<a class="anchor" aria-label="anchor" href="#value"></a></h2>
@@ -116,6 +126,7 @@
 </ul><ul><li><p><code>plot_CAL</code> plots the catch at length</p></li>
 </ul><ul><li><p><code>plot_IAA</code> plots the index age composition</p></li>
 </ul><ul><li><p><code>plot_IAL</code> plots the index length composition</p></li>
+</ul><ul><li><p><code>plot_SC</code> plots the stock composition</p></li>
 </ul></div>
 
   </main><aside class="col-md-3"><nav id="toc"><h2>On this page</h2>
