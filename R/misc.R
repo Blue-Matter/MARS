@@ -172,7 +172,7 @@ check_det <- function(h, abs_val = 0.1, is_null = TRUE) {
 #' 4. Calculate covariance matrix from `chol2inv(chol(h))`
 #' @return
 #' Object returned by [TMB::sdreport()]. A correlation matrix is generated and stored in: `get_sdreport(obj)$env$corr.fixed`
-#' @importFrom stats optimHess cov2cor
+#' @importFrom stats optimHess
 #' @export
 get_sdreport <- function(obj, getReportCovariance = FALSE, silent = FALSE, ...) {
   old_warn <- options()$warn

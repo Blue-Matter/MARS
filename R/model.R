@@ -26,7 +26,11 @@ fit_MARS <- function(MARSdata, parameters, map = list(), random = NULL,
   MARSdata@Misc$map <- map
   MARSdata@Misc$random <- random
 
-  RTMB::TapeConfig(comparison = "tape")
+  old_comparison <- TapeConfig()["comparison"]
+
+  on.exit(TapeConfig(comparison = old_comparison))
+  TapeConfig(comparison = "tape")
+
   func <- function(p) .MARS(p, d = MARSdata)
 
   if (!silent) message("Building model..")

@@ -18,7 +18,7 @@ Imports:
     rlang,
     rmarkdown,
     stats,
-    RTMB, 
+    RTMB (>= 1.5), 
     TMB,
     utils
 Suggests: 
