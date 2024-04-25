@@ -783,7 +783,10 @@ update_report <- function(r, MARSdata) {
   REPORT(F_ymars)
   REPORT(Z_ymars)
   REPORT(B_ymrs)
-  if (nr > 1) REPORT(mov_ymarrs)
+  if (nr > 1) {
+    REPORT(mov_ymarrs)
+    REPORT(recdist_rs)
+  }
 
   ## Fishery arrays ----
   REPORT(sel_ymafs)

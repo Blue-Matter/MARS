@@ -480,7 +480,7 @@ plot_mov <- function(fit, s = 1, y, a) {
   mname <- dat@Dlabel@season
 
   mov <- array(fit@report$mov_ymarrs[y, , a, , , s], c(nm, nr, nr))
-  dist_eq <- mov_proj(mov)
+  dist_eq <- mov_proj(mov, start = fit@report$recdist_rs[, s])
 
   if (nm > 1) {
     old_mar <- par()$mar

@@ -483,10 +483,18 @@ make_map <- function(p, MARSdata, map = list(),
     }
   }
 
-  if (!silent && nr > 1) {
-    if (is.null(map$log_recdist_rs) || any(!is.na(map$log_recdist_rs))) {
-      message_info("Recruitment distribution will be estimated")
-    }
+  if (is.null(map$log_recdist_rs)) {
+    recdist_rs <- sapply(1:ns, function(s) {
+      x <- ifelse(Dmodel@presence_rs[, s], NA, TRUE)
+      x[which(x)[1]] <- NA
+      return(x)
+    })
+    recdist_rs[!is.na(recdist_rs)] <- 1:sum(recdist_rs, na.rm = TRUE)
+    map$log_recdist_rs <- factor(recdist_rs)
+  }
+
+  if (!silent && nr > 1 && any(!is.na(map$log_recdist_rs))) {
+    message_info("Recruitment distribution will be estimated")
   }
 
   # Fleet parameters ----
