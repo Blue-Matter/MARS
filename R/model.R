@@ -142,7 +142,7 @@ update_report <- function(r, MARSdata) {
   # Transform parameters ----
   ## Maturity at age ogive ----
   if (is.null(map$mat_ps)) map$mat_ps <- matrix(TRUE, 2, ns)
-  map$mat_ps <- matrix(map$mat_ps, 2, ns)
+  map$mat_ps <- matrix(as.character(map$mat_ps), 2, ns)
   mat_yas[] <- sapply2(1:ns, function(s) {
     if (all(is.na(map$mat_ps[, s]))) {
       matd_yas[1:ny, , s]
