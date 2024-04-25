@@ -523,8 +523,8 @@ plot_mov <- function(fit, s = 1, y, a) {
   rect(nr + 2, ybottom = 1:nr, xright = nr + 3, ytop = 1:nr + 1, col = vcol[100*round(p, 2)])
   text(nr + 2.5, 1:nr + 0.5, round(p, 2))
 
-  axis(2, at = 1:nr + 0.5, labels = rname, font = 2)
-  axis(1, at = c(1:nr, nr+2) + 0.5, labels = c(rname, "Eq."), font = 2)
+  axis(2, at = 1:nr + 0.5, labels = as.character(rname), font = 2)
+  axis(1, at = c(1:nr, nr+2) + 0.5, labels = c(as.character(rname), "Eq."), font = 2)
 
   invisible()
 }
