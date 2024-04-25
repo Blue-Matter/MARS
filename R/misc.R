@@ -287,16 +287,22 @@ make_yearseason <- function(year, nm = 4) {
 
 # x must be a three dimensional array due to rbind()
 collapse_yearseason <- function(x, MARGIN = c(1, 2)) {
-  ny <- dim(x)[MARGIN[1]]
-  nm <- dim(x)[MARGIN[2]]
 
-  xout <- lapply(1:ny, function(y) {
-    out <- array(NA_real_, c(nm, dim(x)[-MARGIN]))
-    comma <- rep(", ", length(dim(x)) - 1) %>% paste0(collapse = "")
-    eval(parse(text = paste0("out[] <- x[y", comma, "]")))
-    return(out)
-  })
-  do.call(rbind, xout)
+  if (length(dim(x)) > 2) {
+    ny <- dim(x)[MARGIN[1]]
+    nm <- dim(x)[MARGIN[2]]
+
+    xout <- lapply(1:ny, function(y) {
+      out <- array(NA_real_, c(nm, dim(x)[-MARGIN]))
+      comma <- rep(", ", length(dim(x)) - 1) %>% paste0(collapse = "")
+      eval(parse(text = paste0("out[] <- x[y", comma, "]")))
+      return(out)
+    })
+
+    do.call(rbind, xout)
+  } else {
+    as.numeric(t(x))
+  }
 }
 
 message <- function(...) {
