@@ -232,6 +232,37 @@ report.MARSassess <- function(object, name, filename = "MARS", dir = tempdir(), 
     rmd_split[[survey_ind]] <- ""
   }
 
+  sc_ind <- grep("*ADD SC RMD*", rmd)
+  if (ns > 1 && any(dat@Dfishery@SC_ymafrs > 0, na.rm = TRUE)) {
+
+    r_plot <- apply(dat@Dfishery@SC_ymafrs, 5, sum) > 0
+
+    rmd_split[[sc_ind]] <- local({
+
+      sc_txt <- lapply(1:nr, function(r) {
+        if (r_plot[r]) {
+          out <- lapply(1:nrow(dat@Dfishery@SC_ff), function(ff) {
+            lapply(1:nrow(dat@Dfishery@SC_aa), function(aa) {
+              fname <- ifelse(nrow(dat@Dfishery@SC_ff) != ncol(dat@Dfishery@SC_ff), "aggregate fleet")
+              aname <- ifelse(nrow(dat@Dfishery@SC_aa) != ncol(dat@Dfishery@SC_aa), "age class")
+              make_rmd_SC(ff, aa, r, paste(fname, ff), paste(aname, aa), rname[r])
+            }) %>% unlist()
+          })
+          do.call(c, out)
+        } else {
+          ""
+        }
+      }) %>%
+        unlist() %>%
+        as.character()
+
+      c("## Stock composition {.tabset}\n\n", sc_txt)
+    })
+
+  } else {
+    rmd_split[[sc_ind]] <- ""
+  }
+
   srr_ind <- grep("*ADD SRR RMD*", rmd)
   rmd_split[[srr_ind]] <- mapply(make_rmd_srr, s = 1:ns, sname = sname) %>% as.character()
 

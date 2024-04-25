@@ -221,7 +221,26 @@ make_rmd_mov <- function(s, y, a, yname, sname, header = TRUE) {
     "```",
     ""
   )
+
   return(rmd)
 }
 
 
+make_rmd_SC <- function(f, a, r, fname, aname, rname, header = TRUE) {
+  cap <- paste0("Predicted stock composition for ", fname, ", ", aname, ", in ", rname)
+  cap2 <- paste0("Fits to stock composition (observed in black, predicted in red) for ", fname, ", ", aname, ", in ", rname)
+
+  rmd <- c(
+    ifelse(f == 1 && a == 1, paste0("### ", rname, " {.tabset}\n\n"), ""),
+    paste0("```{r sc-prop-f", f, "a-", a, "-r", r, ", fig.cap=\"", cap, ".\"}"),
+    paste0("plot_SC(x, ff = ", f, ", aa = ", a, ", r = ", r, ", prop = TRUE)"),
+    "```",
+    "",
+    paste0("```{r sc-fit-f", f, "a-", a, "-r", r, ", fig.cap=\"", cap, ".\"}"),
+    paste0("plot_SC(x, ff = ", f, ", aa = ", a, ", r = ", r, ", prop = FALSE)"),
+    "```",
+    ""
+  )
+
+  return(rmd)
+}

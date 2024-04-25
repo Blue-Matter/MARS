@@ -8,6 +8,7 @@
 \alias{plot_CAL}
 \alias{plot_IAA}
 \alias{plot_IAL}
+\alias{plot_SC}
 \title{Plotting functions for data in MARS model}
 \usage{
 plot_catch(fit, f = 1, by = c("region", "stock"), prop = FALSE, annual = FALSE)
@@ -21,6 +22,8 @@ plot_CAL(fit, f = 1, r = 1)
 plot_IAA(fit, i = 1)
 
 plot_IAL(fit, i = 1)
+
+plot_SC(fit, ff = 1, aa = 1, r = 1, prop = FALSE)
 }
 \arguments{
 \item{fit}{\linkS4class{MARSassess} object returned by \code{\link[=fit_MARS]{fit_MARS()}}}
@@ -36,6 +39,10 @@ plot_IAL(fit, i = 1)
 \item{i}{Integer, indexes the survey}
 
 \item{r}{Integer, indexes the region}
+
+\item{ff}{Integer, indexes the aggregate fleet (for stock composition data)}
+
+\item{aa}{Integer, indexes the aggregate age class (for stock composition and tag data)}
 }
 \value{
 Various base graphics plots
@@ -66,5 +73,9 @@ A set of functions to plot data variables and predicted values (catch, age compo
 
 \itemize{
 \item \code{plot_IAL} plots the index length composition
+}
+
+\itemize{
+\item \code{plot_SC} plots the stock composition
 }
 }

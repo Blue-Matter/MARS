@@ -45,7 +45,7 @@ if (length(x@SD) && length(x@SD$env$corr.fixed)) as.data.frame(x@SD$env$corr.fix
 
 <!-- *ADD SURVEY RMD* -->
 
-## Stock composition
+<!-- *ADD SC RMD* -->
 
 ## Close-kin
 

@@ -17,7 +17,7 @@ make_color <- function(n, type = c("fleet", "region", "stock"), alpha = 1) {
 }
 
 #' @importFrom graphics barplot box legend axis
-propplot <- function(x, cols, leg.names, xval, ylab = "Proportion") {
+propplot <- function(x, cols, leg.names, xval, ylab = "Proportion", border = ifelse(nrow(x) > 20, NA, "grey60")) {
   p <- apply(x, 1, function(x) x/sum(x, na.rm = TRUE))
   if (is.null(dim(p))) p <- matrix(p, length(xval), 1)
 
@@ -27,9 +27,9 @@ propplot <- function(x, cols, leg.names, xval, ylab = "Proportion") {
   }
   plot(NULL, xlab = "Year", ylab = ylab, xlim = c(0, ncol(p)), xaxt = "n",
     ylim = c(0, 1), yaxs = "i", xaxs = "i")
-  barplot(p, add = TRUE, col = cols, width = 1, space = 0, border = "grey60")
+  barplot(p, add = TRUE, col = cols, width = 1, space = 0, border = border)
   if (!missing(leg.names) && length(leg.names) > 1) {
-    legend("topleft", legend = leg.names, fill = cols, border = "grey60", horiz = TRUE)
+    legend("topleft", legend = leg.names, fill = cols, border = border, horiz = TRUE)
   }
   box()
 
@@ -523,8 +523,8 @@ plot_mov <- function(fit, s = 1, y, a) {
   rect(nr + 2, ybottom = 1:nr, xright = nr + 3, ytop = 1:nr + 1, col = vcol[100*round(p, 2)])
   text(nr + 2.5, 1:nr + 0.5, round(p, 2))
 
-  axis(2, at = 1:nr + 0.5, labels = as.character(rname), font = 2)
-  axis(1, at = c(1:nr, nr+2) + 0.5, labels = c(as.character(rname), "Eq."), font = 2)
+  axis(2, at = 1:nr + 0.5, labels = as.character(rname), font = 2, cex.axis = 0.75)
+  axis(1, at = c(1:nr, nr+2) + 0.5, labels = c(as.character(rname), "Eq."), font = 2, cex.axis = 0.75)
 
   invisible()
 }
