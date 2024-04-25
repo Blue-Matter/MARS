@@ -102,7 +102,11 @@ calc_F <- function(Cobs, N, sel, wt, M, q_fs, delta = 1,
 
   VB_afrs <- array(N[ars_afrs] * sel[afs_afrs] * wt[afs_afrs], c(na, nf, nr, ns))
   VB_fr <- apply(VB_afrs, c(2, 3), sum)
-  Cobs_loop <- ifelse(Cobs < 1e-8, 1e-9, Cobs)
+  if (inherits(Cobs, "advector")) {
+    Cobs_loop <- CondExpLt(Cobs, 1e-8, 1e-9, Cobs)
+  } else {
+    Cobs_loop <- ifelse(Cobs < 1e-8, 1e-9, Cobs)
+  }
   F_init <- Cobs_loop/(Cobs_loop + VB_fr)
 
   if (trans == "log") {

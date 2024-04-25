@@ -630,16 +630,27 @@ update_report <- function(r, MARSdata) {
 
   ## Tag
   if (any(tag_ymarrs > 0, na.rm = TRUE)) {
+    tag_ymarrs <- OBS(tag_ymarrs)
+    tagpred_ymarrs <- array(0, dim(tag_ymarrs))
+    tagpred_ymarrs[] <- sapply2(1:nrow(tag_aa), function(aa) {
+      a1 <- which(tag_aa[aa, ] > 0)[1]
+      sapply2(1:nm, function(m) {
+        mprev <- ifelse(m == 1, nm, m - 1)
+        sapply2(1:nrow(tag_yy), function(yy) {
+          y1 <- which(tag_yy[yy, ] > 0)[1]
+          yprev <- ifelse(y1 == 1, 1, y1 - 1)
+          mov_ymarrs[yprev, mprev, a1, , , ] # rrsyma
+        })
+      })
+    }) %>%
+      aperm(c(4:6, 1:3))
+
     loglike_tag_mov_ymars <- sapply2(1:ns, function(s) { # Likelihood of where the fish are going
       sapply2(1:nr, function(rf) {
         sapply2(1:nrow(tag_aa), function(aa) {
-          a1 <- which(tag_aa[aa, ] > 0)[1]
           sapply(1:nm, function(m) {
-            mprev <- ifelse(m == 1, nm, m - 1)
             sapply(1:nrow(tag_yy), function(yy) {
-              y1 <- which(tag_yy[yy, ] > 0)[1]
-              yprev <- ifelse(y1 == 1, 1, y1 - 1)
-              pred <- mov_ymarrs[yprev, mprev, a1, rf, , s]
+              pred <- tagpred_ymarrs[yy, m, aa, rf, , s]
               like_comp(obs = tag_ymarrs[yy, m, aa, rf, , s],
                         pred = CondExpGt(pred, 1e-8, pred, 1e-8), type = tag_like,
                         N = tagN_ymars[yy, m, aa, rf, s], theta = tagtheta_s[s],
@@ -686,12 +697,12 @@ update_report <- function(r, MARSdata) {
   bcr_s <- -0.5 * sdr_s * sdr_s
 
   if (is.null(map$log_initrdev_as)) {
-    par_initrdev_as <- matrix(TRUE, na, ns)
+    par_initrdev_as <- matrix(0, na, ns)
   } else {
     par_initrdev_as <- matrix(!is.na(map$log_initrdev_as) & !duplicated(map$log_initrdev_as, MARGIN = 0), na, ns)
   }
   logprior_initrdev_as <- sapply(1:ns, function(s) {
-    ifelse(par_initrdev_as[, s], dnorm(p$log_initrdev_as[, s], bcr_s[s], sdr_s[s], log = TRUE), 0)
+    CondExpGt(par_initrdev_as[, s], 0, dnorm(p$log_initrdev_as[, s], bcr_s[s], sdr_s[s], log = TRUE), 0)
   })
 
   if (is.null(map$log_rdev_ys)) {
@@ -700,7 +711,7 @@ update_report <- function(r, MARSdata) {
     par_rdev_ys <- matrix(!is.na(map$log_rdev_ys) & !duplicated(map$log_rdev_ys, MARGIN = 0), ny, ns)
   }
   logprior_rdev_ys <- sapply(1:ns, function(s) {
-    ifelse(par_rdev_ys[, s], dnorm(p$log_rdev_ys[, s], bcr_s[s], sdr_s[s], log = TRUE), 0)
+    CondExpGt(par_rdev_ys[, s], 0, dnorm(p$log_rdev_ys[, s], bcr_s[s], sdr_s[s], log = TRUE), 0)
   })
 
   if (nr > 1 && "mov_g_ymars" %in% random) {
@@ -792,6 +803,9 @@ update_report <- function(r, MARSdata) {
     REPORT(q_i)
   }
 
+  ## Tag ----
+  if (any(tag_ymarrs > 0, na.rm = TRUE)) REPORT(tagpred_ymarrs)
+
   ## CKMR ----
   if (length(POP_s)) REPORT(pPOP_s)
 
@@ -826,8 +840,8 @@ update_report <- function(r, MARSdata) {
   if (any(tag_ymarrs > 0, na.rm = TRUE)) REPORT(loglike_tag_mov_ymars)
   if (any(tag_ymars > 0, na.rm = TRUE)) REPORT(loglike_tag_dist_ymas)
 
-  if (any(par_initrdev_as)) REPORT(logprior_initrdev_as)
-  if (any(par_rdev_ys)) REPORT(logprior_rdev_ys)
+  if (is.null(map$log_initrdev_as) || any(!is.na(map$log_initrdev_as))) REPORT(logprior_initrdev_as)
+  if (is.null(map$log_rdev_ys) || any(!is.na(map$log_rdev_ys))) REPORT(logprior_rdev_ys)
   if (nr > 1 && "mov_g_ymars" %in% random) REPORT(logprior_dist_ymas)
 
   return(fn)

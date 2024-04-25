@@ -311,7 +311,13 @@ calc_phi_simple <- function(Z, fec_a, mat_a, delta = 0) {
 #' @export
 calc_NPR <- function(Z, na = length(Z), plusgroup = TRUE) {
   surv <- exp(-Z)
-  NPR <- numeric(na)
+  is_ad <- inherits(Z, "advector")
+  if (is_ad) {
+    `[<-` <- RTMB::ADoverload("[<-")
+    NPR <- advector(numeric(na))
+  } else {
+    NPR <- numeric(na)
+  }
   NPR[1] <- 1
   for(a in 2:na) NPR[a] <- NPR[a-1] * surv[a-1]
   if (plusgroup) NPR[na] <- NPR[na]/(1 - surv[na])
