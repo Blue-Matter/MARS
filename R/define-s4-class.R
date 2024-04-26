@@ -243,8 +243,8 @@ report.MARSassess <- function(object, name, filename = "MARS", dir = tempdir(), 
         if (r_plot[r]) {
           out <- lapply(1:nrow(dat@Dfishery@SC_ff), function(ff) {
             lapply(1:nrow(dat@Dfishery@SC_aa), function(aa) {
-              fname <- ifelse(nrow(dat@Dfishery@SC_ff) != ncol(dat@Dfishery@SC_ff), "aggregate fleet")
-              aname <- ifelse(nrow(dat@Dfishery@SC_aa) != ncol(dat@Dfishery@SC_aa), "age class")
+              fname <- ifelse(nrow(dat@Dfishery@SC_ff) != ncol(dat@Dfishery@SC_ff), "aggregate fleet", "fleet")
+              aname <- ifelse(nrow(dat@Dfishery@SC_aa) != ncol(dat@Dfishery@SC_aa), "age class", "age")
               make_rmd_SC(ff, aa, r, paste(fname, ff), paste(aname, aa), rname[r])
             }) %>% unlist()
           })
@@ -261,6 +261,33 @@ report.MARSassess <- function(object, name, filename = "MARS", dir = tempdir(), 
 
   } else {
     rmd_split[[sc_ind]] <- ""
+  }
+
+  tagmov_ind <- grep("*ADD TAG MOV RMD*", rmd)
+  if (nr > 1 && any(dat@Dtag@tag_ymarrs > 0, na.rm = TRUE)) {
+
+    r_plot <- apply(dat@Dfishery@SC_ymafrs, 5, sum) > 0
+
+    rmd_split[[tagmov_ind]] <- local({
+
+      tagmov_txt <- lapply(1:ns, function(s) {
+        out <- lapply(1:nrow(dat@Dtag@tag_yy), function(yy) {
+          lapply(1:nrow(dat@Dtag@tag_aa), function(aa) {
+            yname <- ifelse(nrow(dat@Dtag@tag_yy) != ncol(dat@Dtag@tag_yy), "aggregate year", "year")
+            aname <- ifelse(nrow(dat@Dtag@tag_aa) != ncol(dat@Dtag@tag_aa), "age class", "age")
+            make_rmd_tagmov(yy, aa, s, paste(yname, yy), paste(aname, aa), sname[s], header = yy == 1 && aa == 1)
+          }) %>% unlist()
+        })
+        do.call(c, out)
+      }) %>%
+        unlist() %>%
+        as.character()
+
+      c("## Tag movement {.tabset}\n\n", tagmov_txt)
+    })
+
+  } else {
+    rmd_split[[tagmov_ind]] <- ""
   }
 
   srr_ind <- grep("*ADD SRR RMD*", rmd)

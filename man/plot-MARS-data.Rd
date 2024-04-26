@@ -9,6 +9,7 @@
 \alias{plot_IAA}
 \alias{plot_IAL}
 \alias{plot_SC}
+\alias{plot_tagmov}
 \title{Plotting functions for data in MARS model}
 \usage{
 plot_catch(fit, f = 1, by = c("region", "stock"), prop = FALSE, annual = FALSE)
@@ -24,6 +25,8 @@ plot_IAA(fit, i = 1)
 plot_IAL(fit, i = 1)
 
 plot_SC(fit, ff = 1, aa = 1, r = 1, prop = FALSE)
+
+plot_tagmov(fit, s = 1, yy = 1, aa = 1)
 }
 \arguments{
 \item{fit}{\linkS4class{MARSassess} object returned by \code{\link[=fit_MARS]{fit_MARS()}}}
@@ -43,6 +46,8 @@ plot_SC(fit, ff = 1, aa = 1, r = 1, prop = FALSE)
 \item{ff}{Integer, indexes the aggregate fleet (for stock composition data)}
 
 \item{aa}{Integer, indexes the aggregate age class (for stock composition and tag data)}
+
+\item{yy}{Integer, indexes the aggregate yeargs (for the tag data)}
 }
 \value{
 Various base graphics plots
@@ -77,5 +82,9 @@ A set of functions to plot data variables and predicted values (catch, age compo
 
 \itemize{
 \item \code{plot_SC} plots the stock composition
+}
+
+\itemize{
+\item \code{plot_tagmov} plots the tag movements
 }
 }

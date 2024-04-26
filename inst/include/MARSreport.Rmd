@@ -49,7 +49,7 @@ if (length(x@SD) && length(x@SD$env$corr.fixed)) as.data.frame(x@SD$env$corr.fix
 
 ## Close-kin
 
-## Tag
+<!-- *ADD TAG MOV RMD* -->
 
 ## Stock dynamics {.tabset}
 

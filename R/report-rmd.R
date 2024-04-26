@@ -244,3 +244,18 @@ make_rmd_SC <- function(f, a, r, fname, aname, rname, header = TRUE) {
 
   return(rmd)
 }
+
+
+make_rmd_tagmov <- function(y, a, s, yname, aname, sname, header = TRUE) {
+  cap <- paste0("Fits to tag movement (observed in black, predicted in red) for ", sname, ", ", yname, ", ", aname)
+
+  rmd <- c(
+    ifelse(header, paste0("### ", sname, " {.tabset}\n\n"), ""),
+    paste0("```{r tagmov-y", y, "a-", a, "-s", s, ", fig.cap=\"", cap, ".\"}"),
+    paste0("plot_tagmov(x, s = ", s, ", yy = ", y, ", aa = ", a, ")"),
+    "```",
+    ""
+  )
+
+  return(rmd)
+}

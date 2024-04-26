@@ -296,11 +296,11 @@ plot_SC <- function(fit, ff = 1, aa = 1, r = 1, prop = FALSE) {
 #' @importFrom graphics lines mtext
 plot_composition <- function(obs, pred = NULL, xval = 1:ncol(obs), xlab = "Age",
                              ylab = "Value", zval = 1:nrow(obs), N = rowSums(obs),
-                             xaxislab = 1:ncol(obs)) {
+                             xaxislab = 1:ncol(obs), ncol = 4, nrow = 4) {
 
   old_par <- par(no.readonly = TRUE)
   on.exit(par(old_par))
-  par(mfcol = c(4, 4), mar = rep(0, 4), oma = c(5.1, 5.1, 2.1, 2.1))
+  par(mfcol = c(nrow, ncol), mar = rep(0, 4), oma = c(5.1, 5.1, 2.1, 2.1))
 
   ylim <- c(0, 1.1) * range(pred, obs, na.rm = TRUE)
 
@@ -308,19 +308,20 @@ plot_composition <- function(obs, pred = NULL, xval = 1:ncol(obs), xlab = "Age",
   if (max(obs, pred, na.rm = TRUE) == 1) yaxp <- c(0, 1, 4)
   las <- 1
   nplot <- nrow(pred)
+  nset <- nrow * ncol
   xaxt_manual <- any(xaxislab != xval)
   N <- round(N, 2)
 
   for(i in 1:nplot) {
-    yaxt <- ifelse(i %% 16 %in% c(1:4), "s", "n") # TRUE = first column
-    xaxt <- ifelse(i < nplot && i %% 4 %in% c(1:3), "n", "s") # TRUE = first three rows
+    yaxt <- ifelse(i %% nset %in% c(1:nrow), "s", "n") # TRUE = first column
+    xaxt <- ifelse(i < nplot && i %% nrow %in% c(1:(nrow-1)), "n", "s") # TRUE = first three rows
 
     plot(xval, obs[i, ], typ = "o", ylim = ylim, yaxp = yaxp, xaxt = ifelse(xaxt_manual, "n", xaxt), yaxt = yaxt, las = las)
     if (xaxt == "s") axis(1, at = xval, labels = xaxislab)
     if (!is.null(pred)) lines(xval, pred[i, ], lwd = 2, col = 2)
     legend("topright", legend = c(zval[i], ifelse(is.null(N), "", paste0("N = ", N[i]))), bty = "n", xjust = 1)
 
-    if (i %% 16 == 1 || i == nplot) {
+    if (i %% nset == 1) {
       mtext(xlab, side = 1, line = 3, outer = TRUE)
       mtext(ylab, side = 2, line = 3.5, outer = TRUE)
     }
@@ -329,3 +330,48 @@ plot_composition <- function(obs, pred = NULL, xval = 1:ncol(obs), xlab = "Age",
   invisible()
 }
 
+#' @rdname plot-MARS-data
+#' @param yy Integer, indexes the aggregate yeargs (for the tag data)
+#' @aliases plot_tagmov
+#' @details
+#' - `plot_tagmov` plots the tag movements
+#' @export
+plot_tagmov <- function(fit, s = 1, yy = 1, aa = 1) {
+  dat <- get_MARSdata(fit)
+
+  if (dat@Dmodel@nr == 1) stop("Tag movement figure not needed.")
+
+  if (sum(dat@Dtag@tag_ymarrs, na.rm = TRUE)) {
+    N <- apply(dat@Dtag@tag_ymarrs[yy, , aa, , , s, drop = FALSE], c(2, 4), sum)
+    N[is.na(N)] <- 0
+
+    if (any(N > 0)) {
+      Dlabel <- dat@Dlabel
+
+      pred <- apply(fit@report$tagpred_ymarrs[yy, , aa, , , s, drop = FALSE], c(2, 4, 5), identity) %>%
+        collapse_yearseason()
+
+      obs <- apply(dat@Dtag@tag_ymarrs[yy, , aa, , , s, drop = FALSE], c(2, 4, 5), identity)
+      obs2 <- apply(obs, c(1, 2), function(x) x/sum(x, na.rm = TRUE)) %>% aperm(c(2, 3, 1)) %>%
+        collapse_yearseason() # Season + region of origin
+      obs2[is.na(obs2)] <- 0
+
+      N <- collapse_yearseason(N)
+
+      nrow <- dat@Dmodel@nr
+      ncol <- dat@Dmodel@nm
+
+      z <- paste(
+        paste("Origin:", rep(Dlabel@region, dat@Dmodel@nm)),
+        paste(rep(paste0("\nSeason", 1:nm), each = dat@Dmodel@nr))
+      )
+
+      plot_composition(obs2, pred, xval = 1:dat@Dmodel@nr,
+                       xlab = "Destination", ylab = "Proportion",
+                       zval = z, N = N,
+                       xaxislab = Dlabel@region, ncol = ncol, nrow = nrow)
+    }
+  }
+
+  invisible()
+}
