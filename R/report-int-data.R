@@ -363,7 +363,7 @@ plot_tagmov <- function(fit, s = 1, yy = 1, aa = 1) {
 
       z <- paste(
         paste("Origin:", rep(Dlabel@region, dat@Dmodel@nm)),
-        paste(rep(paste0("\nSeason", 1:nm), each = dat@Dmodel@nr))
+        paste(rep(paste("\nSeason", 1:dat@Dmodel@nm), each = dat@Dmodel@nr))
       )
 
       plot_composition(obs2, pred, xval = 1:dat@Dmodel@nr,
