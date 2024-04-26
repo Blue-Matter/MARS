@@ -47,7 +47,9 @@ plot_tagmov(fit, s = 1, yy = 1, aa = 1)
 
 \item{aa}{Integer, indexes the aggregate age class (for stock composition and tag data)}
 
-\item{yy}{Integer, indexes the aggregate yeargs (for the tag data)}
+\item{s}{Integer, indexes the stock}
+
+\item{yy}{Integer, indexes the aggregate years (for the tag data)}
 }
 \value{
 Various base graphics plots

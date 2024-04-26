@@ -331,7 +331,8 @@ plot_composition <- function(obs, pred = NULL, xval = 1:ncol(obs), xlab = "Age",
 }
 
 #' @rdname plot-MARS-data
-#' @param yy Integer, indexes the aggregate yeargs (for the tag data)
+#' @param yy Integer, indexes the aggregate years (for the tag data)
+#' @param s Integer, indexes the stock
 #' @aliases plot_tagmov
 #' @details
 #' - `plot_tagmov` plots the tag movements
