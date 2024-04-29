@@ -665,7 +665,7 @@ make_map <- function(p, MARSdata, map = list(),
     message_info("Initial equilibrium F will be estimated")
   }
 
-  map$log_initrdev_as <- factor(matrix(NA, na, ns))
+  if (is.null(map$log_initrdev_as)) map$log_initrdev_as <- factor(matrix(NA, na, ns))
   if (!silent && (is.null(map$log_initrdev_as) || any(!is.na(map$log_initrdev_as)))) {
     message_info("Year 1 recruitment deviations will be estimated")
   }
