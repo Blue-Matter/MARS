@@ -37,7 +37,7 @@ propplot <- function(x, cols, leg.names, xval, ylab = "Proportion", border = ife
   xt <- xt[xt %in% xval]
   xp <- match(xt, xval)
 
-  axis(1, at = xp + 0.5, labels = xt)
+  axis(1, at = xp - 0.5, labels = xt)
 
   invisible()
 }
