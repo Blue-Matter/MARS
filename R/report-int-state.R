@@ -516,12 +516,15 @@ plot_mov <- function(fit, s = 1, y, a) {
   )
   for(x in 1:nr) {
     for(y in 1:nr) {
-      rect(xleft = x, ybottom = y, xright = x+1, ytop = y+1, col = vcol[100*round(m[y,x], 2)])
-      text(x + 0.5, y + 0.5, round(m[y, x], 2))
+      m_yx <- round(m[y, x], 2)
+      rect(xleft = x, ybottom = y, xright = x+1, ytop = y+1, col = vcol[100 * m_yx])
+      text(x + 0.5, y + 0.5, m_yx)
     }
   }
-  rect(nr + 2, ybottom = 1:nr, xright = nr + 3, ytop = 1:nr + 1, col = vcol[100*round(p, 2)])
-  text(nr + 2.5, 1:nr + 0.5, round(p, 2))
+  eq_val <- round(p, 2)
+  eq_col <- ifelse(eq_val > 0, vcol[100 * eq_val], NA)
+  rect(nr + 2, ybottom = 1:nr, xright = nr + 3, ytop = 1:nr + 1, col = eq_col)
+  text(nr + 2.5, 1:nr + 0.5, eq_val)
 
   axis(2, at = 1:nr + 0.5, labels = as.character(rname), font = 2, cex.axis = 0.75)
   axis(1, at = c(1:nr, nr+2) + 0.5, labels = c(as.character(rname), "Eq."), font = 2, cex.axis = 0.75)
