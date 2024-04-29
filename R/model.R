@@ -41,8 +41,17 @@ fit_MARS <- function(MARSdata, parameters, map = list(), random = NULL,
     ...
   )
 
-  if (any(!obj$gr())) {
-    warning("Gradients of zero at initial values, can be indicative of over-parameterization or non-identifiable parameters.")
+  if (!silent) {
+    if (is.na(obj$fn())) {
+      message_oops("Objective function is NA at initial values.")
+
+      if (MARSdata@Dmodel@condition == "catch" && any(is.na(obj$report()$F_ymfr))) {
+        message_oops("NA's found in F array. Try increasing start value of R0.")
+      }
+
+    } else if (any(!obj$gr(), na.rm = TRUE)) {
+      message_oops("Gradients of zero at initial values, can be indicative of over-parameterization or non-identifiable parameters.")
+    }
   }
 
   M <- new("MARSassess", obj = obj)
@@ -119,6 +128,7 @@ update_report <- function(r, MARSdata) {
   M_yas <- mat_yas <- array(NA_real_, c(ny, na, ns))
   if (length(HSP_s)) F_yas <- array(NA_real_, c(ny, na, ns))
   mov_ymarrs <- array(NA_real_, c(ny, nm, na, nr, nr, ns))
+  recdist_rs <- array(NA_real_, c(nr, ns))
 
   # Fishery arrays ----
   sel_ymafs <- array(NA_real_, c(ny, nm, na, nf, ns))
@@ -197,7 +207,12 @@ update_report <- function(r, MARSdata) {
   ## Fishery and index selectivity ----
   # Check for fishery selectivity blocks
   tv_flensel <- any(
-    sapply(1:nf, function(f) length(unique(sel_block_yf[, f])) > 1)
+    sapply(1:nf, function(f) {
+      bb <- sel_block_yf[, f]
+      lensel <- any(grepl("length", sel_f[bb]))
+      change_sel <- length(unique(bb)) > 1
+      change_sel || lensel
+    })
   )
   if (ni > 0) { # Check for length selectivity blocks
     ilensel <- any(sapply(1:ni, function(i) grepl("length", sel_i[i])))
@@ -207,8 +222,12 @@ update_report <- function(r, MARSdata) {
     # Fishery selectivity
 
     # Check for time-varying growth
-    tv_growth <- any(sapply(2:ny, function(y) max(LAK_ymals[y, , , , s] - LAK_ymals[1, , , , s])) > 0)
-    tv_fagesel_growth <- tv_growth || tv_flensel
+    if (tv_flensel) {
+      tv_growth <- any(sapply(2:ny, function(y) max(LAK_ymals[y, , , , s] - LAK_ymals[1, , , , s])) > 0)
+      tv_fagesel_growth <- tv_growth
+    } else {
+      tv_fagesel_growth <- FALSE
+    }
 
     # Check for time-varying maturity
     tv_mat <- any(sapply(2:ny, function(y) max(mat_yas[y, , s] - mat_yas[1, , s])) > 0)
@@ -259,7 +278,7 @@ update_report <- function(r, MARSdata) {
   }
 
   ## Stock distribution and movement parameters ----
-  recdist_rs <- sapply(1:ns, function(s) softmax(p$log_recdist_rs[, s]))
+  recdist_rs[] <- sapply(1:ns, function(s) softmax(p$log_recdist_rs[, s]))
 
   # Movement
   for (yy in 1:nrow(tag_yy)) {
