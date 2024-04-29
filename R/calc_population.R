@@ -178,7 +178,7 @@ calc_population <- function(ny = 10, nm = 4, na = 20, nf = 1, nr = 4, ns = 2,
       Rnext <- if (y_spawn > 0) { # For year 1, no recruitment has been calculated yet
         R_ys[y_spawn, ]
       } else {
-        colSums(initN_ars[1, , ])
+        apply(initN_ars[1, , , drop = FALSE], 3, sum)
       }
 
       N_ymars[ynext, mnext, , , ] <- calc_nextN(
