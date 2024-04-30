@@ -176,7 +176,11 @@ calc_population <- function(ny = 10, nm = 4, na = 20, nf = 1, nr = 4, ns = 2,
       y_spawn <- ifelse(m_rec > m_spawn, ynext, ynext-1) # If m_rec <= m_spawn in year 1, multiseason?
 
       Rnext <- if (y_spawn > 0) { # For year 1, no recruitment has been calculated yet
-        R_ys[y_spawn, ]
+        if (y_spawn <= ny) {
+          R_ys[y_spawn, ]
+        } else {
+          0
+        }
       } else {
         apply(initN_ars[1, , , drop = FALSE], 3, sum)
       }
