@@ -179,6 +179,10 @@ get_sdreport <- function(obj, getReportCovariance = FALSE, silent = FALSE, ...) 
   options(warn = -1)
   on.exit(options(warn = old_warn))
 
+  old_comparison <- TapeConfig()["comparison"]
+  on.exit(TapeConfig(comparison = old_comparison), add = TRUE)
+  TapeConfig(comparison = "tape")
+
   par.fixed <- obj$env$last.par.best
 
   if (is.null(obj$env$random)) {
@@ -221,7 +225,16 @@ get_sdreport <- function(obj, getReportCovariance = FALSE, silent = FALSE, ...) 
   res$env$corr.fixed <- cov2cor(res$cov.fixed) %>% round(3) %>%
     structure(dimnames = list(corr.names, corr.names))
 
-  if (!silent && !res$pdHess) message_oops("Check convergence. Covariance matrix is not positive-definite.")
+  if (!silent && !res$pdHess) {
+    message_oops("Check convergence. Covariance matrix is not positive-definite.")
+    message_oops("Maximum gradient is ", round(max(abs(fit@SD$gradient.fixed)), 5))
+  }
+  if (exists("h", inherits = FALSE) && !is.null(h)) {
+    if (!silent) message_oops("Determinant of Hessian is ", round(det(h), 5))
+
+    res$env$hessian <- round(h, 3) %>%
+      structure(dimnames = list(corr.names, corr.names))
+  }
 
   return(res)
 }

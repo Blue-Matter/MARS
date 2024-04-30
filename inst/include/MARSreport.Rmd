@@ -39,6 +39,8 @@ if (length(x@SD)) summary(x) %>% zapsmall() %>% as.data.frame()
 if (length(x@SD) && length(x@SD$env$corr.fixed)) as.data.frame(x@SD$env$corr.fixed)
 ```
 
+<!-- *ADD HESSIAN RMD* -->
+
 ## Fishery {.tabset}
 
 <!-- *ADD FISHERY RMD* -->

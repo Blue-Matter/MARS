@@ -53,7 +53,11 @@ fit_MARS <- function(MARSdata, parameters, map = list(), random = NULL,
     } else if (is.infinite(fn)) {
       message_oops("Objective function is infinite at initial values.")
 
-    } else if (any(!obj$gr(), na.rm = TRUE)) {
+    }
+
+    gr <- obj$gr()
+    if (any(is.na(gr))) message_oops("Gradients of NA at initial values were found.")
+    if (any(!gr, na.rm = TRUE)) {
       message_oops("Gradients of zero at initial values, can be indicative of over-parameterization or non-identifiable parameters.")
     }
   }
@@ -62,7 +66,11 @@ fit_MARS <- function(MARSdata, parameters, map = list(), random = NULL,
 
   if (run_model) {
     m <- optimize_RTMB(obj, do_sd = do_sd, control = control, silent = silent)
-    M@opt <- m$opt
+    if (is.character(m$opt)) {
+      message_oops("Error message from optimization:\n", m$opt)
+    } else {
+      M@opt <- m$opt
+    }
     if (do_sd) M@SD <- m$SD
   }
 
