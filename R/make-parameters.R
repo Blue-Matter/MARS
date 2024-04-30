@@ -540,7 +540,7 @@ make_map <- function(p, MARSdata, map = list(),
   if (!silent) {
     message_info("Fishery selectivity setup:")
 
-    fsel_start <- conv_selpar(p$sel_pf, type = Dfishery@sel_f, maxage = Dmodel@na, maxL = 0.95 * max(lmid))
+    fsel_start <- conv_selpar(p$sel_pf, type = Dfishery@sel_f, maxage = Dmodel@na, maxL = 0.95 * max(MARSdata@Dmodel@lmid))
     y <- if (length(Dlabel@year)) {
       Dlabel@year
     } else {
@@ -549,13 +549,19 @@ make_map <- function(p, MARSdata, map = list(),
     no_blocks <- apply(Dfishery@sel_block_yf, 2, function(x) length(unique(x)) == 1) %>% all()
     for (bb in unique(Dfishery@sel_block_yf)) {
       if (no_blocks) {
-        if (length(Dfishery@CAAobs_ymafr)) {
-          nage <- sum(apply(Dfishery@CAAobs_ymafr[, , , bb, ], 1, function(x) sum(x)) > 0, na.rm = TRUE)
+        if (length(Dfishery@CAAobs_ymafr) > 0) {
+          nage <- sum(
+            apply(Dfishery@CAAobs_ymafr[, , , bb, ], 1, function(x) sum(x, na.rm = TRUE)) > 0,
+            na.rm = TRUE
+          )
         } else {
           nage <- 0
         }
         if (length(Dfishery@CALobs_ymlfr)) {
-          nlen <- sum(apply(Dfishery@CALobs_ymlfr[, , , bb, ], 1, function(x) sum(x)) > 0, na.rm = TRUE)
+          nlen <- sum(
+            apply(Dfishery@CALobs_ymlfr[, , , bb, ], 1, function(x) sum(x, na.rm = TRUE)) > 0,
+            na.rm = TRUE
+          )
         } else {
           nlen <- 0
         }
