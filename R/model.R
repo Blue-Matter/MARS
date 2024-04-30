@@ -42,12 +42,16 @@ fit_MARS <- function(MARSdata, parameters, map = list(), random = NULL,
   )
 
   if (!silent) {
-    if (is.na(obj$fn())) {
+    fn <- obj$fn()
+    if (is.na(fn)) {
       message_oops("Objective function is NA at initial values.")
-
-      if (MARSdata@Dmodel@condition == "catch" && any(is.na(obj$report()$F_ymfr))) {
+      report_start <- obj$report()
+      if (MARSdata@Dmodel@condition == "catch" && any(is.na(report_start$F_ymfr))) {
         message_oops("NA's found in F array. Try increasing start value of R0.")
       }
+
+    } else if (is.infinite(fn)) {
+      message_oops("Objective function is infinite at initial values.")
 
     } else if (any(!obj$gr(), na.rm = TRUE)) {
       message_oops("Gradients of zero at initial values, can be indicative of over-parameterization or non-identifiable parameters.")
