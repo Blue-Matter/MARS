@@ -220,20 +220,20 @@ get_sdreport <- function(obj, getReportCovariance = FALSE, silent = FALSE, ...) 
     if (!is.character(ch)) res$cov.fixed <- chol2inv(ch)
   }
 
-  corr.names <- make_unique_names(names(res$par.fixed))
+  fixed.names <- make_unique_names(res)
 
   res$env$corr.fixed <- cov2cor(res$cov.fixed) %>% round(3) %>%
-    structure(dimnames = list(corr.names, corr.names))
+    structure(dimnames = list(fixed.names, fixed.names))
 
   if (!silent && !res$pdHess) {
     message_oops("Check convergence. Covariance matrix is not positive-definite.")
-    message_oops("Maximum gradient is ", round(max(abs(fit@SD$gradient.fixed)), 5))
+    message_oops("Maximum gradient is ", round(max(abs(res$gradient.fixed)), 5))
   }
   if (exists("h", inherits = FALSE) && !is.null(h)) {
     if (!silent) message_oops("Determinant of Hessian is ", round(det(h), 5))
 
     res$env$hessian <- round(h, 3) %>%
-      structure(dimnames = list(corr.names, corr.names))
+      structure(dimnames = list(fixed.names, fixed.names))
   }
 
   return(res)
@@ -246,21 +246,24 @@ sdreport_int <- function(object, select = c("all", "fixed", "random", "report"),
   if ("all" %in% select) select <- c("fixed", "random", "report")
   if ("report" %in% select) {
     AD <- TMB::summary.sdreport(object, "report", p.value = p.value) %>% cbind("Gradient" = NA_real_)
-  } else AD <- NULL
+    ADnames <- make_unique_names(object, select = "report")
+  } else AD <- ADnames <- NULL
 
   if ("fixed" %in% select) {
     fix <- TMB::summary.sdreport(object, "fixed", p.value = p.value) %>% cbind("Gradient" = as.vector(object$gradient.fixed))
-  } else fix <- NULL
+    fixnames <- make_unique_names(object, select = "fixed")
+  } else fix <- fixnames <- NULL
 
   if (!is.null(object$par.random) && "random" %in% select) {
     random <- TMB::summary.sdreport(object, "random", p.value = p.value) %>% cbind("Gradient" = rep(NA_real_, length(object$par.random)))
+    randomnames <- make_unique_names(object, select = "random")
   } else {
-    random <- NULL
+    random <- randomnames <- NULL
   }
 
   out <- rbind(AD, fix, random)
   out <- cbind(out, "CV" = ifelse(abs(out[, "Estimate"]) > 0, out[, "Std. Error"]/abs(out[, "Estimate"]), NA_real_))
-  rownames(out) <- make_unique_names(rownames(out))
+  rownames(out) <- c(ADnames, fixnames, randomnames)
   return(out)
 }
 
@@ -279,16 +282,48 @@ get_MARSdata <- function(MARSassess) {
   return(MARSdata)
 }
 
-make_unique_names <- function(par_names) {
-  unique_names <- unique(par_names)
+make_unique_names <- function(x, select = c("fixed", "random", "report")) {
+  select <- match.arg(select)
 
-  par_new <- lapply(unique_names, function(x) {
-    ind <- par_names == x
-    if (sum(ind) > 1) {
-      paste0(x, "_", 1:sum(ind))
-    } else x
+  if (select == "fixed") {
+    par_names <- unique(names(x$par.fixed))
+    par_list <- as.list(x, what = "Estimate", report = FALSE)
+  } else if (select == "report") {
+    par_names <- unique(names(x$value))
+    par_list <- as.list(x, what = "Estimate", report = TRUE)
+  } else {
+    par_names <- unique(names(x$random))
+    par_list <- as.list(x, what = "Estimate", report = FALSE)
+  }
+
+
+  par_dims <- lapply(par_names, function(y) {
+    dim_y <- dim(par_list[[y]])
+    if (is.null(dim_y)) dim_y <- length(par_list[[y]])
+    ind_y <- lapply(dim_y, function(i) seq(1, i))
+
+    est_grid <- do.call(expand.grid, ind_y)
+
+    if (select != "report") {
+      map_y <- attr(x$env$parameters[[y]], "map")
+
+      if (!is.null(map_y)) {
+        est_y <- map_y >= 0
+        est_grid <- est_grid[est_y, ]
+      }
+    }
+
+    dim_char <- sapply(1:nrow(est_grid), function(i) {
+      paste0(
+        "[",
+        paste0(est_grid[i, ], collapse = ", "),
+        "]"
+      )
+    })
+    paste0(y, dim_char)
   })
-  do.call(c, par_new)
+
+  do.call(c, par_dims)
 }
 
 
