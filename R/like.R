@@ -53,6 +53,7 @@ like_comp <- function(obs, pred, type = c("multinomial", "dirmult1", "dirmult2",
       }
     } else {
       pobs <- obs/sum(obs)
+      pred <- CondExpGt(pred, 1e-8, pred, 1e-8)
       v <- dmultinom(N * pobs, prob = pred, log = TRUE)
     }
 
@@ -75,6 +76,7 @@ like_comp <- function(obs, pred, type = c("multinomial", "dirmult1", "dirmult2",
         obs[] <- NA
       }
     } else {
+      pred <- CondExpGt(pred, 1e-8, pred, 1e-8)
       v <- ddirmnom(obs, size = N, alpha = alpha, log = TRUE)
     }
 
