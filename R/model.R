@@ -294,8 +294,7 @@ update_report <- function(r, MARSdata) {
 
   # Movement
   for (yy in 1:nrow(tag_yy)) {
-    yvec <- tag_yy[yy, ]
-    yvec <- yvec[yvec > 0]
+    yvec <- which(tag_yy[yy, ] > 0)
     y1 <- yvec[1]
 
     for (m in 1:nm) {

@@ -367,9 +367,7 @@ make_map <- function(p, MARSdata, map = list(),
     map$log_sdg_rs <- factor(array(NA, dim(p$log_sdg_rs)))
     map$t_corg_ps <- factor(array(NA, dim(p$t_corg_ps)))
 
-    map$log_recdist_rs <- factor(matrix(NA, nr, ns))
-
-    if (!silent) message_info("No stock movement or recruitment distribution parameters are estimated")
+    if (!silent) message_info("No stock movement parameters are estimated")
 
   } else {
 
@@ -483,19 +481,25 @@ make_map <- function(p, MARSdata, map = list(),
     }
   }
 
-  if (is.null(map$log_recdist_rs)) {
-    recdist_rs <- sapply(1:ns, function(s) {
-      x <- ifelse(Dmodel@presence_rs[, s], NA, TRUE)
-      x[which(x)[1]] <- NA
-      return(x)
-    })
-    recdist_rs[!is.na(recdist_rs)] <- 1:sum(recdist_rs, na.rm = TRUE)
-    map$log_recdist_rs <- factor(recdist_rs)
+  if (nr > 1) {
+    if (is.null(map$log_recdist_rs)) {
+      recdist_rs <- sapply(1:ns, function(s) {
+        x <- ifelse(Dstock@presence_rs[, s], TRUE, NA)
+        if (sum(x, na.rm = TRUE) > 1) x[which(x)[1]] <- NA
+        return(x)
+      })
+      recdist_rs[!is.na(recdist_rs)] <- 1:sum(recdist_rs, na.rm = TRUE)
+      map$log_recdist_rs <- factor(recdist_rs)
+    }
+
+    if (!silent && any(!is.na(map$log_recdist_rs))) {
+      message_info("Recruitment distribution will be estimated")
+    }
+  } else {
+    map$log_recdist_rs <- factor(matrix(NA, nr, ns))
   }
 
-  if (!silent && nr > 1 && any(!is.na(map$log_recdist_rs))) {
-    message_info("Recruitment distribution will be estimated")
-  }
+
 
   # Fleet parameters ----
   if (!est_qfs || ns == 1) {
