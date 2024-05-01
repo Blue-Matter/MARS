@@ -290,10 +290,15 @@ make_map <- function(p, MARSdata, map = list(),
         message_info("Fixed for stock ", paste(which(is.na(map$t_R0_s)), collapse = ", "))
       }
     }
+  }
 
+  if (!est_h) map$t_h_s <- factor(rep(NA, ns))
+  if (!silent) {
+    h_s <- sapply(1:ns, function(s) conv_steepness(p$t_h_s[s], Dstock@SRR_s[s])) %>% signif(4)
     if (is.null(map$t_h_s)) {
-      h_s <- sapply(1:ns, function(s) conv_steepness(p$t_h_s[s], Dstock@SRR_s[s])) %>% signif(4)
-      message_info("Starting steepness = ", paste(h_s, collapse = ", "))
+      message_info("Estimating t_h_s (steepness), starting value = ", paste(h_s, collapse = ", "))
+    } else {
+      message_info("Starting steepnes = ", paste(h_s, collapse = ", "))
       if (any(is.na(map$t_h_s))) {
         message_info("Fixed for stock ", paste(which(is.na(map$t_h_s)), collapse = ", "))
       }
