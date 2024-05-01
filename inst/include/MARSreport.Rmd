@@ -30,7 +30,7 @@ knitr::opts_chunk$set(
 ### Summary 
 
 ```{r sdreport}
-if (length(x@SD)) summary(x) %>% zapsmall() %>% as.data.frame()
+if (length(x@SD)) summary(x) %>% round(4) %>% as.data.frame()
 ```
 
 ### Correlation
