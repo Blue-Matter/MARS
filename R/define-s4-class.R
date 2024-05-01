@@ -215,8 +215,8 @@ report.MARSassess <- function(object, name, filename = "MARS", dir = tempdir(), 
   name_ind <- grep("NAME", rmd)
   rmd_split[[name_ind]] <- paste("#", name, "{.tabset}")
 
+  hessian_ind <- grep("*ADD HESSIAN RMD*", rmd)
   if (length(x@SD) && !x@SD$pdHess && !is.null(x@SD$env$hessian)) {
-    hessian_ind <- grep("*ADD HESSIAN RMD*", rmd)
     rmd_split[[hessian_ind]] <- c(
       "### Hessian",
       "```{r hessian}",

@@ -220,20 +220,22 @@ get_sdreport <- function(obj, getReportCovariance = FALSE, silent = FALSE, ...) 
     if (!is.character(ch)) res$cov.fixed <- chol2inv(ch)
   }
 
-  fixed.names <- make_unique_names(res)
+  fixed.names <- make_unique_names(res, select = "fixed")
 
   res$env$corr.fixed <- cov2cor(res$cov.fixed) %>% round(3) %>%
     structure(dimnames = list(fixed.names, fixed.names))
 
-  if (!silent && !res$pdHess) {
-    message_oops("Check convergence. Covariance matrix is not positive-definite.")
-    message_oops("Maximum gradient is ", round(max(abs(res$gradient.fixed)), 5))
-  }
-  if (exists("h", inherits = FALSE) && !is.null(h)) {
-    if (!silent) message_oops("Determinant of Hessian is ", round(det(h), 5))
+  res$env$hessian <- round(h, 3) %>%
+    structure(dimnames = list(fixed.names, fixed.names))
 
-    res$env$hessian <- round(h, 3) %>%
-      structure(dimnames = list(fixed.names, fixed.names))
+  if (!res$pdHess) {
+    if (!silent) {
+      message_oops("Check convergence. Covariance matrix is not positive-definite.")
+      message_oops("Maximum gradient is ", round(max(abs(res$gradient.fixed)), 5))
+      if (exists("h", inherits = FALSE) && !is.null(h)) {
+        message_oops("Determinant of Hessian is ", round(det(h), 5))
+      }
+    }
   }
 
   return(res)
@@ -308,7 +310,7 @@ make_unique_names <- function(x, select = c("fixed", "random", "report")) {
       map_y <- attr(x$env$parameters[[y]], "map")
 
       if (!is.null(map_y)) {
-        est_y <- map_y >= 0
+        est_y <- map_y >= 0 & !duplicated(map_y)
         est_grid <- est_grid[est_y, ]
       }
     }
