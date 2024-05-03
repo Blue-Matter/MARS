@@ -333,7 +333,7 @@ check_Dfishery <- function(Dfishery, Dstock, Dmodel, silent = FALSE) {
       Dfishery@SCstdev_ymafrs <- array(0.1, c(ny, nm, dim_SC[3], dim_SC[4], nr, ns))
     } else if (length(SCstdev_ymafrs) == 1) {
       Dfishery@SCstdev_ymafrs <- array(Dfishery@SCstdev_ymafrs, c(ny, nm, dim_SC[3], dim_SC[4], nr, ns))
-    } else {
+    } else if (any(dim(SCstdev_ymafrs) != c(ny, nm, dim_SC[3], dim_SC[4], nr, ns))) {
       stop("dim(SCstdev_ymafrs) needs to be: ", c(ny, nm, dim_SC[3], dim_SC[4], nr, ns) %>% paste(collapse = ", "))
     }
   }
