@@ -58,10 +58,12 @@ plot_catch <- function(fit, f = 1, by = c("region", "stock"), prop = FALSE, annu
 #' @rdname plot-MARS-data
 #' @aliases plot_index
 #' @param i Integer, indexes the survey
+#' @param zoom Logical, for `plot_index()`. If \code{TRUE}, plots a subset of years with observed data points. Otherwise, plots
+#' predicted values over all model years.
 #' @details
 #' - `plot_index` plots indices of abundance
 #' @export
-plot_index <- function(fit, i = 1) {
+plot_index <- function(fit, i = 1, zoom = FALSE) {
   dat <- get_MARSdata(fit)
   Dlabel <- dat@Dlabel
   year <- Dlabel@year
@@ -77,13 +79,25 @@ plot_index <- function(fit, i = 1) {
   ipred <- collapse_yearseason(ipred)
   iobs <- collapse_yearseason(iobs)
   isd <- collapse_yearseason(isd)
-  iupper <- exp(log(iobs) + 1.96 * isd)
-  ilower <- exp(log(iobs) - 1.96 * isd)
 
-  plot(year, iobs, xlab = "Year", ylab = iname, typ = "p", pch = 16,
-       ylim = c(0, 1.1) * range(ipred, iupper, na.rm = TRUE), zero_line = TRUE)
-  arrows(year, y0 = ilower, y1 = iupper, length = 0)
-  lines(year, ipred, lwd = 2, col = 2)
+  ind <- !is.na(iobs)
+
+  if (sum(ind)) {
+    if (zoom) {
+      year <- year[ind]
+      ipred <- ipred[ind]
+      iobs <- iobs[ind]
+      isd <- isd[ind]
+    }
+
+    iupper <- exp(log(iobs) + 1.96 * isd)
+    ilower <- exp(log(iobs) - 1.96 * isd)
+
+    plot(year, iobs, xlab = "Year", ylab = iname, typ = "p", pch = 16,
+         ylim = c(0, 1.1) * range(ipred, iupper, na.rm = TRUE), zero_line = TRUE)
+    arrows(year, y0 = ilower, y1 = iupper, length = 0)
+    lines(year, ipred, lwd = 2, col = 2, typ = ifelse(length(year) > 10, "l", "o"))
+  }
 
   invisible()
 }

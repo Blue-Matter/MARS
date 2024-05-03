@@ -14,7 +14,7 @@
 \usage{
 plot_catch(fit, f = 1, by = c("region", "stock"), prop = FALSE, annual = FALSE)
 
-plot_index(fit, i = 1)
+plot_index(fit, i = 1, zoom = FALSE)
 
 plot_CAA(fit, f = 1, r = 1)
 
@@ -40,6 +40,9 @@ plot_tagmov(fit, s = 1, yy = 1, aa = 1)
 \item{annual}{Logical, whether to plot annual values (summed over seasons)}
 
 \item{i}{Integer, indexes the survey}
+
+\item{zoom}{Logical, for \code{plot_index()}. If \code{TRUE}, plots a subset of years with observed data points. Otherwise, plots
+predicted values over all model years.}
 
 \item{r}{Integer, indexes the region}
 
