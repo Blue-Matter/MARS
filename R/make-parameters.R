@@ -158,13 +158,12 @@ make_parameters <- function(MARSdata, start = list(), map = list(), silent = FAL
     p$sel_pf <- sapply(unique(MARSdata@Dfishery@sel_block_yf), function(b) {
       sel_b <- MARSdata@Dfishery@sel_f[b]
       val <- numeric(3)
+      f_yb <- MARSdata@Dfishery@sel_block_yf == b
       if (grepl("length", sel_b) && length(MARSdata@Dfishery@CALobs_ymlfr)) {
-        f_yb <- MARSdata@Dfishery@sel_block_yf == b
-
         CAL <- sapply2(1:nf, function(f) {
           sapply(1:MARSdata@Dmodel@ny, function(y) {
             if (f_yb[y, f]) {
-              apply(MARSdata@Dfishery@CALobs_ymlfr[y, , , f, , drop = FALSE], 3, sum)
+              apply(MARSdata@Dfishery@CALobs_ymlfr[y, , , f, , drop = FALSE], 3, sum, na.rm = TRUE)
             } else {
               rep(0,  MARSdata@Dmodel@nl)
             }
@@ -174,16 +173,37 @@ make_parameters <- function(MARSdata, start = list(), map = list(), silent = FAL
         if (sum(CAL)) {
           LFS <- min(MARSdata@Dmodel@lmid[which.max(CAL)], 0.75 * max(MARSdata@Dmodel@lmid))
           L5 <- approx(cumsum(CAL)/sum(CAL), MARSdata@Dmodel@lmid, 0.05)$y
+          if (is.na(L5) || L5 > 0.99 * LFS) L5 <- 0.5 * LFS
 
-          if (L5 < LFS) {
-            sigma_asc <- min((LFS - L5)/sqrt(-log(0.05, 2)), 0.25 * diff(range(MARSdata@Dmodel@lmid)))
-            val[2:3] <- log(sigma_asc)
-            val[1] <- qlogis(LFS/max(0.95 * MARSdata@Dmodel@lmid))
-          }
+          sigma_asc <- min((LFS - L5)/sqrt(-log(0.05, 2)), 0.25 * diff(range(MARSdata@Dmodel@lmid)))
+          val[2:3] <- log(sigma_asc)
+          val[1] <- qlogis(LFS/max(0.95 * MARSdata@Dmodel@lmid))
         }
+      } else if (grepl("age", sel_b) && length(MARSdata@Dfishery@CAAobs_ymafr)) {
+        CAA <- sapply2(1:nf, function(f) {
+          sapply(1:MARSdata@Dmodel@ny, function(y) {
+            if (f_yb[y, f]) {
+              apply(MARSdata@Dfishery@CAAobs_ymafr[y, , , f, , drop = FALSE], 3, sum, na.rm = TRUE)
+            } else {
+              rep(0,  MARSdata@Dmodel@na)
+            }
+          })
+        }) %>% apply(1, sum)
+
+        if (sum(CAA)) {
+          age <- 1:MARSdata@Dmodel@na
+          AFS <- min(age[which.max(CAA)], 0.75 * max(age))
+          A5 <- approx(cumsum(CAA)/sum(CAA), age, 0.05)$y
+          if (is.na(A5) || A5 > 0.99 * AFS) A5 <- 0.5 * AFS
+
+          sigma_asc <- min((AFS - A5)/sqrt(-log(0.05, 2)), 0.25 * diff(range(age)))
+          val[2:3] <- log(sigma_asc)
+          val[1] <- qlogis(AFS/max(age))
+        }
+
       }
       if (all(!val)) {
-        # Apical sel between 0 and max age/length
+        # Apical sel halfway between 0 and max age/length
         # Knife edge ascending selectivity, ascend SD = 0.1
         # More sloping descending limb of selectivity, descend SD = 2
         val[] <- c(0, log(0.1), log(2))
