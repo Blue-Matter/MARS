@@ -73,6 +73,10 @@ plot_Fstock(x)
 plot_R(x)
 ```
 
+```{r recdist, fig.cap="Distribution of recruitment by region per stock."}
+plot_recdist(x)
+```
+
 <!-- *ADD SRR RMD* -->
 
 <!-- *ADD STOCK REGION RMD* -->
