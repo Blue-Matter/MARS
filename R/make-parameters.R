@@ -74,7 +74,10 @@
 #' [make_parameters()] returns a list of parameters (`"p"`) concatenated with the output of [make_map()].
 #' @importFrom stats approx
 #' @export
-make_parameters <- function(MARSdata, start = list(), map = list(), silent = FALSE, ...) {
+make_parameters <- function(MARSdata, start = list(), map = list(),
+                            est_mov = c("none", "dist_random", "gravity_fixed"),
+                            silent = FALSE, ...) {
+  est_mov <- match.arg(est_mov)
 
   getAllS4(MARSdata@Dmodel)
   nf <- MARSdata@Dfishery@nf
@@ -113,7 +116,14 @@ make_parameters <- function(MARSdata, start = list(), map = list(), silent = FAL
   if (is.null(p$log_recdist_rs)) p$log_recdist_rs <- matrix(0, nr, ns)
 
   if (is.null(p$mov_x_marrs)) {
-    p$mov_x_marrs <- array(0, c(nm, na, nr, nr, ns))
+    if (est_mov == "none" && nr > 1) {
+      p$mov_x_marrs <- array(-1000, c(nm, na, nr, nr, ns))
+      mov_ind <- as.matrix(expand.grid(m = 1:nm, a = 1:na, rf = 1:nr, rt = 1:nr, s = 1:ns))
+      mov_ind_stay <- mov_ind[, "rf"] == mov_ind[, "rt"]
+      p$mov_x_marrs[mov_ind[mov_ind_stay, ]] <- 0
+    } else {
+      p$mov_x_marrs <- array(0, c(nm, na, nr, nr, ns))
+    }
     if (any(!MARSdata@Dstock@presence_rs)) {
       for(s in 1:ns) {
         presence_r <- MARSdata@Dstock@presence_rs[, s]
@@ -251,7 +261,7 @@ make_parameters <- function(MARSdata, start = list(), map = list(), silent = FAL
     p$log_initrdev_as <- matrix(0, na, ns)
   }
 
-  do_map <- make_map(p, MARSdata, map = map, silent = silent, ...)
+  do_map <- make_map(p, MARSdata, map = map, est_mov = est_mov, silent = silent, ...)
   out <- c(list(p = p), do_map)
   out$p <- check_parameters(out$p, out$map, MARSdata, silent)
 
@@ -392,7 +402,7 @@ make_map <- function(p, MARSdata, map = list(),
     map$log_sdg_rs <- factor(array(NA, dim(p$log_sdg_rs)))
     map$t_corg_ps <- factor(array(NA, dim(p$t_corg_ps)))
 
-    if (!silent) message_info("No stock movement parameters are estimated")
+    if (!silent && nr > 1) message_info("No stock movement parameters are estimated")
 
   } else {
 

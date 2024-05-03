@@ -6,7 +6,14 @@
 \alias{check_parameters}
 \title{Make list of parameters for RTMB}
 \usage{
-make_parameters(MARSdata, start = list(), map = list(), silent = FALSE, ...)
+make_parameters(
+  MARSdata,
+  start = list(),
+  map = list(),
+  est_mov = c("none", "dist_random", "gravity_fixed"),
+  silent = FALSE,
+  ...
+)
 
 make_map(
   p,
@@ -31,6 +38,8 @@ Overrides default values created by \code{\link[=make_parameters]{make_parameter
 
 \item{map}{List of mapped parameters. Used by \code{\link[=check_parameters]{check_parameters()}} only to count parameters.}
 
+\item{est_mov}{Character describing structure of stock movement parameters. See details below.}
+
 \item{silent}{Logical, whether \code{\link[=make_map]{make_map()}} reports messages to the console}
 
 \item{...}{Various arguments for \code{\link[=make_map]{make_map()}} (could be important!)}
@@ -44,8 +53,6 @@ Overrides default values created by \code{\link[=make_parameters]{make_parameter
 \item{est_mat}{Logical, estimate maturity?}
 
 \item{est_sdr}{Logical, estimate standard deviation of recruitment deviates?}
-
-\item{est_mov}{Character describing structure of stock movement parameters. See details below.}
 
 \item{est_qfs}{Logical, estimate relative catchability of stocks by each fleet? Fix \code{log_q_fs} for the first stock if \code{TRUE}}
 }
