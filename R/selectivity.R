@@ -90,6 +90,7 @@ calc_sel_len <- function(sel_par, lmid, type) {
         desc <- 2^ex2_desc
       }
       v <- CondExpLt(lmid, sel_par[1, f], asc, desc)
+      v <- v/max(v)
     } else {
       v <- rep(NA_real_, length(lmid))
     }
@@ -144,6 +145,7 @@ calc_fsel_age <- function(sel_len, LAK, type, sel_par, sel_block = seq(1, length
         desc <- 2^ex2_desc
       }
       v <- CondExpLt(a, sel_par[1, f], asc, desc)
+      v <- v/max(v)
     } else if (type[f] == "SB") {
       v <- mat
     } else if (type[f] == "B") {
@@ -193,6 +195,7 @@ calc_isel_age <- function(sel_len, LAK, type, sel_par, fsel_age, maxage, mat, a 
           desc <- 2^ex2_desc
         }
         v <- CondExpLt(a, sel_par[1, i], asc, desc)
+        v <- v/max(v)
       } else if (ti == "SB") {
         v <- mat
       } else if (ti == "B") {
