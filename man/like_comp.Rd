@@ -7,7 +7,7 @@
 like_comp(
   obs,
   pred,
-  type = c("multinomial", "dirmult1", "dirmult2", "lognormal", "logitnormal"),
+  type = c("multinomial", "dirmult1", "dirmult2", "lognormal"),
   N = sum(obs),
   theta,
   stdev
@@ -24,7 +24,7 @@ like_comp(
 
 \item{theta}{Numeric, the linear (\code{type = "dirmult1"}) or saturating (\code{type = "dirmult2"}) Dirichlet-multinomial parameter, respectively. See Thorson et al. (2017)}
 
-\item{stdev}{Numeric or vectorized for \code{obs}, the likelihood standard deviation for lognormal or logit-normal distributions.}
+\item{stdev}{Numeric or vectorized for \code{obs}, the likelihood standard deviation for lognormal distribution.}
 }
 \value{
 Numeric representing the log-likelihood.
@@ -37,8 +37,6 @@ with various statistical distributions supported.
 Observed and predicted vectors are internally converted to proportions.
 
 For \code{type = "lognormal"}, zero observations are removed from the likelihood calculation.
-
-Logitnormal assumes that the \code{obs} and \code{pred} are length-2 vectors. Only the first value enters the likelihood.
 }
 \examples{
 M <- 0.1

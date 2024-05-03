@@ -613,7 +613,7 @@ update_report <- function(r, MARSdata) {
               like_comp(obs = SC_ymafrs[y, m, aa, ff, r, ],
                         pred = CondExpGt(pred, 1e-8, pred, 1e-8), type = SC_like,
                         N = SCN_ymafr[y, m, aa, ff, r], theta = SCtheta_f[ff],
-                        stdev = SCstdev_f[ff])
+                        stdev = SCstdev_ymafrs[y, m, a, f, r, ])
             })
           })
         })

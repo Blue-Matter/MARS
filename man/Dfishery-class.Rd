@@ -46,7 +46,7 @@ in the model. Default of zero.}
 \item{\code{SC_like}}{Character, likelihood for the stock composition data. See \code{type} argument of \code{\link[=like_comp]{like_comp()}} for options}
 \item{\code{SCN_ymafr}}{Sample size of the stock composition vector if using the multinomial or Dirichlet-multinomial likelihoods}
 \item{\code{SCtheta_f}}{Stock composition dispersion parameter if using the Dirichlet-multinomial likelihood. Default set to 1.}
-\item{\code{SCstdev_f}}{Stock composition standard deviation if using the lognormal likelihood. Default set to 0.1.}
+\item{\code{SCstdev_ymafrs}}{Stock composition standard deviation if using the lognormal likelihood. Default set to 0.1.}
 }
 }
 

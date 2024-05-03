@@ -21,7 +21,7 @@
 #' \item{`SC_like`}{Character, likelihood for the stock composition data. See `type` argument of [like_comp()] for options}
 #' \item{`SCN_ymafr`}{Sample size of the stock composition vector if using the multinomial or Dirichlet-multinomial likelihoods}
 #' \item{`SCtheta_f`}{Stock composition dispersion parameter if using the Dirichlet-multinomial likelihood. Default set to 1.}
-#' \item{`SCstdev_f`}{Stock composition standard deviation if using the lognormal likelihood. Default set to 0.1.}
+#' \item{`SCstdev_ymafrs`}{Stock composition standard deviation if using the lognormal likelihood. Default set to 0.1.}
 #' }
 #' @examples
 #' # Aggregate stock composition for ages 1-4 and 5-10 across all fleets

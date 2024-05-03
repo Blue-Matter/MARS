@@ -328,13 +328,13 @@ check_Dfishery <- function(Dfishery, Dstock, Dmodel, silent = FALSE) {
       stop("Vector SCtheta_f needs to be length ", dim_SC[4])
     }
 
-    if (!length(SCstdev_f)) {
-      if (grepl("log", SC_like) && !silent) message("Setting ", ch, "@SCstdev_f to 0.1 for all fleets")
-      Dfishery@SCstdev_f <- rep(0.1, dim_SC[4])
-    } else if (length(SCstdev_f) == 1) {
-      Dfishery@SCstdev_f <- rep(Dfishery@SCstdev_f, dim_SC[4])
-    } else if (length(SCstdev_f) != dim_SC[4]) {
-      stop("Vector SCstdev_f needs to be length ", dim_SC[4])
+    if (!length(SCstdev_ymafrs)) {
+      if (grepl("log", SC_like) && !silent) message("Setting ", ch, "@SCstdev_ymafrs to 0.1 for all fleets")
+      Dfishery@SCstdev_ymafrs <- array(0.1, c(ny, nm, dim_SC[3], dim_SC[4], nr, ns))
+    } else if (length(SCstdev_ymafrs) == 1) {
+      Dfishery@SCstdev_ymafrs <- array(Dfishery@SCstdev_ymafrs, c(ny, nm, dim_SC[3], dim_SC[4], nr, ns))
+    } else {
+      stop("dim(SCstdev_ymafrs) needs to be: ", c(ny, nm, dim_SC[3], dim_SC[4], nr, ns) %>% paste(collapse = ", "))
     }
   }
   return(Dfishery)

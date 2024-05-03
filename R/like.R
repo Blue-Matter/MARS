@@ -9,15 +9,13 @@
 #' @param type Character for the desired distribution
 #' @param N Numeric, the sample size corresponding to `obs` for multinomial or Dirichlet multinomial distributions.
 #' @param theta Numeric, the linear (`type = "dirmult1"`) or saturating (`type = "dirmult2"`) Dirichlet-multinomial parameter, respectively. See Thorson et al. (2017)
-#' @param stdev Numeric or vectorized for `obs`, the likelihood standard deviation for lognormal or logit-normal distributions.
+#' @param stdev Numeric or vectorized for `obs`, the likelihood standard deviation for lognormal distribution.
 #' @return Numeric representing the log-likelihood.
 #'
 #' @details
 #' Observed and predicted vectors are internally converted to proportions.
 #'
 #' For `type = "lognormal"`, zero observations are removed from the likelihood calculation.
-#'
-#' Logitnormal assumes that the `obs` and `pred` are length-2 vectors. Only the first value enters the likelihood.
 #' @references
 #' Thorson et al. 2017. Model-based estimates of effective sample size in stock assessment models using the
 #' Dirichlet-multinomial distribution. Fish. Res. 192:84-93. \doi{10.1016/j.fishres.2016.06.005}
@@ -32,7 +30,7 @@
 #' like_comp(obs, pred, N = 10, type = "dirmult1", theta = 20)
 #' @importFrom stats rmultinom rnorm
 #' @export
-like_comp <- function(obs, pred, type = c("multinomial", "dirmult1", "dirmult2", "lognormal", "logitnormal"),
+like_comp <- function(obs, pred, type = c("multinomial", "dirmult1", "dirmult2", "lognormal"),
                       N = sum(obs), theta, stdev) {
 
   stopifnot(length(obs) == length(pred))
@@ -99,13 +97,8 @@ like_comp <- function(obs, pred, type = c("multinomial", "dirmult1", "dirmult2",
       v <- dnorm(log(resid[obs > 0]), 0, stdev[obs > 0], log = TRUE) %>% sum()
     }
 
-  } else if (type == "logitnormal") {
-    stopifnot(length(obs) == 2)
-    lobs <- qlogis(obs[1]/sum(obs))
-    lpred <- qlogis(pred[1]/sum(pred))
-
-    v <- dnorm(lobs, lpred, stdev[1], log = TRUE)
   }
+
   return(v)
 }
 

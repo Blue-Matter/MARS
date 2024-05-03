@@ -49,7 +49,7 @@ setClass(
             fcomp_like = "character", CAAN_ymfr = "array", CALN_ymfr = "array", CAAtheta_f = "numeric", CALtheta_f = "numeric",
             sel_block_yf = "array", sel_f = "character", Cinit_mfr = "array",
             SC_ymafrs = "array", SC_aa = "matrix", SC_ff = "matrix",
-            SC_like = "character", SCN_ymafr = "array", SCtheta_f = "numeric", SCstdev_f = "numeric")
+            SC_like = "character", SCN_ymafr = "array", SCtheta_f = "numeric", SCstdev_ymafrs = "array")
 )
 
 #' Dsurvey S4 object
