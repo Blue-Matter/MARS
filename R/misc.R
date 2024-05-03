@@ -231,9 +231,9 @@ get_sdreport <- function(obj, getReportCovariance = FALSE, silent = FALSE, ...) 
   if (!res$pdHess) {
     if (!silent) {
       message_oops("Check convergence. Covariance matrix is not positive-definite.")
-      message_oops("Maximum gradient is ", round(max(abs(res$gradient.fixed)), 5))
+      message_info("Maximum gradient is ", round(max(abs(res$gradient.fixed)), 5))
       if (exists("h", inherits = FALSE) && !is.null(h)) {
-        message_oops("Determinant of Hessian is ", round(det(h), 5))
+        message_info("Determinant of Hessian is ", round(det(h), 5))
       }
     }
   }
