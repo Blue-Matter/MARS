@@ -25,6 +25,9 @@
     <loc>https://blue-matter.github.io/MARS/news/index.html</loc>
   </url>
   <url>
+    <loc>https://blue-matter.github.io/MARS/reference/AD.html</loc>
+  </url>
+  <url>
     <loc>https://blue-matter.github.io/MARS/reference/CondExpLt.html</loc>
   </url>
   <url>
@@ -119,9 +122,6 @@
   </url>
   <url>
     <loc>https://blue-matter.github.io/MARS/reference/make_parameters.html</loc>
-  </url>
-  <url>
-    <loc>https://blue-matter.github.io/MARS/reference/matmul.html</loc>
   </url>
   <url>
     <loc>https://blue-matter.github.io/MARS/reference/optimize_RTMB.html</loc>
