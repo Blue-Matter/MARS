@@ -247,7 +247,7 @@ make_rmd_stock_region <- function(s, sname) {
 make_rmd_mov <- function(s, y, a, yname, sname, header = TRUE) {
   rmd <- c(
     ifelse(header, "### Movement\n\n", ""),
-    paste0("```{r fig.cap=\"Movement of ", sname, " for year ", yname, ", age ", a, " and the corresponding equilibrium distribution.\"}"),
+    paste0("```{r fig.cap=\"Movement matrix for ", sname, " for year ", yname, ", age ", a, " and its corresponding equilibrium distribution, calculated starting with the recruitment distribution.\"}"),
     paste0("plot_mov(x, s = ", s, ", y = ", y, ", a = ", a, ")"),
     "```",
     ""

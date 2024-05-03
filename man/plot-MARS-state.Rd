@@ -13,6 +13,7 @@
 \alias{plot_V}
 \alias{plot_Ffleet}
 \alias{plot_mov}
+\alias{plot_recdist}
 \title{Plotting functions for fitted MARS model}
 \usage{
 plot_S(fit, by = c("stock", "region"), s = 1, prop = FALSE)
@@ -36,6 +37,8 @@ plot_V(fit, f = 1, by = c("stock", "region"), prop = FALSE)
 plot_Ffleet(fit, f = 1)
 
 plot_mov(fit, s = 1, y, a)
+
+plot_recdist(fit)
 }
 \arguments{
 \item{fit}{\linkS4class{MARSassess} object returned by \code{\link[=fit_MARS]{fit_MARS()}}}
@@ -107,5 +110,9 @@ A set of functions to plot state variables (biomass, recruitment time series, et
 
 \itemize{
 \item \code{plot_mov} plots movement matrices and the corresponding equilibrium distribution in multi-area models
+}
+
+\itemize{
+\item \code{plot_recdist} plots the distribution of recruitment for each stock
 }
 }

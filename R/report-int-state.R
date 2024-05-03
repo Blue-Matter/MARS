@@ -503,6 +503,41 @@ plot_mov <- function(fit, s = 1, y, a) {
   invisible()
 }
 
+#' @rdname plot-MARS-state
+#' @aliases plot_recdist
+#' @details
+#' - `plot_recdist` plots the distribution of recruitment for each stock
+#' @export
+plot_recdist <- function(fit) {
+  dat <- get_MARSdata(fit)
+
+  nr <- dat@Dmodel@nr
+  ns <- dat@Dmodel@ns
+  rname <- dat@Dlabel@region
+  sname <- dat@Dlabel@stock
+
+  recdist <- fit@report$recdist
+
+  vcol <- rainbow(100, end = 0.45)
+
+  graphics::plot.default(
+    NULL, xlab = "Stock", ylab = "Region", xaxs = "i", yaxs = "i",
+    xaxt = "n", yaxt = "n", xlim = c(1, ns+1), ylim = c(1, nr+1)
+  )
+  for(x in 1:ns) {
+    for(y in 1:nr) {
+      m_yx <- round(recdist[y, x], 2)
+      rect(xleft = x, ybottom = y, xright = x+1, ytop = y+1, col = vcol[100 * m_yx])
+      text(x + 0.5, y + 0.5, m_yx)
+    }
+  }
+
+  axis(1, at = 1:ns + 0.5, labels = as.character(sname), font = 2, cex.axis = 0.75)
+  axis(2, at = 1:nr + 0.5, labels = as.character(rname), font = 2, cex.axis = 0.75)
+
+  invisible()
+}
+
 #' @importFrom grDevices rainbow
 #' @importFrom graphics rect text
 .plot_mov <- function(m, p, xlab = "Destination", ylab = "Origin",
