@@ -310,7 +310,7 @@ plot_SC <- function(fit, ff = 1, aa = 1, r = 1, prop = FALSE) {
 #' @importFrom graphics lines mtext
 plot_composition <- function(obs, pred = NULL, xval = 1:ncol(obs), xlab = "Age",
                              ylab = "Value", zval = 1:nrow(obs), N = rowSums(obs),
-                             xaxislab = 1:ncol(obs), ncol = 4, nrow = 4) {
+                             xaxislab = xval, ncol = 4, nrow = 4) {
 
   old_par <- par(no.readonly = TRUE)
   on.exit(par(old_par))
@@ -331,7 +331,7 @@ plot_composition <- function(obs, pred = NULL, xval = 1:ncol(obs), xlab = "Age",
     xaxt <- ifelse(i < nplot && i %% nrow %in% c(1:(nrow-1)), "n", "s") # TRUE = first three rows
 
     plot(xval, obs[i, ], typ = "o", ylim = ylim, yaxp = yaxp, xaxt = ifelse(xaxt_manual, "n", xaxt), yaxt = yaxt, las = las)
-    if (xaxt == "s") axis(1, at = xval, labels = xaxislab)
+    if (xaxt_manual && xaxt == "s") axis(1, at = xval, labels = xaxislab)
     if (!is.null(pred)) lines(xval, pred[i, ], lwd = 2, col = 2)
     legend("topright", legend = c(zval[i], ifelse(is.null(N), "", paste0("N = ", N[i]))), bty = "n", xjust = 1)
 
