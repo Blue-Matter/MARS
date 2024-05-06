@@ -25,9 +25,14 @@ knitr::opts_chunk$set(
 
 # NAME {.tabset}
 
-## Parameters {.tabset}
+## Parameters
 
-### Summary 
+```{r print-summary}
+Summary <- utils::capture.output(x)
+as.data.frame(Summary)
+```
+
+### Estimates 
 
 ```{r sdreport}
 if (length(x@SD)) summary(x) %>% round(4) %>% as.data.frame()
