@@ -107,9 +107,12 @@ setMethod("show",
 
                 gr_order <- order(gr_report, decreasing = TRUE)
 
-                x <- data.frame(Gradient = round(gr_report, 4))
+                x <- data.frame(
+                  Estimate = round(object@SD$par.fixed[gr_large], 4),
+                  Gradient = round(gr_report, 4)
+                )
                 rownames(x) <- gr_names
-                print(x[gr_order, "Gradient", drop = FALSE])
+                print(x[gr_order, ])
               }
             }
 
