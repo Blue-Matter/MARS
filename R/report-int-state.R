@@ -110,10 +110,8 @@ plot_B <- function(fit, by = c("stock", "region"), s = 1, prop = FALSE) {
     name <- Dlabel@region
   }
 
-  if (nm > 1) {
-    year <- make_yearseason(year, nm)
-    x <- collapse_yearseason(x)
-  }
+  year <- make_yearseason(year, nm)
+  x <- collapse_yearseason(x)
 
   color <- make_color(ncol(x), type = by)
 
