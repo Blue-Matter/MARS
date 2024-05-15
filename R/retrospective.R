@@ -92,6 +92,10 @@ retrospective <- function(MARSassess, yret = 1:5, cores = 1) {
     })
   }
 
+  if (length(MARSdata@Dtag@tag_yy)) {
+    data_new@Dtag@tag_yy <- MARSdata@Dtag@tag_yy[, 1:nyret, drop = FALSE]
+  }
+
   parameters <- MARSassess@obj$env$parList()
   map <- MARSdata@Misc$map
   random <- MARSdata@Misc$random
