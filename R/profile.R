@@ -14,26 +14,38 @@
 #' @param v1 Vector of values corresponding to `p1`
 #' @param p2 Character string that represents the optional second parameter to be profiled
 #' @param v2 Vector of values corresponding to `p2`
+#' @param cores Integer for the number of cores to use for parallel processing (snowfall package)
 #' @param ... Not used
 #' @return
 #' The profile generic returns a data frame of the likelihood values that correspond to
 #' fixed values of `p1` and `p2`.
 #'
 #' - Likelihood `loglike` refers to maximizing the probability of the observed data (higher values for better fit)
-#' - Prior `logprior` refers to maximizing the probability of a parameter to their prior distribution (higher values are closer to the prior)
+#' - Prior `logprior` refers to maximizing the probability of a parameter to their prior distribution (higher values are closer to the prior mode)
 #' - Penalty `penalty` are values added to the objective function when parameters exceed model bounds (lower values are better)
 #' - `fn` is the objective function returned by RTMB (lower values are better)
 #' - `objective` is the objective function returned by the optimizer (lower values are better)
 #' @importFrom stats profile
 #' @export
-profile.MARSassess <- function(fitted, p1, v1, p2, v2, ...) {
+profile.MARSassess <- function(fitted, p1, v1, p2, v2, cores = 1, ...) {
+
+  if (cores > 1 && !snowfall::sfIsRunning()) {
+    snowfall::sfInit(parallel = TRUE, cpus = cores)
+    on.exit(snowfall::sfStop())
+  }
+
+  if (snowfall::sfIsRunning()) {
+    .lapply <- snowfall::sfLapply
+  } else {
+    .lapply <- base::lapply
+  }
 
   if (missing(p2)) {
     out <- expand.grid(p1 = v1)
-    prof <- lapply(1:nrow(out), function(i) .prof(fitted, p1, out$p1[i]))
+    prof <- .lapply(1:nrow(out), function(i) .prof(fitted, p1, out$p1[i]))
   } else {
     out <- expand.grid(p1 = v1, p2 = v2)
-    prof <- lapply(1:nrow(out), function(i) .prof(fitted, c(p1, p2), c(out$p1[i], out$p2[i])))
+    prof <- .lapply(1:nrow(out), function(i) .prof(fitted, c(p1, p2), c(out$p1[i], out$p2[i])))
   }
 
   prof_df <- cbind(out, do.call(rbind, prof)) %>%

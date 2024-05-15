@@ -6,7 +6,7 @@
 \alias{plot.MARSprof}
 \title{Profile parameters of MARS model}
 \usage{
-\method{profile}{MARSassess}(fitted, p1, v1, p2, v2, ...)
+\method{profile}{MARSassess}(fitted, p1, v1, p2, v2, cores = 1, ...)
 
 \method{plot}{MARSprof}(x, component = "objective", rel = TRUE, xlab, ylab, main, ...)
 }
@@ -22,6 +22,8 @@ Additionally, this function allows users to specify \code{R0_s} and \code{h_s} (
 \item{p2}{Character string that represents the optional second parameter to be profiled}
 
 \item{v2}{Vector of values corresponding to \code{p2}}
+
+\item{cores}{Integer for the number of cores to use for parallel processing (snowfall package)}
 
 \item{...}{Other argument to base graphics}
 
@@ -42,7 +44,7 @@ The profile generic returns a data frame of the likelihood values that correspon
 fixed values of \code{p1} and \code{p2}.
 \itemize{
 \item Likelihood \code{loglike} refers to maximizing the probability of the observed data (higher values for better fit)
-\item Prior \code{logprior} refers to maximizing the probability of a parameter to their prior distribution (higher values are closer to the prior)
+\item Prior \code{logprior} refers to maximizing the probability of a parameter to their prior distribution (higher values are closer to the prior mode)
 \item Penalty \code{penalty} are values added to the objective function when parameters exceed model bounds (lower values are better)
 \item \code{fn} is the objective function returned by RTMB (lower values are better)
 \item \code{objective} is the objective function returned by the optimizer (lower values are better)
