@@ -13,10 +13,21 @@
 #' - `VB_ymft` Vulnerable biomass available to each fishery `[y, m, f, t]`
 #' @param MARSassess [MARSassess-class] object
 #' @param yret Vector of integers (greater than zero) specifying the years to remove for the retrospective analysis
+#' @param cores Integer for the number of cores to use for parallel processing (snowfall package)
 #' @export
-retrospective <- function(MARSassess, yret = 1:5) {
+#' @import snowfall
+retrospective <- function(MARSassess, yret = 1:5, cores = 1) {
 
-  ret <- lapply(yret, .ret, MARSassess)
+  if (cores > 1 && !snowfall::sfIsRunning()) {
+    snowfall::sfInit(parallel = TRUE, cpus = cores)
+    on.exit(snowfall::sfStop())
+  }
+
+  if (snowfall::sfIsRunning()) {
+    ret <- snowfall::sfLapply(yret, .ret, MARSassess)
+  } else {
+    ret <- lapply(yret, .ret, MARSassess)
+  }
 
   MARSdata <- get_MARSdata(MARSassess)
   ny <- MARSdata@Dmodel@ny

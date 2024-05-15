@@ -17,6 +17,7 @@ Imports:
     reshape2,
     rlang,
     rmarkdown,
+    snowfall,
     stats,
     RTMB (>= 1.5), 
     TMB,

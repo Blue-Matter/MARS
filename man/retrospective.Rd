@@ -7,7 +7,7 @@
 \alias{report.MARSretro}
 \title{Retrospective analysis}
 \usage{
-retrospective(MARSassess, yret = 1:5)
+retrospective(MARSassess, yret = 1:5, cores = 1)
 
 \method{plot}{MARSretro}(x, var = c("S_yst", "R_yst", "F_yst", "VB_ymft"), s = 1, f = 1, ...)
 
@@ -26,6 +26,8 @@ retrospective(MARSassess, yret = 1:5)
 \item{MARSassess}{\linkS4class{MARSassess} object}
 
 \item{yret}{Vector of integers (greater than zero) specifying the years to remove for the retrospective analysis}
+
+\item{cores}{Integer for the number of cores to use for parallel processing (snowfall package)}
 
 \item{x, object}{Output of \code{retrospective} function}
 
