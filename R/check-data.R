@@ -527,10 +527,8 @@ check_Dtag <- function(Dtag, Dmodel, silent = FALSE) {
     } else if (length(tagstdev_s) != ns) {
       stop("Vector tagstdev_s needs to be length ", ns)
     }
-  } else if (nr == 1) { # Sets up movement estimation
+  } else { # Sets up movement estimation
     Dtag@tag_yy <- matrix(1:ny, 1, ny)
-  } else {
-    Dtag@tag_yy <- diag(ny)
   }
 
   if (length(tag_ymarrs)) {
