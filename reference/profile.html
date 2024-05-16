@@ -59,7 +59,7 @@
     <div class="section level2">
     <h2 id="ref-usage">Usage<a class="anchor" aria-label="anchor" href="#ref-usage"></a></h2>
     <div class="sourceCode"><pre class="sourceCode r"><code><span><span class="co"># S3 method for MARSassess</span></span>
-<span><span class="fu">profile</span><span class="op">(</span><span class="va">fitted</span>, <span class="va">p1</span>, <span class="va">v1</span>, <span class="va">p2</span>, <span class="va">v2</span>, <span class="va">...</span><span class="op">)</span></span>
+<span><span class="fu">profile</span><span class="op">(</span><span class="va">fitted</span>, <span class="va">p1</span>, <span class="va">v1</span>, <span class="va">p2</span>, <span class="va">v2</span>, cores <span class="op">=</span> <span class="fl">1</span>, <span class="va">...</span><span class="op">)</span></span>
 <span></span>
 <span><span class="co"># S3 method for MARSprof</span></span>
 <span><span class="fu"><a href="https://rdrr.io/r/graphics/plot.default.html" class="external-link">plot</a></span><span class="op">(</span><span class="va">x</span>, component <span class="op">=</span> <span class="st">"objective"</span>, rel <span class="op">=</span> <span class="cn">TRUE</span>, <span class="va">xlab</span>, <span class="va">ylab</span>, <span class="va">main</span>, <span class="va">...</span><span class="op">)</span></span></code></pre></div>
@@ -87,6 +87,10 @@ Additionally, this function allows users to specify <code>R0_s</code> and <code>
 
 <dt>v2</dt>
 <dd><p>Vector of values corresponding to <code>p2</code></p></dd>
+
+
+<dt>cores</dt>
+<dd><p>Integer for the number of cores to use for parallel processing (snowfall package)</p></dd>
 
 
 <dt>...</dt>
@@ -123,7 +127,7 @@ Additionally, this function allows users to specify <code>R0_s</code> and <code>
 
 <p>The profile generic returns a data frame of the likelihood values that correspond to
 fixed values of <code>p1</code> and <code>p2</code>.</p><ul><li><p>Likelihood <code>loglike</code> refers to maximizing the probability of the observed data (higher values for better fit)</p></li>
-<li><p>Prior <code>logprior</code> refers to maximizing the probability of a parameter to their prior distribution (higher values are closer to the prior)</p></li>
+<li><p>Prior <code>logprior</code> refers to maximizing the probability of a parameter to their prior distribution (higher values are closer to the prior mode)</p></li>
 <li><p>Penalty <code>penalty</code> are values added to the objective function when parameters exceed model bounds (lower values are better)</p></li>
 <li><p><code>fn</code> is the objective function returned by RTMB (lower values are better)</p></li>
 <li><p><code>objective</code> is the objective function returned by the optimizer (lower values are better)</p></li>
