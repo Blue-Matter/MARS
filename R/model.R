@@ -107,6 +107,8 @@ update_report <- function(r, MARSdata) {
         })
       })
 
+      if (any(is.na(r$F_yas))) message_oops("NA in predicted catch at age")
+      if (any(is.infinite(r$F_yas))) message_oops("Catch-at-age exceeds abundance-at-age")
     }
     r$Z_yas <- r$F_yas + r$M_yas
   }

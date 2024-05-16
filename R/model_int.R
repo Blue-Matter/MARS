@@ -182,8 +182,9 @@ calc_Baranov <- function(FM, Z, N) FM/Z * (1 - exp(-Z)) * N
 .calc_summary_F <- function(FM, M, N, CN) calc_Baranov(FM, FM + M, N) - CN
 calc_summary_F <- function(M, N, CN, Fmax) {
 
-  if (CN > N) {
-    message_oops("Catch-at-age exceeds abundance-at-age")
+  if (is.na(CN) || is.na(N)) {
+    out <- NA_real_
+  } else if (CN > N) {
     out <- Inf
   } else {
     out <- try(uniroot(.calc_summary_F, interval = c(0, Fmax), M = M, N = N, CN = CN)$root, silent = TRUE)
