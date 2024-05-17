@@ -128,7 +128,11 @@ get_likelihood_components <- function(fit) {
       structure(names = nm_out)
   }
 
-  if (length(fit@opt)) out$objective <- fit@opt$objective
+  if (length(fit@opt)) {
+    out$objective <- fit@opt$objective
+  } else {
+    out$objective <- NA_real_
+  }
 
   do.call(data.frame, out)
 }
@@ -184,12 +188,13 @@ plot.MARSprof <- function(x, component = "objective", rel = TRUE, xlab, ylab, ma
     if (grepl("logprior", component) || grepl("loglike", component)) {
       zplot <- -1 * zplot
     }
-    if (rel) zplot <- zplot - min(zplot)
+    if (rel) zplot <- zplot - min(zplot, na.rm = TRUE)
     if (missing(ylab)) ylab <- p2
     if (missing(main)) main <- paste("Change in", component)
 
     contour(x = as.numeric(rownames(zplot)), y = as.numeric(colnames(zplot)),
             z = zplot, xlab = xlab, ylab = ylab, main = main, ...)
+
   }
   invisible()
 }
