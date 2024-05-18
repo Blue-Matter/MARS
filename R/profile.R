@@ -55,7 +55,32 @@ profile.MARSassess <- function(fitted, p1, v1, p2, v2, cores = 1, ...) {
   if (!missing(p2)) {
     names(prof_df)[2] <- attr(prof_df, "p2") <- p2
   }
-  attr(prof_df, "fitted") <- get_likelihood_components(fitted)
+
+  p <- fitted@obj$env$parList()
+  pval1 <- eval(parse(text = paste0("p$", p1)))
+  if (is.null(pval1)) pval1 <- eval(parse(text = paste0("fitted@report$", p1)))
+  if (is.null(pval1)) pval1 <- NA
+
+  if (missing(pval2)) {
+
+    attr(prof_df, "fitted") <- cbind(
+      pval1,
+      get_likelihood_components(fitted)
+    )
+    names(attr(prof_df, "fitted"))[1] <- p1
+
+  } else {
+    pval2 <- eval(parse(text = paste0("p$", p2)))
+    if (is.null(pval2)) pval2 <- eval(parse(text = paste0("fitted@report$", p2)))
+    if (is.null(pval2)) pval2 <- NA
+
+    attr(prof_df, "fitted") <- cbind(
+      pval1,
+      pval2,
+      get_likelihood_components(fitted)
+    )
+    names(attr(prof_df, "fitted"))[1:2] <- c(p1, p2)
+  }
 
   return(prof_df)
 }
@@ -161,13 +186,15 @@ plot.MARSprof <- function(x, component = "objective", rel = TRUE, xlab, ylab, ma
   if (missing(xlab)) xlab <- p1
   if (is.null(x[[component]])) stop("\"", component, "\" not found in ", substitute(x))
 
+  fitted <- attr(x, "fitted")
+
   if (is.null(p2)) {
     xplot <- x[[p1]]
     yplot <- x[[component]]
-    if (grepl("logprior", component) || grepl("loglike", component)) {
-      yplot <- -1 * yplot
-    }
-    if (rel) yplot <- yplot - min(yplot)
+    #if (grepl("logprior", component) || grepl("loglike", component)) {
+    #  yplot <- -1 * yplot
+    #}
+    if (rel) yplot <- yplot - fitted[[component]]
     if (missing(ylab)) {
       if (grepl("logprior", component) || grepl("loglike", component)) {
         ylab <- paste("Change in negative ", component)
@@ -178,6 +205,7 @@ plot.MARSprof <- function(x, component = "objective", rel = TRUE, xlab, ylab, ma
     if (missing(main)) main <- NULL
 
     plot(xplot, yplot, xlab = xlab, ylab = ylab, typ = "o", main = main, ...)
+    abline(v = fitted[[p1]], lty = 2)
 
   } else {
 
@@ -185,15 +213,17 @@ plot.MARSprof <- function(x, component = "objective", rel = TRUE, xlab, ylab, ma
     names(x)[names(x) == p2] <- "p2"
 
     zplot <- reshape2::acast(x, list("p1", "p2"), value.var = component)
-    if (grepl("logprior", component) || grepl("loglike", component)) {
-      zplot <- -1 * zplot
-    }
-    if (rel) zplot <- zplot - min(zplot, na.rm = TRUE)
+    #if (grepl("logprior", component) || grepl("loglike", component)) {
+    #  zplot <- -1 * zplot
+    #}
+    if (rel) zplot <- zplot - fitted[[component]]
     if (missing(ylab)) ylab <- p2
     if (missing(main)) main <- paste("Change in", component)
 
     contour(x = as.numeric(rownames(zplot)), y = as.numeric(colnames(zplot)),
             z = zplot, xlab = xlab, ylab = ylab, main = main, ...)
+
+    points(fitted[[p1]], fitted[[p2]], col = "red", pch = 2)
 
   }
   invisible()
