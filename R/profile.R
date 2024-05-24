@@ -171,16 +171,18 @@ get_likelihood_components <- function(fit) {
 #' @param xlab Optional character for the x-axis label
 #' @param ylab Optional character for the y-axis label
 #' @param main Optional character for the plot title
-#' @param ... Other argument to base graphics
+#' @param plot2d Character, plotting function for two-dimensional profiling (either a [contour()] or [filled.contour()] plot)
+#' @param ... Other argument to the base graphics function, i.e., either plot() or contour()
 #' @return
 #' The accompanying plot function returns a line plot for a 1-dimensional profile or a contour plot for a two
 #' dimensional profile. Will plot the negative log likelihood or negative log prior (better fit with lower values).
 #'
 #' Relative values are obtained by subtracting from the fitted value. See `attr(x, "fitted")`
-#' @importFrom graphics contour
+#' @importFrom graphics contour filled.contour
 #' @importFrom reshape2 acast
 #' @export
-plot.MARSprof <- function(x, component = "objective", rel = TRUE, xlab, ylab, main, ...) {
+plot.MARSprof <- function(x, component = "objective", rel = TRUE, xlab, ylab, main,
+                          plot2d = c("contour", "filled.contour"), ...) {
 
   p1 <- attr(x, "p1")
   p2 <- attr(x, "p2")
@@ -213,6 +215,9 @@ plot.MARSprof <- function(x, component = "objective", rel = TRUE, xlab, ylab, ma
 
   } else {
 
+    plot2d <- match.arg(plot2d)
+    plot2d <- match.fun(plot2d)
+
     names(x)[names(x) == p1] <- "p1"
     names(x)[names(x) == p2] <- "p2"
 
@@ -232,9 +237,11 @@ plot.MARSprof <- function(x, component = "objective", rel = TRUE, xlab, ylab, ma
       }
     }
 
-    contour(x = as.numeric(rownames(zplot)), y = as.numeric(colnames(zplot)),
-            z = zplot, xlab = xlab, ylab = ylab, main = main, ...)
-
+    plot2d(
+      x = as.numeric(rownames(zplot)), y = as.numeric(colnames(zplot)), z = zplot,
+      xlab = xlab, ylab = ylab, main = main,
+      ...
+    )
     points(fitted[[p1]], fitted[[p2]], col = "red", pch = 16)
 
   }

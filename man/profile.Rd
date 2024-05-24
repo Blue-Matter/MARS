@@ -8,7 +8,16 @@
 \usage{
 \method{profile}{MARSassess}(fitted, p1, v1, p2, v2, cores = 1, ...)
 
-\method{plot}{MARSprof}(x, component = "objective", rel = TRUE, xlab, ylab, main, ...)
+\method{plot}{MARSprof}(
+  x,
+  component = "objective",
+  rel = TRUE,
+  xlab,
+  ylab,
+  main,
+  plot2d = c("contour", "filled.contour"),
+  ...
+)
 }
 \arguments{
 \item{fitted}{\linkS4class{MARSassess} object returned by \code{\link[=fit_MARS]{fit_MARS()}}}
@@ -25,7 +34,7 @@ Additionally, this function allows users to specify \code{R0_s} and \code{h_s} (
 
 \item{cores}{Integer for the number of cores to use for parallel processing (snowfall package)}
 
-\item{...}{Other argument to base graphics}
+\item{...}{Other argument to the base graphics function, i.e., either plot() or contour()}
 
 \item{x}{Output from \code{\link[=profile.MARSassess]{profile.MARSassess()}}}
 
@@ -38,6 +47,8 @@ Additionally, this function allows users to specify \code{R0_s} and \code{h_s} (
 \item{ylab}{Optional character for the y-axis label}
 
 \item{main}{Optional character for the plot title}
+
+\item{plot2d}{Character, plotting function for two-dimensional profiling (either a \code{\link[=contour]{contour()}} or \code{\link[=filled.contour]{filled.contour()}} plot)}
 }
 \value{
 The profile generic returns a data frame of the likelihood values that correspond to
