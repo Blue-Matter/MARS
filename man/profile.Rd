@@ -52,6 +52,8 @@ fixed values of \code{p1} and \code{p2}.
 
 The accompanying plot function returns a line plot for a 1-dimensional profile or a contour plot for a two
 dimensional profile. Will plot the negative log likelihood or negative log prior (better fit with lower values).
+
+Relative values are obtained by subtracting from the fitted value. See \code{attr(x, "fitted")}
 }
 \description{
 Evaluate change in objective function and likelihood components for up to 2 parameters.

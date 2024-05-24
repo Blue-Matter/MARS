@@ -61,7 +61,7 @@ profile.MARSassess <- function(fitted, p1, v1, p2, v2, cores = 1, ...) {
   if (is.null(pval1)) pval1 <- eval(parse(text = paste0("fitted@report$", p1)))
   if (is.null(pval1)) pval1 <- NA
 
-  if (missing(pval2)) {
+  if (missing(p2)) {
 
     attr(prof_df, "fitted") <- cbind(
       pval1,
@@ -175,6 +175,8 @@ get_likelihood_components <- function(fit) {
 #' @return
 #' The accompanying plot function returns a line plot for a 1-dimensional profile or a contour plot for a two
 #' dimensional profile. Will plot the negative log likelihood or negative log prior (better fit with lower values).
+#'
+#' Relative values are obtained by subtracting from the fitted value. See `attr(x, "fitted")`
 #' @importFrom graphics contour
 #' @importFrom reshape2 acast
 #' @export
@@ -191,13 +193,15 @@ plot.MARSprof <- function(x, component = "objective", rel = TRUE, xlab, ylab, ma
   if (is.null(p2)) {
     xplot <- x[[p1]]
     yplot <- x[[component]]
-    #if (grepl("logprior", component) || grepl("loglike", component)) {
-    #  yplot <- -1 * yplot
-    #}
-    if (rel) yplot <- yplot - fitted[[component]]
+    yfit <- fitted[[component]]
+    if (grepl("logprior", component) || grepl("loglike", component)) {
+      yplot <- -1 * yplot
+      yfit <- -1 * yfit
+    }
+    if (rel) yplot <- yplot - yfit
     if (missing(ylab)) {
       if (grepl("logprior", component) || grepl("loglike", component)) {
-        ylab <- paste("Change in negative ", component)
+        ylab <- paste("Change in negative", component)
       } else {
         ylab <- paste("Change in", component)
       }
@@ -213,17 +217,25 @@ plot.MARSprof <- function(x, component = "objective", rel = TRUE, xlab, ylab, ma
     names(x)[names(x) == p2] <- "p2"
 
     zplot <- reshape2::acast(x, list("p1", "p2"), value.var = component)
-    #if (grepl("logprior", component) || grepl("loglike", component)) {
-    #  zplot <- -1 * zplot
-    #}
-    if (rel) zplot <- zplot - fitted[[component]]
+    zfit <- fitted[[component]]
+    if (grepl("logprior", component) || grepl("loglike", component)) {
+      zplot <- -1 * zplot
+      zfit <- -1 * zfit
+    }
+    if (rel) zplot <- zplot - zfit
     if (missing(ylab)) ylab <- p2
-    if (missing(main)) main <- paste("Change in", component)
+    if (missing(main)) {
+      if (grepl("logprior", component) || grepl("loglike", component)) {
+        main <- paste("Change in negative", component)
+      } else {
+        main <- paste("Change in", component)
+      }
+    }
 
     contour(x = as.numeric(rownames(zplot)), y = as.numeric(colnames(zplot)),
             z = zplot, xlab = xlab, ylab = ylab, main = main, ...)
 
-    points(fitted[[p1]], fitted[[p2]], col = "red", pch = 2)
+    points(fitted[[p1]], fitted[[p2]], col = "red", pch = 16)
 
   }
   invisible()
