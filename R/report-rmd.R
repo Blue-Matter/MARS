@@ -237,6 +237,14 @@ make_rmd_stock_region <- function(s, sname) {
     paste0("```{r SB-rp", s, ", fig.cap=\"Proportion spawning output of ", sname, " by region.\"}"),
     "plot_S(x, by = \"region\", s = ", s, ", prop = TRUE)",
     "```",
+    "",
+    paste0("```{r B-r", s, ", fig.cap=\"Total biomass of ", sname, " by region.\"}"),
+    paste0("plot_B(x, by = \"region\", s = ", s, ")"),
+    "```",
+    "",
+    paste0("```{r B-rp", s, ", fig.cap=\"Proportion biomass of ", sname, " by region.\"}"),
+    "plot_B(x, by = \"region\", s = ", s, ", prop = TRUE)",
+    "```",
     ""
   )
 
