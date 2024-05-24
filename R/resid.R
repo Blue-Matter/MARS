@@ -297,7 +297,7 @@ plot_resid_IAL <- function(fit, i = 1, do_hist = FALSE, ...) {
 
   zz <- pmin(z, zmax) %>% pmax(-zmax) %>% round(2)
   zlegend <- seq(-zmax, zmax, 0.01)
-  cols <- hcl.colors(length(zlegend), palette = "Blue-Red", alpha = 0.6) %>%
+  cols <- hcl.colors(length(zlegend), palette = "Blue-Red 2", alpha = 1) %>%
     structure(names = zlegend)
 
   ydiff <- diff(y)
