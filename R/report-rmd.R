@@ -252,6 +252,18 @@ make_rmd_stock_region <- function(s, sname) {
 }
 
 
+make_rmd_sel_stock <- function(s, sname) {
+  rmd <- c(
+    paste0("```{r selstock-s", s, ", fig.cap=\"Aggregate selectivity of ", sname, " from total catch and abundance at age.\"}"),
+    paste0("plot_selstock(x, s = ", s, ", plot2d = \"filled.contour\")"),
+    "```",
+    ""
+  )
+
+  return(rmd)
+}
+
+
 make_rmd_mov <- function(s, y, a, yname, sname, header = TRUE) {
   rmd <- c(
     ifelse(header, "### Movement\n\n", ""),

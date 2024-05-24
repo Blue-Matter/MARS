@@ -306,6 +306,9 @@ report.MARSassess <- function(object, name, filename = "MARS", dir = tempdir(), 
   srr_ind <- grep("*ADD SRR RMD*", rmd)
   rmd_split[[srr_ind]] <- mapply(make_rmd_srr, s = 1:ns, sname = sname) %>% as.character()
 
+  selstock_ind <- grep("*ADD SEL STOCK RMD*", rmd)
+  rmd_split[[selstock_ind]] <- mapply(make_rmd_sel_stock, s = 1:ns, sname = sname) %>% as.character()
+
   stock_ind <- grep("*ADD STOCK REGION RMD*", rmd)
   mov_ind <- grep("*ADD MOVEMENT RMD*", rmd)
   if (nr > 1) {

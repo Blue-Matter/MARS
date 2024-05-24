@@ -10,6 +10,7 @@
 \alias{plot_Fstock}
 \alias{plot_self}
 \alias{plot_seli}
+\alias{plot_selstock}
 \alias{plot_V}
 \alias{plot_Ffleet}
 \alias{plot_mov}
@@ -31,6 +32,8 @@ plot_Fstock(fit, s)
 plot_self(fit, f = 1)
 
 plot_seli(fit, i = 1)
+
+plot_selstock(fit, s = 1, plot2d = c("contour", "filled.contour"), ...)
 
 plot_V(fit, f = 1, by = c("stock", "region"), prop = FALSE)
 
@@ -56,6 +59,10 @@ plot_recdist(fit)
 \item{f}{Integer for the corresponding fleet}
 
 \item{i}{Integer for the corresponding survey}
+
+\item{plot2d}{Character, plotting function for either a \code{\link[=contour]{contour()}} or \code{\link[=filled.contour]{filled.contour()}} plot}
+
+\item{...}{Other argument to the base graphics function}
 
 \item{y}{Integer, year for plotting the movement matrix}
 
@@ -98,6 +105,10 @@ A set of functions to plot state variables (biomass, recruitment time series, et
 
 \itemize{
 \item \code{plot_seli} plots index selectivity
+}
+
+\itemize{
+\item \code{plot_selstock} plots effective selectivity from total catch and total abundance at age
 }
 
 \itemize{

@@ -386,6 +386,33 @@ plot_seli <- function(fit, i = 1) {
   invisible()
 }
 
+
+#' @rdname plot-MARS-state
+#' @aliases plot_selstock
+#' @param plot2d Character, plotting function for either a [contour()] or [filled.contour()] plot
+#' @param ... Other argument to the base graphics function
+#' @details
+#' - `plot_selstock` plots effective selectivity from total catch and total abundance at age
+#' @export
+#' @importFrom graphics contour filled.contour
+plot_selstock <- function(fit, s = 1, plot2d = c("contour", "filled.contour"), ...) {
+
+  plot2d <- match.arg(plot2d)
+  plot2d <- match.fun(plot2d)
+
+  dat <- get_MARSdata(fit)
+  year <- dat@Dlabel@year
+  age <- dat@Dlabel@age
+
+  sel_ya <- fit@report$F_yas[, , s] %>%
+    apply(1, function(x) x/max(x)) %>%
+    t()
+
+  plot2d(x = 1:58, y = 1:35, xlab = "Year", ylab = "Age", z = sel_ya, levels = seq(0, 1, 0.1), ...)
+
+  invisible()
+}
+
 #' @rdname plot-MARS-state
 #' @aliases plot_V
 #' @details
