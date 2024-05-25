@@ -62,7 +62,16 @@
 <span><span class="fu">profile</span><span class="op">(</span><span class="va">fitted</span>, <span class="va">p1</span>, <span class="va">v1</span>, <span class="va">p2</span>, <span class="va">v2</span>, cores <span class="op">=</span> <span class="fl">1</span>, <span class="va">...</span><span class="op">)</span></span>
 <span></span>
 <span><span class="co"># S3 method for MARSprof</span></span>
-<span><span class="fu"><a href="https://rdrr.io/r/graphics/plot.default.html" class="external-link">plot</a></span><span class="op">(</span><span class="va">x</span>, component <span class="op">=</span> <span class="st">"objective"</span>, rel <span class="op">=</span> <span class="cn">TRUE</span>, <span class="va">xlab</span>, <span class="va">ylab</span>, <span class="va">main</span>, <span class="va">...</span><span class="op">)</span></span></code></pre></div>
+<span><span class="fu"><a href="https://rdrr.io/r/graphics/plot.default.html" class="external-link">plot</a></span><span class="op">(</span></span>
+<span>  <span class="va">x</span>,</span>
+<span>  component <span class="op">=</span> <span class="st">"objective"</span>,</span>
+<span>  rel <span class="op">=</span> <span class="cn">TRUE</span>,</span>
+<span>  <span class="va">xlab</span>,</span>
+<span>  <span class="va">ylab</span>,</span>
+<span>  <span class="va">main</span>,</span>
+<span>  plot2d <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"contour"</span>, <span class="st">"filled.contour"</span><span class="op">)</span>,</span>
+<span>  <span class="va">...</span></span>
+<span><span class="op">)</span></span></code></pre></div>
     </div>
 
     <div class="section level2">
@@ -94,7 +103,7 @@ Additionally, this function allows users to specify <code>R0_s</code> and <code>
 
 
 <dt>...</dt>
-<dd><p>Other argument to base graphics</p></dd>
+<dd><p>Other argument to the base graphics function, i.e., either plot() or contour()</p></dd>
 
 
 <dt>x</dt>
@@ -119,6 +128,10 @@ Additionally, this function allows users to specify <code>R0_s</code> and <code>
 
 <dt>main</dt>
 <dd><p>Optional character for the plot title</p></dd>
+
+
+<dt>plot2d</dt>
+<dd><p>Character, plotting function for two-dimensional profiling (either a <code><a href="https://rdrr.io/r/graphics/contour.html" class="external-link">contour()</a></code> or <code><a href="https://rdrr.io/r/graphics/filled.contour.html" class="external-link">filled.contour()</a></code> plot)</p></dd>
 
 </dl></div>
     <div class="section level2">
