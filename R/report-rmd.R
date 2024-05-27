@@ -1,7 +1,7 @@
 
 make_rmd_CAA <- function(f, r, fname, rname) {
   cap <- paste0("Observed (black) and predicted (red) catch at age for ", fname, " in ", rname)
-  cap2 <- paste0("Pearson residuals for the catch at age for ", fname, " in ", rname)
+  cap2 <- paste0("Pearson (Z-score) residuals for the catch at age for ", fname, " in ", rname)
   cap3 <- paste0("Residual histogram for the catch at age for ", fname, " in ", rname)
 
   rmd <- c(
@@ -30,7 +30,7 @@ make_rmd_CAA <- function(f, r, fname, rname) {
 
 make_rmd_CAL <- function(f, r, fname, rname) {
   cap <- paste0("Catch at length for ", fname, " in ", rname)
-  cap2 <- paste0("Pearson residuals for the catch at length for ", fname, " in ", rname)
+  cap2 <- paste0("Pearson (Z-score) residuals for the catch at length for ", fname, " in ", rname)
   cap3 <- paste0("Residual histogram for the catch at length for ", fname, " in ", rname)
 
   rmd <- c(
