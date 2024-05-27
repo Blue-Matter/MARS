@@ -408,10 +408,46 @@ plot_selstock <- function(fit, s = 1, plot2d = c("contour", "filled.contour"), .
     apply(1, function(x) x/max(x)) %>%
     t()
 
-  plot2d(x = 1:58, y = 1:35, xlab = "Year", ylab = "Age", z = sel_ya, levels = seq(0, 1, 0.1), ...)
+  plot2d(x = year, y = age, xlab = "Year", ylab = "Age", z = sel_ya, levels = seq(0, 1, 0.1), ...)
 
   invisible()
 }
+
+#' @rdname plot-MARS-state
+#' @aliases plot_N
+#' @param ... Other argument to the base graphics function
+#' @details
+#' - `plot_N` reports total abundance at age
+#' @export
+#' @importFrom graphics contour filled.contour
+plot_N <- function(fit, m = 1, r, s = 1, plot2d = c("contour", "filled.contour"), ...) {
+  plot2d <- match.arg(plot2d)
+  plot2d <- match.fun(plot2d)
+
+  dat <- get_MARSdata(fit)
+  if (missing(r)) r <- 1:dat@Dmodel@nr
+  if (length(m) > 1) stop("length(m) should be one")
+  ny <- dat@Dmodel@ny
+  year <- dat@Dlabel@year
+  age <- dat@Dlabel@age
+
+  N_ya <- apply(fit@report$N_ymars[1:ny, m, , r, s, drop = FALSE], c(1, 3), sum)
+
+  dots <- list(...)
+  if (!length(dots$nlevels)) dots$nlevels <- 10
+  if (!length(dots$levels)) dots$levels <- exp(pretty(log(range(N_ya)), 10))
+
+  dots$x <- year
+  dots$y <- age
+  dots$xlab = "Year"
+  dots$ylab <- "Age"
+  dots$z <- N_ya
+
+  do.call(plot2d, dots)
+
+  invisible()
+}
+
 
 #' @rdname plot-MARS-state
 #' @aliases plot_V

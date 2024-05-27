@@ -82,9 +82,7 @@ plot_R(x)
 plot_recdist(x)
 ```
 
-<!-- *ADD SEL STOCK RMD* -->
-
-<!-- *ADD SRR RMD* -->
+<!-- *ADD IND STOCK RMD* -->
 
 <!-- *ADD STOCK REGION RMD* -->
 

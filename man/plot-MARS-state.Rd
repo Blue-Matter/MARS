@@ -11,6 +11,7 @@
 \alias{plot_self}
 \alias{plot_seli}
 \alias{plot_selstock}
+\alias{plot_N}
 \alias{plot_V}
 \alias{plot_Ffleet}
 \alias{plot_mov}
@@ -34,6 +35,8 @@ plot_self(fit, f = 1)
 plot_seli(fit, i = 1)
 
 plot_selstock(fit, s = 1, plot2d = c("contour", "filled.contour"), ...)
+
+plot_N(fit, m = 1, r, s = 1, plot2d = c("contour", "filled.contour"), ...)
 
 plot_V(fit, f = 1, by = c("stock", "region"), prop = FALSE)
 
@@ -109,6 +112,10 @@ A set of functions to plot state variables (biomass, recruitment time series, et
 
 \itemize{
 \item \code{plot_selstock} plots effective selectivity from total catch and total abundance at age
+}
+
+\itemize{
+\item \code{plot_N} reports total abundance at age
 }
 
 \itemize{

@@ -210,23 +210,6 @@ make_rmd_survey <- function(i, iname) {
   return(rmd)
 }
 
-
-
-make_rmd_srr <- function(s, sname) {
-  rmd <- c(
-    paste0("```{r Rdev-", s, ", fig.cap=\"Recruitment deviations of ", sname, ".\"}"),
-    paste0("plot_Rdev(x, s = ", s, ")"),
-    "```",
-    "",
-    paste0("```{r SRR-", s, ", fig.cap=\"Stock recruit relationship, and historical stock-recruit pairs, of ", sname, ". The dotted line is the unfished replacement line.\"}"),
-    paste0("plot_SRR(x, s = ", s, ")"),
-    "```",
-    ""
-  )
-
-  return(rmd)
-}
-
 make_rmd_stock_region <- function(s, sname) {
   rmd <- c(
     ifelse(s == 1, "### By region\n\n", ""),
@@ -252,10 +235,22 @@ make_rmd_stock_region <- function(s, sname) {
 }
 
 
-make_rmd_sel_stock <- function(s, sname) {
+make_rmd_ind_stock <- function(s, sname) {
   rmd <- c(
-    paste0("```{r selstock-s", s, ", fig.cap=\"Aggregate selectivity of ", sname, " from total catch and abundance at age.\"}"),
+    paste0("```{r selstock-s", s, ", fig.cap=\"Aggregate annual selectivity of ", sname, " from total annual catch at age and abundance at age at the beginning of the year.\"}"),
     paste0("plot_selstock(x, s = ", s, ", plot2d = \"filled.contour\")"),
+    "```",
+    "",
+    paste0("```{r N-s", s, ", fig.cap=\"Total abundance at age of ", sname, " at the beginning of the year.\"}"),
+    paste0("plot_N(x, s = ", s, ", plot2d = \"filled.contour\")"),
+    "```",
+    "",
+    paste0("```{r Rdev-s", s, ", fig.cap=\"Recruitment deviations of ", sname, ".\"}"),
+    paste0("plot_Rdev(x, s = ", s, ")"),
+    "```",
+    "",
+    paste0("```{r SRR-s", s, ", fig.cap=\"Stock recruit relationship, and historical stock-recruit pairs, of ", sname, ". The dotted line is the unfished replacement line.\"}"),
+    paste0("plot_SRR(x, s = ", s, ")"),
     "```",
     ""
   )
