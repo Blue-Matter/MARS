@@ -23,11 +23,10 @@ retrospective <- function(MARSassess, yret = 1:5, cores = 1) {
     on.exit(snowfall::sfStop())
   }
 
-  if (snowfall::sfIsRunning()) {
-    ret <- snowfall::sfLapply(yret, .ret, MARSassess)
-  } else {
-    ret <- lapply(yret, .ret, MARSassess)
-  }
+  .lapply <- pbapply::pblapply
+  if (snowfall::sfIsRunning()) formals(.lapply)$cl <- substitute(snowfall::sfGetCluster())
+
+  ret <- .lapply(yret, .ret, MARSassess)
 
   MARSdata <- get_MARSdata(MARSassess)
   ny <- MARSdata@Dmodel@ny

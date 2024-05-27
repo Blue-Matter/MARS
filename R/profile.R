@@ -26,6 +26,7 @@
 #' - `fn` is the objective function returned by RTMB (lower values are better)
 #' - `objective` is the objective function returned by the optimizer (lower values are better)
 #' @importFrom stats profile
+#' @importFrom pbapply pblapply
 #' @export
 profile.MARSassess <- function(fitted, p1, v1, p2, v2, cores = 1, ...) {
 
@@ -34,10 +35,9 @@ profile.MARSassess <- function(fitted, p1, v1, p2, v2, cores = 1, ...) {
     on.exit(snowfall::sfStop())
   }
 
+  .lapply <- pbapply::pblapply
   if (snowfall::sfIsRunning()) {
-    .lapply <- snowfall::sfLapply
-  } else {
-    .lapply <- base::lapply
+    formals(.lapply)$cl <- substitute(snowfall::sfGetCluster())
   }
 
   if (missing(p2)) {
