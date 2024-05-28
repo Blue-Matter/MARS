@@ -19,14 +19,15 @@ make_color <- function(n, type = c("fleet", "region", "stock"), alpha = 1) {
 #' @importFrom graphics barplot box legend axis
 propplot <- function(x, cols, leg.names, xval, ylab = "Proportion", border = ifelse(nrow(x) > 20, NA, "grey60")) {
   p <- apply(x, 1, function(x) x/sum(x, na.rm = TRUE))
+  colnames(p) <- NULL
   if (is.null(dim(p))) p <- matrix(p, length(xval), 1)
 
   if (missing(cols)) {
     ncat <- nrow(p)
     cols <- make_color(ncat)
   }
-  plot(NULL, xlab = "Year", ylab = ylab, xlim = c(0, ncol(p)), xaxt = "n",
-    ylim = c(0, 1), yaxs = "i", xaxs = "i")
+
+  plot(NULL, xlab = "Year", ylab = ylab, xlim = c(0, ncol(p)), xaxt = "n", ylim = c(0, 1), yaxs = "i", xaxs = "i")
   barplot(p, add = TRUE, col = cols, width = 1, space = 0, border = border)
   if (!missing(leg.names) && length(leg.names) > 1) {
     legend("topleft", legend = leg.names, fill = cols, border = border, horiz = TRUE)
@@ -55,36 +56,65 @@ NULL
 #'
 #' @param fit [MARSassess-class] object returned by [fit_MARS()]
 #' @param by Character to indicate dimension for multivariate plots
-#' @param s Integer for the corresponding stock when plotting by region
+#' @param s Integer for the corresponding stock
 #' @param prop Logical, whether to plot proportions (TRUE) or absolute numbers
 #' @details
 #' - `plot_S` plots spawning output by stock or region (either whole numbers or proportions for the latter)
 #'
 #' @export
-plot_S <- function(fit, by = c("stock", "region"), s = 1, prop = FALSE) {
+plot_S <- function(fit, by = c("total", "stock", "region"), r, s, prop = FALSE) {
   by <- match.arg(by)
   var <- "S_yrs"
 
   Dlabel <- get_MARSdata(fit)@Dlabel
   year <- Dlabel@year
+  ny <- length(year)
 
-  if (by == "stock") {
+  if (by == "total") {
     x <- apply(fit@report[[var]], c(1, 3), sum) # S_ys
     name <- Dlabel@stock
-  } else {
-    x <- fit@report[[var]][, , s] # S_yr
+
+    if (!missing(s)) {
+      x <- x[, s, drop = FALSE]
+      name <- name[s]
+    }
+
+    x <- structure(x, dimnames = list(year = year, stock = name))
+  } else if (by == "stock") {
+
+    if (missing(r)) stop("Need region integer r to plot spawning output by stock")
+
+    name <- Dlabel@stock
+    ns <- length(name)
+    x <- matrix(fit@report[[var]][, r, ], ny, ns) %>% # S_ys
+      structure(dimnames = list(year = year, stock = name))
+
+  } else if (by == "region") {
+    if (missing(s)) stop("Need stock integer s to plot spawning output by region")
     name <- Dlabel@region
+    nr <- length(name)
+
+    x <- matrix(fit@report[[var]][, , s], ny, nr) %>% # S_yr
+      structure(dimnames = list(year = year, region = name))
   }
-  color <- make_color(ncol(x), type = by)
-  if (by == "region" && prop) {
+  color <- make_color(ncol(x), type = ifelse(by == "total", "stock", by))
+
+  if (prop) {
     propplot(x, cols = color, leg.names = name, xval = year, ylab = "Spawning fraction")
   } else {
-    matplot(year, x, xlab = "Year", ylab = "Spawning output", typ = "o", col = color, pch = 16,
+
+    if (by == "total" && !missing(s)) {
+      ylab <- paste(name, "spawning output")
+    } else {
+      ylab <- "Spawning output"
+    }
+    matplot(year, x, xlab = "Year", ylab = ylab, typ = "o", col = color, pch = 16,
             ylim = c(0, 1.1) * range(x, na.rm = TRUE), zero_line = TRUE)
     if (ncol(x) > 1) legend("topleft", legend = name, col = color, lwd = 1, pch = 16, horiz = TRUE)
   }
 
-  invisible()
+  out <- array2DF(x, responseName = ifelse(prop, "p", "S"))
+  invisible(out)
 }
 
 
@@ -94,36 +124,62 @@ plot_S <- function(fit, by = c("stock", "region"), s = 1, prop = FALSE) {
 #' - `plot_B` plots total biomass by stock or region (either whole numbers or proportions for the latter)
 #'
 #' @export
-plot_B <- function(fit, by = c("stock", "region"), s = 1, prop = FALSE) {
+plot_B <- function(fit, by = c("total", "stock", "region"), r, s, prop = FALSE) {
   by <- match.arg(by)
   var <- "B_ymrs"
 
   Dlabel <- get_MARSdata(fit)@Dlabel
   year <- Dlabel@year
+  ny <- length(year)
   nm <- max(length(Dlabel@season), 1)
 
-  if (by == "stock") {
+  if (by == "total") {
     x <- apply(fit@report[[var]], c(1, 2, 4), sum) # B_yms
     name <- Dlabel@stock
+
+    if (!missing(s)) {
+      x <- x[, , s, drop = FALSE]
+      name <- name[s]
+    }
+  } else if (by == "stock") {
+
+    if (missing(r)) stop("Need region integer r to plot spawning output by stock")
+
+    name <- Dlabel@stock
+    ns <- length(name)
+    x <- array(fit@report[[var]][, , r, ], c(ny, nm, ns)) # B_yms
+
   } else {
-    x <- fit@report[[var]][, , , s, drop = FALSE] %>% apply(1:3, sum) # B_ymr
+
+    if (missing(s)) stop("Need stock integer s to plot spawning output by region")
     name <- Dlabel@region
+    nr <- length(name)
+
+    x <- array(fit@report[[var]][, , , s], c(ny, nm, nr)) # B_ymr
+
   }
 
   year <- make_yearseason(year, nm)
-  x <- collapse_yearseason(x)
+  x <- collapse_yearseason(x) # B_tr or B_ts
 
-  color <- make_color(ncol(x), type = by)
+  color <- make_color(ncol(x), type = ifelse(by == "total", "stock", by))
 
-  if (by == "region" && prop) {
+  if (prop) {
     propplot(x, cols = color, leg.names = name, xval = year, ylab = "Biomass fraction")
   } else {
+
+    if (by == "total" && !missing(s)) {
+      ylab <- paste(name, "spawning output")
+    } else {
+      ylab <- "Spawning output"
+    }
     matplot(year, x, xlab = "Year", ylab = "Total biomass", typ = "o", col = color, pch = 16,
             ylim = c(0, 1.1) * range(x, na.rm = TRUE), zero_line = TRUE)
     if (ncol(x) > 1) legend("topleft", legend = name, col = color, lwd = 1, pch = 16, horiz = TRUE)
   }
 
-  invisible()
+  out <- array2DF(x, responseName = ifelse(prop, "p", "B"))
+  invisible(out)
 }
 
 
@@ -155,7 +211,8 @@ plot_R <- function(fit, s) {
           ylim = c(0, 1.1) * range(x, na.rm = TRUE), zero_line = TRUE)
   if (ncol(x) > 1) legend("topleft", legend = name, col = color, lwd = 1, pch = 16, horiz = TRUE)
 
-  invisible()
+  x <- structure(x, dimnames = list(year = year, stock = name))
+  invisible(array2DF(x, "R"))
 }
 
 
@@ -544,6 +601,9 @@ plot_mov <- function(fit, s = 1, y, a) {
 
   mov <- array(fit@report$mov_ymarrs[y, , a, , , s], c(nm, nr, nr))
   dist_eq <- mov_proj(mov, start = fit@report$recdist_rs[, s])
+
+  #dist_start <- ifelse(dat@Dstock@presence_rs[, s], 1/sum(dat@Dstock@presence_rs[, s]), 0)
+  #dist_eq <- mov_proj(mov, start = dist_start)
 
   if (nm > 1) {
     old_mar <- par()$mar

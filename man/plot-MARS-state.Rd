@@ -18,9 +18,9 @@
 \alias{plot_recdist}
 \title{Plotting functions for fitted MARS model}
 \usage{
-plot_S(fit, by = c("stock", "region"), s = 1, prop = FALSE)
+plot_S(fit, by = c("total", "stock", "region"), r, s, prop = FALSE)
 
-plot_B(fit, by = c("stock", "region"), s = 1, prop = FALSE)
+plot_B(fit, by = c("total", "stock", "region"), r, s, prop = FALSE)
 
 plot_R(fit, s)
 
@@ -51,7 +51,9 @@ plot_recdist(fit)
 
 \item{by}{Character to indicate dimension for multivariate plots}
 
-\item{s}{Integer for the corresponding stock when plotting by region}
+\item{r}{Integer for the corresponding region}
+
+\item{s}{Integer for the corresponding stock}
 
 \item{prop}{Logical, whether to plot proportions (TRUE) or absolute numbers}
 
@@ -68,8 +70,6 @@ plot_recdist(fit)
 \item{...}{Other argument to the base graphics function}
 
 \item{m}{Integer for the corresponding season}
-
-\item{r}{Integer for the corresponding region}
 
 \item{y}{Integer, year for plotting the movement matrix}
 

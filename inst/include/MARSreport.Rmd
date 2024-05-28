@@ -63,11 +63,11 @@ if (length(x@SD) && length(x@SD$env$corr.fixed)) as.data.frame(x@SD$env$corr.fix
 ### All stocks
 
 ```{r SB, fig.cap="Spawning output."}
-plot_S(x, by = "stock")
+plot_S(x, by = "total")
 ```
 
 ```{r B, fig.cap="Total biomass."}
-plot_B(x, by = "stock")
+plot_B(x, by = "total")
 ```
 
 ```{r FF, fig.cap="Instantaneous fishing mortality (per year)."}
