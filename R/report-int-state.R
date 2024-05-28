@@ -415,6 +415,8 @@ plot_selstock <- function(fit, s = 1, plot2d = c("contour", "filled.contour"), .
 
 #' @rdname plot-MARS-state
 #' @aliases plot_N
+#' @param m Integer for the corresponding season
+#' @param r Integer for the corresponding region
 #' @param ... Other argument to the base graphics function
 #' @details
 #' - `plot_N` reports total abundance at age

@@ -67,6 +67,10 @@ plot_recdist(fit)
 
 \item{...}{Other argument to the base graphics function}
 
+\item{m}{Integer for the corresponding season}
+
+\item{r}{Integer for the corresponding region}
+
 \item{y}{Integer, year for plotting the movement matrix}
 
 \item{a}{Integer, corresponding age for plotting the movement matrix}
