@@ -158,7 +158,6 @@ resid_comp <- function(obs, pred, like, ...) {
     "dirmult1" = dots$N * (obs_prob - pred_prob),
     "dirmult2" = dots$N * (obs_prob - pred_prob),
     "lognormal" = ifelse(obs > 0, log(obs_prob/pred_prob), NA),
-    "logitnormal" = NA,
     NA
   )
 
@@ -169,7 +168,6 @@ resid_comp <- function(obs, pred, like, ...) {
     "dirmult1" = dots$N * pred_prob * (1 - pred_prob) * dots$N * (1 + dots$theta) / (1 + dots$theta * dots$N),
     "dirmult2" = dots$N * pred_prob * (1 - pred_prob) * (dots$N + dots$theta) / (1 + dots$theta),
     "lognormal" = 1/pred_prob,
-    "logitnormal" = NA,
     NA
   )
 
@@ -236,7 +234,14 @@ plot_resid_CAA <- function(fit, f = 1, r = 1, do_hist = FALSE, ...) {
   year <- make_yearseason(dat@Dlabel@year, dat@Dmodel@nm)
   x <- collapse_yearseason(x)
 
-  .plot_resid_comp(year, dat@Dlabel@age, x, xlab = "Year", ylab = "Age", do_hist = do_hist)
+  ind <- rowSums(x, na.rm = TRUE) != 0
+  yeardiff <- c(diff(year), diff(year)[1])
+
+  .plot_resid_comp(
+    year[ind], dat@Dlabel@age, x[ind, , drop = FALSE],
+    xlab = "Year", ylab = "Age", do_hist = do_hist,
+    xdiff = yeardiff[ind]
+  )
 }
 
 
@@ -253,7 +258,14 @@ plot_resid_CAL <- function(fit, f = 1, r = 1, do_hist = FALSE, ...) {
   year <- make_yearseason(dat@Dlabel@year, dat@Dmodel@nm)
   x <- collapse_yearseason(x)
 
-  .plot_resid_comp(year, dat@Dmodel@lmid, x, xlab = "Year", ylab = "Length", do_hist = do_hist)
+  ind <- rowSums(x, na.rm = TRUE) != 0
+  yeardiff <- c(diff(year), diff(year)[1])
+
+  .plot_resid_comp(
+    year[ind], dat@Dmodel@lmid, x[ind, , drop = FALSE],
+    xlab = "Year", ylab = "Length", do_hist = do_hist,
+    xdiff = yeardiff[ind]
+  )
 }
 
 plot_resid_IAA <- function(fit, i = 1, do_hist = FALSE, ...) {
@@ -269,7 +281,14 @@ plot_resid_IAA <- function(fit, i = 1, do_hist = FALSE, ...) {
   year <- make_yearseason(dat@Dlabel@year, dat@Dmodel@nm)
   x <- collapse_yearseason(x)
 
-  .plot_resid_comp(year, dat@Dlabel@age, x, xlab = "Year", ylab = "Age", do_hist = do_hist)
+  ind <- rowSums(x, na.rm = TRUE) != 0
+  yeardiff <- c(diff(year), diff(year)[1])
+
+  .plot_resid_comp(
+    year[ind], dat@Dlabel@age, x[ind, , drop = FALSE],
+    xlab = "Year", ylab = "Age", do_hist = do_hist,
+    xdiff = yeardiff[ind]
+  )
 }
 
 plot_resid_IAL <- function(fit, i = 1, do_hist = FALSE, ...) {
@@ -285,12 +304,19 @@ plot_resid_IAL <- function(fit, i = 1, do_hist = FALSE, ...) {
   year <- make_yearseason(dat@Dlabel@year, dat@Dmodel@nm)
   x <- collapse_yearseason(x)
 
-  .plot_resid_comp(year, dat@Dmodel@lmid, x, xlab = "Year", ylab = "Length", do_hist = do_hist)
+  ind <- rowSums(x, na.rm = TRUE) != 0
+  yeardiff <- c(diff(year), diff(year)[1])
+
+  .plot_resid_comp(
+    year[ind], dat@Dmodel@lmid, x[ind, , drop = FALSE],
+    xlab = "Year", ylab = "Length", do_hist = do_hist,
+    xdiff = yeardiff[ind]
+  )
 }
 
 #' @importFrom graphics hist
 .plot_resid_comp <- function(x = 1:nrow(z), y = 1:ncol(z), z, xlab = "Year", ylab = "Age", zmax = 2,
-                             do_hist = FALSE) {
+                             do_hist = FALSE, ydiff, xdiff) {
 
   if (all(is.na(z))) return(invisible())
   if (do_hist) return(hist(z, xlab = "Residuals", main = ""))
@@ -300,10 +326,15 @@ plot_resid_IAL <- function(fit, i = 1, do_hist = FALSE, ...) {
   cols <- hcl.colors(length(zlegend), palette = "Blue-Red 2", alpha = 1) %>%
     structure(names = zlegend)
 
-  ydiff <- diff(y)
-  ydiff <- c(ydiff, ydiff[1])
-  xdiff <- diff(x)
-  xdiff <- c(xdiff, xdiff[1])
+  if (missing(ydiff)) {
+    ydiff <- diff(y)
+    ydiff <- c(ydiff, ydiff[1])
+  }
+
+  if (missing(xdiff)) {
+    xdiff <- diff(x)
+    xdiff <- c(xdiff, xdiff[1])
+  }
 
   border <- ifelse(any(xdiff < 0.5), NA, "grey60")
   rect_diff <- ifelse(any(xdiff < 0.5), 0.475, 0.5)
