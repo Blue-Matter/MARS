@@ -99,7 +99,7 @@ plot_index <- function(fit, i = 1, zoom = FALSE) {
     lines(year, ipred, lwd = 2, col = 2, typ = ifelse(length(year) > 10, "l", "o"))
   }
 
-  invisible()
+  invisible(data.frame(year = year, obs = iobs, pred = ipred, lwr = ilower, upr = iupper, name = iname))
 }
 
 
