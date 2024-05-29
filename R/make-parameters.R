@@ -328,7 +328,7 @@ make_map <- function(p, MARSdata, map = list(),
     if (is.null(map$t_h_s)) {
       message_info("Estimating t_h_s (steepness), starting value = ", paste(h_s, collapse = ", "))
     } else {
-      message_info("Starting steepnes = ", paste(h_s, collapse = ", "))
+      message_info("Starting steepness = ", paste(h_s, collapse = ", "))
       if (any(is.na(map$t_h_s))) {
         message_info("Fixed for stock ", paste(which(is.na(map$t_h_s)), collapse = ", "))
       }
@@ -633,12 +633,14 @@ make_map <- function(p, MARSdata, map = list(),
       }
 
       if (grepl("logistic", Dfishery@sel_f[bb])) {
+        sel5 <- -sqrt(-log(0.05, 2)) * fsel_start[2, bb] + fsel_start[1, bb]
         message_info("   Selectivity start values: full sel = ", round(fsel_start[1, bb], 2),
-                     ", ascending limb SD = ", round(fsel_start[2, bb], 2))
+                     ", ascending limb SD = ", round(fsel_start[2, bb], 2), " (5% sel = ", round(sel5, 2), ")")
       }
       if (grepl("dome", Dfishery@sel_f[bb])) {
+        sel5 <- -sqrt(-log(0.05, 2)) * fsel_start[2, bb] + fsel_start[1, bb]
         message_info("   Selectivity start values: full sel = ", round(fsel_start[1, bb], 2),
-                     ", ascending limb SD = ", round(fsel_start[2, bb], 2),
+                     ", ascending limb SD = ", round(fsel_start[2, bb], 2), " (5% sel = ", round(sel5, 2), ")",
                      ", descending limb SD = ", round(fsel_start[3, bb], 2))
       }
       message_info("\n")
@@ -687,12 +689,14 @@ make_map <- function(p, MARSdata, map = list(),
       }
 
       if (grepl("logistic", sel_i)) {
+        sel5 <- -sqrt(-log(0.05, 2)) * isel_start[2, bb] + isel_start[1, bb]
         message_info("   Selectivity start values: full sel = ", round(isel_start[1, i], 2),
-                     ", ascending limb SD = ", round(isel_start[2, i], 2))
+                     ", ascending limb SD = ", round(isel_start[2, i], 2), " (5% sel = ", round(sel5, 2), ")")
       }
       if (grepl("dome", sel_i)) {
+        sel5 <- -sqrt(-log(0.05, 2)) * isel_start[2, bb] + isel_start[1, bb]
         message_info("   Selectivity start values: full sel = ", round(isel_start[1, i], 2),
-                     ", ascending limb SD = ", round(isel_start[2, i], 2),
+                     ", ascending limb SD = ", round(isel_start[2, i], 2),  " (5% sel = ", round(sel5, 2), ")",
                      ", descending limb SD = ", round(isel_start[3, i], 2))
       }
     }
