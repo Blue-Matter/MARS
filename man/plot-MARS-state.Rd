@@ -34,7 +34,13 @@ plot_self(fit, f = 1)
 
 plot_seli(fit, i = 1)
 
-plot_selstock(fit, s = 1, plot2d = c("contour", "filled.contour"), ...)
+plot_selstock(
+  fit,
+  s = 1,
+  by = c("annual", "season"),
+  plot2d = c("contour", "filled.contour"),
+  ...
+)
 
 plot_N(fit, m = 1, r, s = 1, plot2d = c("contour", "filled.contour"), ...)
 
@@ -49,7 +55,7 @@ plot_recdist(fit)
 \arguments{
 \item{fit}{\linkS4class{MARSassess} object returned by \code{\link[=fit_MARS]{fit_MARS()}}}
 
-\item{by}{Character to indicate dimension for multivariate plots}
+\item{by}{Character to indicate whether to calculate selectivity from F per year or per season}
 
 \item{r}{Integer for the corresponding region}
 

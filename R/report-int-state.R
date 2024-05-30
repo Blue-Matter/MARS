@@ -447,12 +447,15 @@ plot_seli <- function(fit, i = 1) {
 #' @rdname plot-MARS-state
 #' @aliases plot_selstock
 #' @param plot2d Character, plotting function for either a [contour()] or [filled.contour()] plot
-#' @param ... Other argument to the base graphics function
+#' @param by Character to indicate whether to calculate selectivity from F per year or per season
+#' @param ... Other arguments to the base graphics function
 #' @details
 #' - `plot_selstock` plots the realized selectivity from total catch and total abundance at age
 #' @export
 #' @importFrom graphics contour filled.contour
-plot_selstock <- function(fit, s = 1, plot2d = c("contour", "filled.contour"), ...) {
+plot_selstock <- function(fit, s = 1, by = c("annual", "season"), plot2d = c("contour", "filled.contour"), ...) {
+
+  by <- match.arg(by)
 
   plot2d <- match.arg(plot2d)
   plot2d <- match.fun(plot2d)
@@ -461,9 +464,28 @@ plot_selstock <- function(fit, s = 1, plot2d = c("contour", "filled.contour"), .
   year <- dat@Dlabel@year
   age <- dat@Dlabel@age
 
-  sel_ya <- fit@report$F_yas[, , s] %>%
-    apply(1, function(x) x/max(x)) %>%
-    t()
+  nm <- max(length(dat@Dlabel@season), 1)
+
+  if (by == "annual") {
+    sel_ya <- fit@report$F_yas[, , s] %>%
+      apply(1, function(x) x/max(x)) %>%
+      t()
+  } else if (by == "season" && nm > 1) {
+
+    year <- make_yearseason(year, nm)
+    F_yma <- sapply2(1:dat@Dmodel@na, function(a) {
+      sapply(1:nm, function(m) {
+        sapply(1:dat@Dmodel@ny, function(y) {
+          N <- sum(fit@report$N_ymars[y, m, a, , s])
+          CN <- sum(fit@report$CN_ymafrs[y, m, a, , , s])
+          calc_summary_F(M = fit@report$M_yas[y, a, s]/nm, N = N, CN = CN, Fmax = 100)
+        })
+      })
+    })
+    sel_ya <- collapse_yearseason(F_yma) %>%
+      apply(1, function(x) x/max(x)) %>%
+      t()
+  }
 
   plot2d(x = year, y = age, xlab = "Year", ylab = "Age", z = sel_ya, levels = seq(0, 1, 0.1), ...)
 
