@@ -237,7 +237,7 @@ make_rmd_stock_region <- function(s, sname) {
 
 make_rmd_ind_stock <- function(s, sname) {
   rmd <- c(
-    paste0("```{r selstock-s", s, ", fig.cap=\"Aggregate annual selectivity of ", sname, " from total annual catch at age and abundance at age at the beginning of the year.\"}"),
+    paste0("```{r selstock-s", s, ", fig.cap=\"Realized annual selectivity of ", sname, " from total annual catch at age and abundance at age at the beginning of the year.\"}"),
     paste0("plot_selstock(x, s = ", s, ", plot2d = \"filled.contour\")"),
     "```",
     "",

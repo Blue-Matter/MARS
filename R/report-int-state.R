@@ -449,7 +449,7 @@ plot_seli <- function(fit, i = 1) {
 #' @param plot2d Character, plotting function for either a [contour()] or [filled.contour()] plot
 #' @param ... Other argument to the base graphics function
 #' @details
-#' - `plot_selstock` plots effective selectivity from total catch and total abundance at age
+#' - `plot_selstock` plots the realized selectivity from total catch and total abundance at age
 #' @export
 #' @importFrom graphics contour filled.contour
 plot_selstock <- function(fit, s = 1, plot2d = c("contour", "filled.contour"), ...) {

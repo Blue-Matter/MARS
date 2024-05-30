@@ -115,7 +115,7 @@ A set of functions to plot state variables (biomass, recruitment time series, et
 }
 
 \itemize{
-\item \code{plot_selstock} plots effective selectivity from total catch and total abundance at age
+\item \code{plot_selstock} plots the realized selectivity from total catch and total abundance at age
 }
 
 \itemize{
