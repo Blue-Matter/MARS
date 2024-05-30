@@ -28,7 +28,7 @@ plot_SRR(fit, s = 1, phi = TRUE)
 
 plot_Rdev(fit, s = 1, log = TRUE)
 
-plot_Fstock(fit, s)
+plot_Fstock(fit, s, by = c("annual", "season"))
 
 plot_self(fit, f = 1)
 

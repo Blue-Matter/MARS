@@ -288,29 +288,72 @@ plot_Rdev <- function(fit, s = 1, log = TRUE) {
 #' - `plot_Fstock` plots apical instantaneous fishing mortality (per year) by stock
 #'
 #' @export
-plot_Fstock <- function(fit, s) {
-  var <- "F_yas"
+plot_Fstock <- function(fit, s, by = c("annual", "season")) {
+  by <- match.arg(by)
 
-  Dlabel <- get_MARSdata(fit)@Dlabel
-  year <- Dlabel@year
+  dat <- get_MARSdata(fit)
+  year <- dat@Dlabel@year
+  nm <- dat@Dmodel@nm
 
-  if (missing(s)) {
-    x <- fit@report[[var]]
-    name <- Dlabel@stock
-    ylab <- "Apical fishing mortality"
-  } else {
-    x <- fit@report[[var]][, , s, drop = FALSE]
-    name <- Dlabel@stock[s]
-    ylab <- paste(name, "apical fishing mortality")
+  unit <- ifelse(by == "annual", "year", "season")
+
+  if (by == "annual") {
+    var <- "F_yas"
+    if (missing(s)) {
+      x <- fit@report[[var]]
+    } else {
+      x <- fit@report[[var]][, , s, drop = FALSE]
+    }
+    x <- apply(x, c(1, 3), max)
+
+  } else if (by == "season" && nm > 1) {
+    if (missing(s)) {
+      F_ymas <- sapply2(1:dat@Dmodel@ns, function(s) {
+        sapply2(1:dat@Dmodel@na, function(a) {
+          sapply(1:nm, function(m) {
+            sapply(1:dat@Dmodel@ny, function(y) {
+              N <- sum(fit@report$N_ymars[y, m, a, , s])
+              CN <- sum(fit@report$CN_ymafrs[y, m, a, , , s])
+              calc_summary_F(M = fit@report$M_yas[y, a, s]/nm, N = N, CN = CN, Fmax = 100)
+            })
+          })
+        })
+      })
+    } else {
+      F_ymas <- sapply2(1, function(...) {
+        sapply2(1:dat@Dmodel@na, function(a) {
+          sapply(1:nm, function(m) {
+            sapply(1:dat@Dmodel@ny, function(y) {
+              N <- sum(fit@report$N_ymars[y, m, a, , s])
+              CN <- sum(fit@report$CN_ymafrs[y, m, a, , , s])
+              calc_summary_F(M = fit@report$M_yas[y, a, s]/nm, N = N, CN = CN, Fmax = 100)
+            })
+          })
+        })
+      })
+    }
+    x <- apply(F_ymas, c(1, 2, 4), max) %>%
+      collapse_yearseason()
+
+    year <- make_yearseason(year, nm)
   }
 
-  x <- apply(x, c(1, 3), max)
-  x[is.infinite(x)] <- NA
+  if (exists("x", inherits = FALSE)) {
+    x[is.infinite(x)] <- NA
 
-  color <- make_color(ncol(x), "stock")
-  matplot(year, x, xlab = "Year", ylab = ylab, typ = "o", col = color, pch = 16,
-          ylim = c(0, 1.1) * range(x, na.rm = TRUE), zero_line = TRUE)
-  if (ncol(x) > 1) legend("topleft", legend = name, col = color, lwd = 1, pch = 16, horiz = TRUE)
+    if (missing(s)) {
+      name <- dat@Dlabel@stock
+      ylab <- paste0("Apical fishing mortality\n(per ", unit, ")")
+    } else {
+      name <- dat@Dlabel@stock[s]
+      ylab <- paste0(name, " apical fishing mortality\n(per ", unit, ")")
+    }
+
+    color <- make_color(ncol(x), "stock")
+    matplot(year, x, xlab = "Year", ylab = ylab, typ = "o", col = color, pch = 16,
+            ylim = c(0, 1.1) * range(x, na.rm = TRUE), zero_line = TRUE)
+    if (ncol(x) > 1) legend("topleft", legend = name, col = color, lwd = 1, pch = 16, horiz = TRUE)
+  }
 
   invisible()
 }
