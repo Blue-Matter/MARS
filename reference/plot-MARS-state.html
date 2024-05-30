@@ -74,7 +74,13 @@
 <span></span>
 <span><span class="fu">plot_seli</span><span class="op">(</span><span class="va">fit</span>, i <span class="op">=</span> <span class="fl">1</span><span class="op">)</span></span>
 <span></span>
-<span><span class="fu">plot_selstock</span><span class="op">(</span><span class="va">fit</span>, s <span class="op">=</span> <span class="fl">1</span>, plot2d <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"contour"</span>, <span class="st">"filled.contour"</span><span class="op">)</span>, <span class="va">...</span><span class="op">)</span></span>
+<span><span class="fu">plot_selstock</span><span class="op">(</span></span>
+<span>  <span class="va">fit</span>,</span>
+<span>  s <span class="op">=</span> <span class="fl">1</span>,</span>
+<span>  by <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"annual"</span>, <span class="st">"season"</span><span class="op">)</span>,</span>
+<span>  plot2d <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"contour"</span>, <span class="st">"filled.contour"</span><span class="op">)</span>,</span>
+<span>  <span class="va">...</span></span>
+<span><span class="op">)</span></span>
 <span></span>
 <span><span class="fu">plot_N</span><span class="op">(</span><span class="va">fit</span>, m <span class="op">=</span> <span class="fl">1</span>, <span class="va">r</span>, s <span class="op">=</span> <span class="fl">1</span>, plot2d <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"contour"</span>, <span class="st">"filled.contour"</span><span class="op">)</span>, <span class="va">...</span><span class="op">)</span></span>
 <span></span>
@@ -94,7 +100,7 @@
 
 
 <dt>by</dt>
-<dd><p>Character to indicate dimension for multivariate plots</p></dd>
+<dd><p>Character to indicate whether to calculate selectivity from F per year or per season</p></dd>
 
 
 <dt>r</dt>
