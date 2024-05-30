@@ -40,11 +40,14 @@ MARS is entirely written in R and uses automatic differentiation enabled by RTMB
 
 ## Model fitting
 
-Model fitting first starts with a S4 object of class `MARSdata`, the various slots of which identify the various settings that control the model structure, and the dimensions of the various data series. See `help("MARSdata-class")`. `check_data()` scans the object 
+Model fitting first starts with a S4 object of class `MARSdata`, with various slots to specify the model structure and data. See `help("MARSdata-class")`. `check_data()` scans the object and checks if the arrays are of the correct dimension and the necessary ancillary information are provided, e.g., sample sizes for compositional data.
 
-Once the data object is set up, we can create the parameter object for RTMB with `make_parameters()`. 
-Various arguments aid the user for fixing parameters.
-Bespoke parameter structure, such as further mirroring of parameters, can be performed afterwards and can be checked with `check_parameters()`.
+Once the data object is set up, we can create the parameter object for RTMB with `make_parameters()`.
+A list of starting values can be provided to override system defaults.
+This function also calls `make_map()` which will create a list that specifies which parameters are fixed and mirrored.
+A list of mapped parameters can be provided to override system defaults, with additional arguments as a shortcut.
+
+The parameter and map set-up is finally checked with `check_parameters()` which reports the structure of the model to the console including start values and the parameters to be estimated.
 
 These objects can then be passed to `fit_MARS()` which creates and fits the model:
 
@@ -76,6 +79,9 @@ knitr::include_graphics("../man/figures/intro-index-1.png")
 ```
 
 *Example figure that compares the fit in the observed and predicted index.*
+
+The reporting function uses a variety of `plot_*()` functions that can be accessed by the user. 
+View the options with `help("plot-MARS-data")` and `help("plot-MARS-state")`.
 
 ## Diagnostics
 
