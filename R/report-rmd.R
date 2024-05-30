@@ -210,54 +210,105 @@ make_rmd_survey <- function(i, iname) {
   return(rmd)
 }
 
-make_rmd_stock_region <- function(s, sname) {
-  rmd <- c(
-    ifelse(s == 1, "### By region\n\n", ""),
-    paste0("```{r SB-r", s, ", fig.cap=\"Spawning output of ", sname, " by region at the spawning season.\"}"),
-    paste0("plot_S(x, by = \"region\", s = ", s, ")"),
-    "```",
-    "",
-    paste0("```{r SB-rp", s, ", fig.cap=\"Proportion spawning output of ", sname, " by region.\"}"),
-    "plot_S(x, by = \"region\", s = ", s, ", prop = TRUE)",
-    "```",
-    "",
-    paste0("```{r B-r", s, ", fig.cap=\"Total biomass of ", sname, " by region.\"}"),
-    paste0("plot_B(x, by = \"region\", s = ", s, ")"),
-    "```",
-    "",
-    paste0("```{r B-rp", s, ", fig.cap=\"Proportion biomass of ", sname, " by region.\"}"),
-    "plot_B(x, by = \"region\", s = ", s, ", prop = TRUE)",
-    "```",
-    ""
-  )
+make_rmd_stock_region <- function(s, sname, ns = 1) {
+
+  if (ns > 1) {
+    rmd <- c(
+      ifelse(s == 1, "### By region\n\n", ""),
+      paste0("```{r SB-r", s, ", fig.cap=\"Spawning output of ", sname, " by region at the spawning season.\"}"),
+      paste0("plot_S(x, by = \"region\", s = ", s, ")"),
+      "```",
+      "",
+      paste0("```{r SB-rp", s, ", fig.cap=\"Proportion spawning output of ", sname, " by region.\"}"),
+      "plot_S(x, by = \"region\", s = ", s, ", prop = TRUE)",
+      "```",
+      "",
+      paste0("```{r B-r", s, ", fig.cap=\"Total biomass of ", sname, " by region.\"}"),
+      paste0("plot_B(x, by = \"region\", s = ", s, ")"),
+      "```",
+      "",
+      paste0("```{r B-rp", s, ", fig.cap=\"Proportion biomass of ", sname, " by region.\"}"),
+      "plot_B(x, by = \"region\", s = ", s, ", prop = TRUE)",
+      "```",
+      ""
+    )
+  } else {
+    rmd <- c(
+      ifelse(s == 1, "### By region\n\n", ""),
+      paste0("```{r SB-r", s, ", fig.cap=\"Spawning output by region at the spawning season.\"}"),
+      paste0("plot_S(x, by = \"region\", s = ", s, ")"),
+      "```",
+      "",
+      paste0("```{r SB-rp", s, ", fig.cap=\"Proportion spawning output by region.\"}"),
+      "plot_S(x, by = \"region\", s = ", s, ", prop = TRUE)",
+      "```",
+      "",
+      paste0("```{r B-r", s, ", fig.cap=\"Total biomass by region.\"}"),
+      paste0("plot_B(x, by = \"region\", s = ", s, ")"),
+      "```",
+      "",
+      paste0("```{r B-rp", s, ", fig.cap=\"Proportion biomass by region.\"}"),
+      "plot_B(x, by = \"region\", s = ", s, ", prop = TRUE)",
+      "```",
+      ""
+    )
+  }
+
+
 
   return(rmd)
 }
 
 
-make_rmd_ind_stock <- function(s, sname) {
-  rmd <- c(
-    paste0("```{r selstock-annual-s", s, ", fig.cap=\"Realized annual selectivity of ", sname, " from total annual catch at age and abundance at age at the beginning of the year.\"}"),
-    paste0("plot_selstock(x, s = ", s, ", plot2d = \"filled.contour\")"),
-    "```",
-    "",
-    paste0("```{r selstock-season-s", s, ", fig.cap=\"Realized seasonal selectivity of ", sname, " from total catch at age and abundance at age at the beginning of the time step.\"}"),
-    paste0("plot_selstock(x, s = ", s, ", by = \"season\", plot2d = \"filled.contour\")"),
-    "```",
-    "",
-    paste0("```{r N-s", s, ", fig.cap=\"Total abundance at age of ", sname, " at the beginning of the year.\"}"),
-    paste0("plot_N(x, s = ", s, ", plot2d = \"filled.contour\")"),
-    "```",
-    "",
-    paste0("```{r Rdev-s", s, ", fig.cap=\"Recruitment deviations of ", sname, ".\"}"),
-    paste0("plot_Rdev(x, s = ", s, ")"),
-    "```",
-    "",
-    paste0("```{r SRR-s", s, ", fig.cap=\"Stock recruit relationship, and historical stock-recruit pairs, of ", sname, ". The dotted line is the unfished replacement line.\"}"),
-    paste0("plot_SRR(x, s = ", s, ")"),
-    "```",
-    ""
-  )
+make_rmd_ind_stock <- function(s, sname, ns = 1) {
+  if (ns > 1) {
+    rmd <- c(
+      paste0("```{r selstock-annual-s", s, ", fig.cap=\"Realized annual selectivity of ", sname, " from total annual catch at age and abundance at age at the beginning of the year.\"}"),
+      paste0("plot_selstock(x, s = ", s, ", plot2d = \"filled.contour\")"),
+      "```",
+      "",
+      paste0("```{r selstock-season-s", s, ", fig.cap=\"Realized seasonal selectivity of ", sname, " from total catch at age and abundance at age at the beginning of the time step.\"}"),
+      paste0("plot_selstock(x, s = ", s, ", by = \"season\", plot2d = \"filled.contour\")"),
+      "```",
+      "",
+      paste0("```{r N-s", s, ", fig.cap=\"Total abundance at age of ", sname, " at the beginning of the year.\"}"),
+      paste0("plot_N(x, s = ", s, ", plot2d = \"filled.contour\")"),
+      "```",
+      "",
+      paste0("```{r Rdev-s", s, ", fig.cap=\"Recruitment deviations of ", sname, ".\"}"),
+      paste0("plot_Rdev(x, s = ", s, ")"),
+      "```",
+      "",
+      paste0("```{r SRR-s", s, ", fig.cap=\"Stock recruit relationship, and historical stock-recruit pairs, of ", sname, ". The dotted line is the unfished replacement line.\"}"),
+      paste0("plot_SRR(x, s = ", s, ")"),
+      "```",
+      ""
+    )
+  } else {
+    rmd <- c(
+      paste0("```{r selstock-annual-s", s, ", fig.cap=\"Realized annual selectivity from total annual catch at age and abundance at age at the beginning of the year.\"}"),
+      paste0("plot_selstock(x, s = ", s, ", plot2d = \"filled.contour\")"),
+      "```",
+      "",
+      paste0("```{r selstock-season-s", s, ", fig.cap=\"Realized seasonal selectivity from total catch at age and abundance at age at the beginning of the time step.\"}"),
+      paste0("plot_selstock(x, s = ", s, ", by = \"season\", plot2d = \"filled.contour\")"),
+      "```",
+      "",
+      paste0("```{r N-s", s, ", fig.cap=\"Total abundance at age at the beginning of the year.\"}"),
+      paste0("plot_N(x, s = ", s, ", plot2d = \"filled.contour\")"),
+      "```",
+      "",
+      paste0("```{r Rdev-s", s, ", fig.cap=\"Recruitment deviations.\"}"),
+      paste0("plot_Rdev(x, s = ", s, ")"),
+      "```",
+      "",
+      paste0("```{r SRR-s", s, ", fig.cap=\"Stock recruit relationship, and historical stock-recruit pairs. The dotted line is the unfished replacement line.\"}"),
+      paste0("plot_SRR(x, s = ", s, ")"),
+      "```",
+      ""
+    )
+  }
+
 
   return(rmd)
 }

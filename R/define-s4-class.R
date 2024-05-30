@@ -304,13 +304,15 @@ report.MARSassess <- function(object, name, filename = "MARS", dir = tempdir(), 
   }
 
   summarystock_ind <- grep("*ADD IND STOCK RMD*", rmd)
-  rmd_split[[summarystock_ind]] <- mapply(make_rmd_ind_stock, s = 1:ns, sname = sname) %>% as.character()
+  rmd_split[[summarystock_ind]] <- mapply(make_rmd_ind_stock, s = 1:ns, sname = sname, MoreArgs = list(ns = ns)) %>%
+    as.character()
 
   stock_ind <- grep("*ADD STOCK REGION RMD*", rmd)
   mov_ind <- grep("*ADD MOVEMENT RMD*", rmd)
   if (nr > 1) {
     year <- dat@Dlabel@year
-    rmd_split[[stock_ind]] <- mapply(make_rmd_stock_region, s = 1:ns, sname = sname) %>% as.character()
+    rmd_split[[stock_ind]] <- mapply(make_rmd_stock_region, s = 1:ns, sname = sname, MoreArgs = list(ns = ns)) %>%
+      as.character()
 
     if (is.null(dots$ymov)) dots$ymov <- dat@Dmodel@ny
     if (is.null(dots$amov)) dots$amov <- 2

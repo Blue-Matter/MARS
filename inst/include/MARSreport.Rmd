@@ -32,10 +32,17 @@ Summary <- utils::capture.output(x)
 as.data.frame(Summary)
 ```
 
-### Estimates 
+### Parameter estimates 
 
 ```{r sdreport}
-if (length(x@SD)) summary(x) %>% round(4) %>% as.data.frame()
+if (length(x@SD)) summary(x, select = c("fixed", "random")) %>% round(4) %>% as.data.frame()
+```
+
+
+### Derived quantities
+
+```{r sdreport-derived}
+if (length(x@SD)) summary(x, select = "report") %>% round(4) %>% as.data.frame()
 ```
 
 ### Correlation
@@ -54,13 +61,13 @@ if (length(x@SD) && length(x@SD$env$corr.fixed)) as.data.frame(x@SD$env$corr.fix
 
 <!-- *ADD SC RMD* -->
 
-## Close-kin
+<!-- *ADD CK RMD* -->
 
 <!-- *ADD TAG MOV RMD* -->
 
 ## Stock dynamics {.tabset}
 
-### All stocks
+### Summary
 
 ```{r SB, fig.cap="Spawning output."}
 plot_S(x, by = "total")
