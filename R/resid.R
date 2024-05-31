@@ -8,7 +8,7 @@
 #' @param vars Character vector to indicate which residuals will be calculated.
 #' Available choices from [MARSdata-class] object are:
 #' "Cinit_mfr", "Cobs_ymfr", "CAAobs_ymafr", "CALobs_ymlfr",
-#' "Iobs_ymi", "IAAobs_ymai", "IALobs_ymli"
+#' "Iobs_ymi", "IAAobs_ymai", "IALobs_ymli", "SC_ymafrs"
 #' @param type Character, 'response' for the `log(observed/predicted)` values or 'pearson' for calculating Z-scores.
 #' Composition data always use 'pearson'.
 #' @param ... Not used
@@ -20,7 +20,7 @@
 residuals.MARSassess <- function(object, vars, type = c("response", "pearson"), ...) {
 
   vars_choices <- c("Cinit_mfr", "Cobs_ymfr", "CAAobs_ymafr", "CALobs_ymlfr",
-                    "Iobs_ymi", "IAAobs_ymai", "IALobs_ymli")
+                    "Iobs_ymi", "IAAobs_ymai", "IALobs_ymli", "SC_ymafrs")
   if (missing(vars)) vars <- vars_choices
   vars <- match.arg(vars, choices = vars_choices, several.ok = TRUE)
   type <- match.arg(type)
@@ -60,12 +60,14 @@ residuals.MARSassess <- function(object, vars, type = c("response", "pearson"), 
       for(m in 1:dat@Dmodel@nm) {
         for(f in 1:dat@Dfishery@nf) {
           for(r in 1:dat@Dmodel@nr) {
+            pred_i <- pred[y, m, , f, r]
             res$CAAobs_ymafr[y, m, , f, r] <- resid_comp(
               obs = dat@Dfishery@CAAobs_ymafr[y, m, , f, r],
-              pred = pred[y, m, , f, r],
+              pred = pred_i,
               like = dat@Dfishery@fcomp_like,
               N = dat@Dfishery@CAAN_ymfr[y, m, f, r],
-              theta = dat@Dfishery@CAAtheta_f[f]
+              theta = dat@Dfishery@CAAtheta_f[f],
+              stdev = sum(pred_i)/pred_i
             )
           }
         }
@@ -81,12 +83,14 @@ residuals.MARSassess <- function(object, vars, type = c("response", "pearson"), 
       for(m in 1:dat@Dmodel@nm) {
         for(f in 1:dat@Dfishery@nf) {
           for(r in 1:dat@Dmodel@nr) {
+            pred_i <- pred[y, m, , f, r]
             res$CALobs_ymlfr[y, m, , f, r] <- resid_comp(
               obs = dat@Dfishery@CALobs_ymlfr[y, m, , f, r],
-              pred = pred[y, m, , f, r],
+              pred = pred_i,
               like = dat@Dfishery@fcomp_like,
               N = dat@Dfishery@CALN_ymfr[y, m, f, r],
-              theta = dat@Dfishery@CALtheta_f[f]
+              theta = dat@Dfishery@CALtheta_f[f],
+              stdev = sum(pred_i)/pred_i
             )
           }
         }
@@ -109,12 +113,14 @@ residuals.MARSassess <- function(object, vars, type = c("response", "pearson"), 
     for(y in 1:dat@Dmodel@ny) {
       for(m in 1:dat@Dmodel@nm) {
         for(i in 1:dat@Dmodel@ni) {
+          pred_i <- pred[y, m, , i]
           res$IAAobs_ymai[y, m, , i] <- resid_comp(
             obs = dat@Dsurvey@IAAobs_ymai[y, m, , i],
-            pred = pred[y, m, , i],
+            pred = pred_i,
             like = dat@Dsurvey@icomp_like,
             N = dat@Dsurvey@IAAN_ymi[y, m, i],
-            theta = dat@Dsurvey@IAAtheta_i[i]
+            theta = dat@Dsurvey@IAAtheta_i[i],
+            stdev = sum(pred_i)/pred_i
           )
         }
       }
@@ -128,13 +134,40 @@ residuals.MARSassess <- function(object, vars, type = c("response", "pearson"), 
     for(y in 1:dat@Dmodel@ny) {
       for(m in 1:dat@Dmodel@nm) {
         for(i in 1:dat@Dmodel@ni) {
+          pred_i <- pred[y, m, , i]
           res$IALobs_ymli[y, m, , i] <- resid_comp(
             obs = dat@Dsurvey@IALobs_ymli[y, m, , i],
-            pred = pred[y, m, , i],
+            pred = pred_i,
             like = dat@Dsurvey@icomp_like,
             N = dat@Dsurvey@IALN_ymi[y, m, i],
-            theta = dat@Dsurvey@IALtheta_i[i]
+            theta = dat@Dsurvey@IALtheta_i[i],
+            stdev = sum(pred_i)/pred_i
           )
+        }
+      }
+    }
+  }
+
+  # Stock composition (at age) ----
+  if (any(vars == "SC_ymafrs") && length(dat@Dfishery@SC_ymafrs)) {
+    SC_ymafrs <- dat@Dfishery@SC_ymafrs
+    res$SC_ymafrs <- array(NA, dim(dat@Dfishery@SC_ymafrs))
+    pred <- object@report$SCpred_ymafrs
+    for(y in 1:dat@Dmodel@ny) {
+      for(m in 1:dat@Dmodel@nm) {
+        for(a in 1:dim(SC_ymafrs)[3]) {
+          for (f in 1:dim(SC_ymafrs)[4]) {
+            for (r in 1:dat@Dmodel@nr) {
+              res$SC_ymafrs[y, m, a, f, r, ] <- resid_comp(
+                obs = SC_ymafrs[y, m, a, f, r, ],
+                pred = pred[y, m, a, f, r, ],
+                like = dat@Dfishery@SC_like,
+                N = dat@Dfishery@SCN_ymafr[y, m, a, f, r],
+                theta = dat@Dfishery@SCtheta_f[f],
+                stdev = dat@Dfishery@SCstdev_ymafrs[y, m, a, f, r, ]
+              )
+            }
+          }
         }
       }
     }
@@ -167,7 +200,7 @@ resid_comp <- function(obs, pred, like, ...) {
     "multinomial" = dots$N * pred_prob * (1 - pred_prob),
     "dirmult1" = dots$N * pred_prob * (1 - pred_prob) * dots$N * (1 + dots$theta) / (1 + dots$theta * dots$N),
     "dirmult2" = dots$N * pred_prob * (1 - pred_prob) * (dots$N + dots$theta) / (1 + dots$theta),
-    "lognormal" = 1/pred_prob,
+    "lognormal" = dots$stdev * dots$stdev,
     NA
   )
 
@@ -244,6 +277,10 @@ plot_resid_CAA <- function(fit, f = 1, r = 1, do_hist = FALSE, ...) {
   )
 }
 
+plot_resid_SC <- function(fit, f = 1, r = 1, do_hist = FALSE, ...) {
+
+}
+
 
 plot_resid_CAL <- function(fit, f = 1, r = 1, do_hist = FALSE, ...) {
   vars <- "CALobs_ymlfr"
@@ -314,12 +351,43 @@ plot_resid_IAL <- function(fit, i = 1, do_hist = FALSE, ...) {
   )
 }
 
-#' @importFrom graphics hist
+plot_resid_SC <- function(fit, a = 1, f = 1, r = 1, do_hist = FALSE, ...) {
+  vars <- "SC_ymafrs"
+
+  dat <- get_MARSdata(fit)
+
+  res <- residuals(fit, vars = vars, ...)[[vars]]
+  if (is.null(res)) return(invisible())
+
+  x <- apply(res[, , a, f, r, , drop = FALSE], c(1, 2, 6), identity)
+
+  year <- make_yearseason(dat@Dlabel@year, dat@Dmodel@nm)
+  x <- collapse_yearseason(x)
+
+  ind <- rowSums(x, na.rm = TRUE) != 0
+  yeardiff <- c(diff(year), diff(year)[1])
+
+  .plot_resid_comp(
+    year[ind], dat@Dlabel@stock, x[ind, , drop = FALSE],
+    xlab = "Year", ylab = "Stock", do_hist = do_hist,
+    xdiff = yeardiff[ind]
+  )
+}
+
+#' @importFrom graphics hist box
 .plot_resid_comp <- function(x = 1:nrow(z), y = 1:ncol(z), z, xlab = "Year", ylab = "Age", zmax = 2,
                              do_hist = FALSE, ydiff, xdiff) {
 
   if (all(is.na(z))) return(invisible())
   if (do_hist) return(hist(z, xlab = "Residuals", main = ""))
+
+  if (is.character(y)) {
+    yval <- y
+    y <- 1:ncol(z)
+    yaxt <- "n"
+  } else {
+    yaxt <- "s"
+  }
 
   zz <- pmin(z, zmax) %>% pmax(-zmax) %>% round(2)
   zlegend <- seq(-zmax, zmax, 0.01)
@@ -339,7 +407,7 @@ plot_resid_IAL <- function(fit, i = 1, do_hist = FALSE, ...) {
   border <- ifelse(any(xdiff < 0.5), NA, "grey60")
   rect_diff <- ifelse(any(xdiff < 0.5), 0.475, 0.5)
 
-  plot(NULL, typ = "n", xlab = xlab, ylab = ylab, xlim = range(x), ylim = range(y))
+  plot(NULL, typ = "n", xlab = xlab, ylab = ylab, xlim = range(x), ylim = range(y), yaxt = yaxt)
   sapply(1:nrow(z), function(i) {
     if (any(!is.na(zz[i, ]))) {
       rect(xleft = x[i] - rect_diff * xdiff[i], xright = x[i] + rect_diff * xdiff[i],
@@ -351,6 +419,10 @@ plot_resid_IAL <- function(fit, i = 1, do_hist = FALSE, ...) {
   legend("topleft", legend = c(-zmax, -zmax/2, 0, zmax/2, zmax),
          col = "grey60", pt.cex = 1, pt.bg = cols[zlegend %in% c(-zmax, -zmax/2, 0, zmax/2, zmax)],
          pch = 22, horiz = TRUE)
+  if (yaxt == "n") {
+    axis(2, at = y, labels = yval)
+  }
+  box()
 
   invisible()
 }

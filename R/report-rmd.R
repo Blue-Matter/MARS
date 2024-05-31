@@ -1,7 +1,7 @@
 
 make_rmd_CAA <- function(f, r, fname, rname) {
   cap <- paste0("Observed (black) and predicted (red) catch at age for ", fname, " in ", rname)
-  cap2 <- paste0("Pearson (Z-score) residuals for the catch at age for ", fname, " in ", rname)
+  cap2 <- paste0("Z-score residuals for the catch at age for ", fname, " in ", rname)
   cap3 <- paste0("Residual histogram for the catch at age for ", fname, " in ", rname)
 
   rmd <- c(
@@ -30,7 +30,7 @@ make_rmd_CAA <- function(f, r, fname, rname) {
 
 make_rmd_CAL <- function(f, r, fname, rname) {
   cap <- paste0("Catch at length for ", fname, " in ", rname)
-  cap2 <- paste0("Pearson (Z-score) residuals for the catch at length for ", fname, " in ", rname)
+  cap2 <- paste0("Z-score residuals for the catch at length for ", fname, " in ", rname)
   cap3 <- paste0("Residual histogram for the catch at length for ", fname, " in ", rname)
 
   rmd <- c(
@@ -185,7 +185,7 @@ make_rmd_survey <- function(i, iname) {
     paste0("plot_IAA(x, i = ", i, ")"),
     "```",
     "",
-    paste0("```{r IAA-resid-", i, ", fig.cap=\"Pearson residuals for the age composition from ", iname, ".\"}"),
+    paste0("```{r IAA-resid-", i, ", fig.cap=\"Z-score residuals for the age composition from ", iname, ".\"}"),
     paste0("plot_resid_IAA(x, i = ", i, ")"),
     "```",
     "",
@@ -197,7 +197,7 @@ make_rmd_survey <- function(i, iname) {
     paste0("plot_IAL(x, i = ", i, ")"),
     "```",
     "",
-    paste0("```{r IAL-resid-", i, ", fig.cap=\"Pearson residuals for the length composition from ", iname, ".\"}"),
+    paste0("```{r IAL-resid-", i, ", fig.cap=\"Z-score residuals for the length composition from ", iname, ".\"}"),
     paste0("plot_resid_IAL(x, i = ", i, ")"),
     "```",
     "",
@@ -330,6 +330,8 @@ make_rmd_mov <- function(s, y, a, yname, sname, header = TRUE) {
 make_rmd_SC <- function(f, a, r, fname, aname, rname, header = TRUE) {
   cap <- paste0("Predicted stock composition for ", fname, ", ", aname, ", in ", rname)
   cap2 <- paste0("Fits to stock composition (observed in black, predicted in red) for ", fname, ", ", aname, ", in ", rname)
+  cap3 <- paste0("Z-score residuals of for ", fname, ", ", aname, ", in ", rname)
+  cap4 <- paste0("Histogram of Z-score residuals for ", fname, ", ", aname, ", in ", rname)
 
   rmd <- c(
     ifelse(f == 1 && a == 1, paste0("### ", rname, " {.tabset}\n\n"), ""),
@@ -337,8 +339,16 @@ make_rmd_SC <- function(f, a, r, fname, aname, rname, header = TRUE) {
     paste0("plot_SC(x, ff = ", f, ", aa = ", a, ", r = ", r, ", prop = TRUE)"),
     "```",
     "",
-    paste0("```{r sc-fit-f", f, "a-", a, "-r", r, ", fig.cap=\"", cap, ".\"}"),
+    paste0("```{r sc-fit-f", f, "a-", a, "-r", r, ", fig.cap=\"", cap2, ".\"}"),
     paste0("plot_SC(x, ff = ", f, ", aa = ", a, ", r = ", r, ", prop = FALSE)"),
+    "```",
+    "",
+    paste0("```{r sc-resid-f", f, "a-", a, "-r", r, ", fig.cap=\"", cap3, ".\"}"),
+    paste0("plot_resid_SC(x, f = ", f, ", a = ", a, ", r = ", r, ")"),
+    "```",
+    "",
+    paste0("```{r sc-resid-hist-f", f, "a-", a, "-r", r, ", fig.cap=\"", cap4, ".\"}"),
+    paste0("plot_resid_SC(x, f = ", f, ", a = ", a, ", r = ", r, ", do_hist = TRUE)"),
     "```",
     ""
   )
