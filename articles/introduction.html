@@ -74,7 +74,7 @@
   <main id="main" class="col-md-9"><div class="page-header">
       <img src="" class="logo" alt=""><h1>Introduction</h1>
             
-            <h4 data-toc-skip class="date">2024-05-30</h4>
+            <h4 data-toc-skip class="date">2024-05-31</h4>
       
       <small class="dont-index">Source: <a href="https://github.com/Blue-Matter/MARS/blob/HEAD/vignettes/introduction.Rmd" class="external-link"><code>vignettes/introduction.Rmd</code></a></small>
       <div class="d-none name"><code>introduction.Rmd</code></div>
@@ -128,15 +128,22 @@ enabled by RTMB for model fitting.</p>
 <h3 id="model-fitting">Model fitting<a class="anchor" aria-label="anchor" href="#model-fitting"></a>
 </h3>
 <p>Model fitting first starts with a S4 object of class
-<code>MARSdata</code>, the various slots of which identify the various
-settings that control the model structure, and the dimensions of the
-various data series. See <code><a href="../reference/MARSdata-class.html">help("MARSdata-class")</a></code>.
-<code><a href="../reference/check_data.html">check_data()</a></code> scans the object</p>
+<code>MARSdata</code>, with various slots to specify the model structure
+and data. See <code><a href="../reference/MARSdata-class.html">help("MARSdata-class")</a></code>.
+<code><a href="../reference/check_data.html">check_data()</a></code> scans the object and checks if the arrays are
+of the correct dimension and the necessary ancillary information are
+provided, e.g., sample sizes for compositional data.</p>
 <p>Once the data object is set up, we can create the parameter object
-for RTMB with <code><a href="../reference/make_parameters.html">make_parameters()</a></code>. Various arguments aid the
-user for fixing parameters. Bespoke parameter structure, such as further
-mirroring of parameters, can be performed afterwards and can be checked
-with <code><a href="../reference/make_parameters.html">check_parameters()</a></code>.</p>
+for RTMB with <code><a href="../reference/make_parameters.html">make_parameters()</a></code>. A list of starting values
+can be provided to override system defaults. This function also calls
+<code><a href="../reference/make_parameters.html">make_map()</a></code> which will create a list that specifies which
+parameters are fixed and mirrored. A list of mapped parameters can be
+provided to override system defaults, with additional arguments as a
+shortcut.</p>
+<p>The parameter and map set-up is finally checked with
+<code><a href="../reference/make_parameters.html">check_parameters()</a></code> which reports the structure of the model
+to the console including start values and the parameters to be
+estimated.</p>
 <p>These objects can then be passed to <code><a href="../reference/fit_MARS.html">fit_MARS()</a></code> which
 creates and fits the model:</p>
 <div class="sourceCode" id="cb1"><pre class="downlit sourceCode r">
@@ -157,6 +164,10 @@ ascertain goodness of fit, residuals, etc.</p>
 <p><img src="../reference/figures/intro-index-1.png"><!-- --></p>
 <p><em>Example figure that compares the fit in the observed and
 predicted index.</em></p>
+<p>The reporting function uses a variety of <code>plot_*()</code>
+functions that can be accessed by the user. View the options with
+<code><a href="../reference/plot-MARS-data.html">help("plot-MARS-data")</a></code> and
+<code><a href="../reference/plot-MARS-state.html">help("plot-MARS-state")</a></code>.</p>
 </div>
 <div class="section level3">
 <h3 id="diagnostics">Diagnostics<a class="anchor" aria-label="anchor" href="#diagnostics"></a>
