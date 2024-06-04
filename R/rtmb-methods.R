@@ -94,11 +94,18 @@ setMethod("show",
             } else {
               gr <- abs(object@obj$gr())
             }
-            cat("\nMaximum gradient:", round(max(gr), 4))
+            cat("\nMaximum gradient:", round(max(gr, na.rm = TRUE), 4))
 
             if (length(object@SD) && !is.null(object@SD$gradient.fixed)) {
-              gr_large <- gr > 0.1
+              gr_na <- is.na(gr)
+              if (sum(gr_na)) {
+                gr_names <- make_unique_names(object@SD)[gr_na]
 
+                cat("\nParameters with gradient = NA:\n")
+                cat(paste(gr_names, collapse = ", "))
+              }
+
+              gr_large <- !is.na(gr) & gr > 0.1
               if (sum(gr_large)) {
                 gr_report <- gr[gr_large]
                 gr_names <- make_unique_names(object@SD)[gr_large]
@@ -122,7 +129,7 @@ setMethod("show",
               cat(paste("\nDeterminant of Hessian:"), round(det_h, 4))
 
               zero_rows <- apply(h, 1, function(x) all(x == 0))
-              if (any(zero_rows)) {
+              if (any(zero_rows, na.rm = TRUE)) {
                 cat("\nParameters with all zeros in Hessian:\n")
                 par_zero <- names(zero_rows)[zero_rows]
                 for(i in par_zero) cat(i, "\n")

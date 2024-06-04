@@ -343,10 +343,10 @@ plot_Fstock <- function(fit, s, by = c("annual", "season")) {
 
     if (missing(s)) {
       name <- dat@Dlabel@stock
-      ylab <- paste0("Apical fishing mortality\n(per ", unit, ")")
+      ylab <- paste0("Apical fishing mortality (per ", unit, ")")
     } else {
       name <- dat@Dlabel@stock[s]
-      ylab <- paste0(name, " apical fishing mortality\n(per ", unit, ")")
+      ylab <- paste0(name, " apical fishing mortality (per ", unit, ")")
     }
 
     color <- make_color(ncol(x), "stock")
