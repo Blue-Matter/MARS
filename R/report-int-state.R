@@ -255,7 +255,7 @@ plot_Rdev <- function(fit, s = 1, log = TRUE) {
   year <- Dlabel@year
 
   if (log) {
-    if (length(fit@SD)) {
+    if (length(fit@SD) > 1) {
       x <- as.list(fit@SD, what = "Estimate")$log_rdev_ys[, s]
       std <- as.list(fit@SD, what = "Std. Error")$log_rdev_ys[, s]
       std[is.na(std)] <- 0

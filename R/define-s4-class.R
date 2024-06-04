@@ -158,7 +158,7 @@ summary.MARSassess <- function(object, ...) {
   if (length(object@SD) > 1) {
     sdreport_int(object@SD)
   } else {
-    stop("No SD object found.")
+    invisible()
   }
 }
 
@@ -216,7 +216,7 @@ report.MARSassess <- function(object, name, filename = "MARS", dir = tempdir(), 
   rmd_split[[name_ind]] <- paste("#", name, "{.tabset}")
 
   hessian_ind <- grep("*ADD HESSIAN RMD*", rmd)
-  if (length(x@SD) && !x@SD$pdHess && !is.null(x@SD$env$hessian)) {
+  if (length(x@SD) > 1 && !x@SD$pdHess && !is.null(x@SD$env$hessian)) {
     rmd_split[[hessian_ind]] <- c(
       "### Hessian",
       "```{r hessian}",

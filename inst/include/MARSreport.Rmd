@@ -35,20 +35,20 @@ as.data.frame(Summary)
 ### Parameter estimates 
 
 ```{r sdreport}
-if (length(x@SD)) summary(x, select = c("fixed", "random")) %>% round(4) %>% as.data.frame()
+if (length(x@SD) > 1) summary(x, select = c("fixed", "random")) %>% round(4) %>% as.data.frame()
 ```
 
 
 ### Derived quantities
 
 ```{r sdreport-derived}
-if (length(x@SD)) summary(x, select = "report") %>% round(4) %>% as.data.frame()
+if (length(x@SD) > 1) summary(x, select = "report") %>% round(4) %>% as.data.frame()
 ```
 
 ### Correlation
 
 ```{r sdcorr}
-if (length(x@SD) && length(x@SD$env$corr.fixed)) as.data.frame(x@SD$env$corr.fixed)
+if (length(x@SD) > 1 && length(x@SD$env$corr.fixed)) as.data.frame(x@SD$env$corr.fixed)
 ```
 
 <!-- *ADD HESSIAN RMD* -->

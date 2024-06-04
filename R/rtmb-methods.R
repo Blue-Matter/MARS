@@ -89,14 +89,14 @@ setMethod("show",
           function(object) {
 
             cat("Number of parameters:", length(object@obj$par))
-            if (length(object@SD) && !is.null(object@SD$gradient.fixed)) {
+            if (length(object@SD) > 1 && !is.null(object@SD$gradient.fixed)) {
               gr <- abs(object@SD$gradient.fixed)
+              cat("\nMaximum gradient:", round(max(gr, na.rm = TRUE), 4))
             } else {
-              gr <- abs(object@obj$gr())
+              cat("\nRun model to view gradient report")
             }
-            cat("\nMaximum gradient:", round(max(gr, na.rm = TRUE), 4))
 
-            if (length(object@SD) && !is.null(object@SD$gradient.fixed)) {
+            if (length(object@SD) > 1 && !is.null(object@SD$gradient.fixed)) {
               gr_na <- is.na(gr)
               if (sum(gr_na)) {
                 gr_names <- make_unique_names(object@SD)[gr_na]
@@ -123,7 +123,7 @@ setMethod("show",
               }
             }
 
-            if (length(object@SD) && !is.null(object@SD$env$hessian)) {
+            if (length(object@SD) > 1 && !is.null(object@SD$env$hessian)) {
               h <- object@SD$env$hessian
               det_h <- det(h)
               cat(paste("\nDeterminant of Hessian:"), round(det_h, 4))
