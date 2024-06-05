@@ -156,7 +156,7 @@ setMethod("initialize", "MARSassess", function(.Object, ...) init_fn(.Object, li
 #' @export
 summary.MARSassess <- function(object, ...) {
   if (length(object@SD) > 1) {
-    sdreport_int(object@SD)
+    sdreport_int(object@SD, ...)
   } else {
     invisible()
   }
