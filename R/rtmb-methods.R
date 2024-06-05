@@ -91,7 +91,8 @@ setMethod("show",
             cat("Number of parameters:", length(object@obj$par))
             if (length(object@SD) > 1 && !is.null(object@SD$gradient.fixed)) {
               gr <- abs(object@SD$gradient.fixed)
-              cat("\nMaximum gradient:", round(max(gr, na.rm = TRUE), 4))
+              gr_max <- ifelse(all(is.na(gr)), NA, round(max(gr, na.rm = TRUE), 4))
+              cat("\nMaximum gradient:", gr_max)
             } else {
               cat("\nRun model to view gradient report")
             }
@@ -99,10 +100,14 @@ setMethod("show",
             if (length(object@SD) > 1 && !is.null(object@SD$gradient.fixed)) {
               gr_na <- is.na(gr)
               if (sum(gr_na)) {
-                gr_names <- make_unique_names(object@SD)[gr_na]
+                if (sum(gr_na) < length(gr_na)) {
+                  gr_names <- make_unique_names(object@SD)[gr_na]
 
-                cat("\nParameters with gradient = NA:\n")
-                cat(paste(gr_names, collapse = ", "))
+                  cat("\nParameters with gradient = NA:\n")
+                  cat(paste(gr_names, collapse = ", "))
+                } else {
+                  cat("\nGradient of NA for all parameters")
+                }
               }
 
               gr_large <- !is.na(gr) & gr > 0.1
