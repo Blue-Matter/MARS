@@ -760,7 +760,13 @@ update_report <- function(r, MARSdata) {
     logprior_dist_ymas <- 0
   }
 
-  logprior <- sum(logprior_initrdev_as) + sum(logprior_rdev_ys) + sum(logprior_dist_ymas)
+  if (length(prior)) {
+    logprior_par <- sapply(prior, function(x, p) eval(parse(text = x)), p = p)
+  } else {
+    logprior_par <- 0
+  }
+
+  logprior <- sum(logprior_par) + sum(logprior_initrdev_as) + sum(logprior_rdev_ys) + sum(logprior_dist_ymas)
 
   # Objective function ----
   fn <- -1 * (logprior + loglike) + penalty
@@ -874,6 +880,8 @@ update_report <- function(r, MARSdata) {
 
   if (any(tag_ymarrs > 0, na.rm = TRUE)) REPORT(loglike_tag_mov_ymars)
   if (any(tag_ymars > 0, na.rm = TRUE)) REPORT(loglike_tag_dist_ymas)
+
+  if (length(prior)) REPORT(logprior_par)
 
   if (is.null(map$log_initrdev_as) || any(!is.na(map$log_initrdev_as))) REPORT(logprior_initrdev_as)
   if (is.null(map$log_rdev_ys) || any(!is.na(map$log_rdev_ys))) REPORT(logprior_rdev_ys)
