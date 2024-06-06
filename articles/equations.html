@@ -74,7 +74,7 @@
   <main id="main" class="col-md-9"><div class="page-header">
       <img src="" class="logo" alt=""><h1>Model equations</h1>
             
-            <h4 data-toc-skip class="date">2024-06-04</h4>
+            <h4 data-toc-skip class="date">2024-06-06</h4>
       
       <small class="dont-index">Source: <a href="https://github.com/Blue-Matter/MARS/blob/HEAD/vignettes/equations.Rmd" class="external-link"><code>vignettes/equations.Rmd</code></a></small>
       <div class="d-none name"><code>equations.Rmd</code></div>
@@ -402,8 +402,8 @@ output at the end of this numerical spool-up.</li>
 </ul>
 <table class="table">
 <colgroup>
-<col width="14%">
-<col width="82%">
+<col width="13%">
+<col width="84%">
 <col width="2%">
 </colgroup>
 <thead><tr class="header">
@@ -415,9 +415,10 @@ output at the end of this numerical spool-up.</li>
 <tr class="odd">
 <td align="left">Selectivity at length</td>
 <td align="left"><span class="math inline">\(s_{\ell,f} = \begin{cases}
-2^{-\left(\dfrac{L_\ell - \mu_f}{\sigma^{\textrm{asc}}_f}\right)^2}
-&amp;, L_\ell &lt; \mu_f \\ 2^{-\left(\dfrac{L_\ell -
-\mu_f}{\sigma^{\textrm{dsc}}_f}\right)^2} &amp;, L_\ell \ge \mu_f
+\exp\left(-0.5\left[\dfrac{L_\ell -
+\mu_f}{\sigma^{\textrm{asc}}_f}\right]^2\right) &amp;, L_\ell &lt; \mu_f
+\\ \exp\left(-0.5\left[\dfrac{L_\ell -
+\mu_f}{\sigma^{\textrm{dsc}}_f}\right]^2\right) &amp;, L_\ell \ge \mu_f
 \end{cases}\)</span></td>
 <td align="left">4.1</td>
 </tr>

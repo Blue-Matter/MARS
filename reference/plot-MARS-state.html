@@ -70,7 +70,7 @@
 <span></span>
 <span><span class="fu">plot_Fstock</span><span class="op">(</span><span class="va">fit</span>, <span class="va">s</span>, by <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"annual"</span>, <span class="st">"season"</span><span class="op">)</span><span class="op">)</span></span>
 <span></span>
-<span><span class="fu">plot_self</span><span class="op">(</span><span class="va">fit</span>, f <span class="op">=</span> <span class="fl">1</span><span class="op">)</span></span>
+<span><span class="fu">plot_self</span><span class="op">(</span><span class="va">fit</span>, f <span class="op">=</span> <span class="fl">1</span>, type <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"length"</span>, <span class="st">"age"</span><span class="op">)</span><span class="op">)</span></span>
 <span></span>
 <span><span class="fu">plot_seli</span><span class="op">(</span><span class="va">fit</span>, i <span class="op">=</span> <span class="fl">1</span><span class="op">)</span></span>
 <span></span>
@@ -125,6 +125,10 @@
 
 <dt>f</dt>
 <dd><p>Integer for the corresponding fleet</p></dd>
+
+
+<dt>type</dt>
+<dd><p>For <code>plot_self</code>, indicates whether to plot the selectivity by age or length.</p></dd>
 
 
 <dt>i</dt>

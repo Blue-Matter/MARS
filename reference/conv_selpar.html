@@ -190,17 +190,17 @@ to the corresponding fleet <code>f</code> (will be coerced to integer), <code>"S
 $$
 s_{\ell} =
 \begin{cases}
-2^\alpha &amp; L_{\ell} &lt; \mu_f\\
-2^\beta &amp; L_{\ell} \ge \mu_f\\
+\exp(\alpha) &amp; L_{\ell} &lt; \mu_f\\
+\exp(\beta) &amp; L_{\ell} \ge \mu_f\\
 \end{cases}
 $$
 where
 \(
-\alpha = -(L_\ell - \mu_f)^2/(\sigma_f^{asc})^2
+\alpha = -0.5(L_\ell - \mu_f)^2/(\sigma_f^{asc})^2
 \)
 and
 \(
-\beta = -(L_\ell - \mu_f)^2/(\sigma_f^{des})^2
+\beta = -0.5(L_\ell - \mu_f)^2/(\sigma_f^{des})^2
 \)</p>
     </div>
     <div class="section level2">
