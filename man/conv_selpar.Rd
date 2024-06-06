@@ -95,17 +95,17 @@ The selectivity at length is
 \deqn{
 s_{\ell} =
 \begin{cases}
-2^\alpha & L_{\ell} < \mu_f\\
-2^\beta & L_{\ell} \ge \mu_f\\
+\exp(\alpha) & L_{\ell} < \mu_f\\
+\exp(\beta) & L_{\ell} \ge \mu_f\\
 \end{cases}
 }
 where
 \eqn{
-\alpha = -(L_\ell - \mu_f)^2/(\sigma_f^{asc})^2
+\alpha = -0.5(L_\ell - \mu_f)^2/(\sigma_f^{asc})^2
 }
 and
 \eqn{
-\beta = -(L_\ell - \mu_f)^2/(\sigma_f^{des})^2
+\beta = -0.5(L_\ell - \mu_f)^2/(\sigma_f^{des})^2
 }
 }
 

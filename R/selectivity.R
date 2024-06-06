@@ -58,17 +58,17 @@ conv_selpar <- function(x, type, maxage, maxL) {
 #' \deqn{
 #' s_{\ell} =
 #' \begin{cases}
-#' 2^\alpha & L_{\ell} < \mu_f\\
-#' 2^\beta & L_{\ell} \ge \mu_f\\
+#' \exp(\alpha) & L_{\ell} < \mu_f\\
+#' \exp(\beta) & L_{\ell} \ge \mu_f\\
 #' \end{cases}
 #' }
 #' where
 #' \eqn{
-#' \alpha = -(L_\ell - \mu_f)^2/(\sigma_f^{asc})^2
+#' \alpha = -0.5(L_\ell - \mu_f)^2/(\sigma_f^{asc})^2
 #' }
 #' and
 #' \eqn{
-#' \beta = -(L_\ell - \mu_f)^2/(\sigma_f^{des})^2
+#' \beta = -0.5(L_\ell - \mu_f)^2/(\sigma_f^{des})^2
 #' }
 #' @return
 #' [calc_sel_len()] returns a matrix `[l, f]`, i.e., `[length(lmid), length(type)]`.
@@ -79,15 +79,13 @@ calc_sel_len <- function(sel_par, lmid, type) {
   sel_lf <- sapply(1:nf, function(f) {
     if (grepl("length", type[f])) {
       ex_asc <- (lmid - sel_par[1, f])/sel_par[2, f]
-      ex2_asc <- -1 * ex_asc^2
-      asc <- 2^ex2_asc
+      asc <- exp(-0.5 * ex_asc * ex_asc)
 
       if (grepl("logistic", type[f])) {
         desc <- 1
       } else {
         ex_desc <- (lmid - sel_par[1, f])/sel_par[3, f]
-        ex2_desc <- -1 * ex_desc^2
-        desc <- 2^ex2_desc
+        desc <- exp(-0.5 * ex_desc * ex_desc)
       }
       v <- CondExpLt(lmid, sel_par[1, f], asc, desc)
       v <- v/max(v)
@@ -134,15 +132,13 @@ calc_fsel_age <- function(sel_len, LAK, type, sel_par, sel_block = seq(1, length
     } else if (grepl("age", type[f])) {
 
       ex_asc <- (a - sel_par[1, f])/sel_par[2, f]
-      ex2_asc <- -1 * ex_asc^2
-      asc <- 2^ex2_asc
+      asc <- exp(-0.5 * ex_asc * ex_asc)
 
       if (grepl("logistic", type[f])) {
         desc <- 1
       } else {
         ex_desc <- (a - sel_par[1, f])/sel_par[3, f]
-        ex2_desc <- -1 * ex_desc^2
-        desc <- 2^ex2_desc
+        desc <- exp(-0.5 * ex_desc * ex_desc)
       }
       v <- CondExpLt(a, sel_par[1, f], asc, desc)
       v <- v/max(v)
@@ -184,15 +180,13 @@ calc_isel_age <- function(sel_len, LAK, type, sel_par, fsel_age, maxage, mat, a 
       } else if (grepl("age", ti)) {
 
         ex_asc <- (a - sel_par[1, i])/sel_par[2, i]
-        ex2_asc <- -1 * ex_asc^2
-        asc <- 2^ex2_asc
+        asc <- exp(-0.5 * ex_asc * ex_asc)
 
         if (grepl("logistic", ti)) {
           desc <- 1
         } else {
           ex_desc <- (a - sel_par[1, i])/sel_par[3, i]
-          ex2_desc <- -1 * ex_desc^2
-          desc <- 2^ex2_desc
+          desc <- exp(-0.5 * ex_desc * ex_desc)
         }
         v <- CondExpLt(a, sel_par[1, i], asc, desc)
         v <- v/max(v)

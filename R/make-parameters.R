@@ -185,7 +185,7 @@ make_parameters <- function(MARSdata, start = list(), map = list(),
           L5 <- approx(cumsum(CAL)/sum(CAL), MARSdata@Dmodel@lmid, 0.05)$y
           if (is.na(L5) || L5 > 0.99 * LFS) L5 <- 0.5 * LFS
 
-          sigma_asc <- min((LFS - L5)/sqrt(-log(0.05, 2)), 0.25 * diff(range(MARSdata@Dmodel@lmid)))
+          sigma_asc <- min((LFS - L5)/sqrt(-2 * log(0.05)), 0.25 * diff(range(MARSdata@Dmodel@lmid)))
           val[2:3] <- log(sigma_asc)
           val[1] <- qlogis(LFS/max(0.95 * MARSdata@Dmodel@lmid))
         }
@@ -206,7 +206,7 @@ make_parameters <- function(MARSdata, start = list(), map = list(),
           A5 <- approx(cumsum(CAA)/sum(CAA), age, 0.05)$y
           if (is.na(A5) || A5 > 0.99 * AFS) A5 <- 0.5 * AFS
 
-          sigma_asc <- min((AFS - A5)/sqrt(-log(0.05, 2)), 0.25 * diff(range(age)))
+          sigma_asc <- min((AFS - A5)/sqrt(-2 * log(0.05)), 0.25 * diff(range(age)))
           val[2:3] <- log(sigma_asc)
           val[1] <- qlogis(AFS/max(age))
         }
@@ -237,7 +237,7 @@ make_parameters <- function(MARSdata, start = list(), map = list(),
           L5 <- approx(cumsum(IAL)/sum(IAL), MARSdata@Dmodel@lmid, 0.05)$y
 
           if (L5 < LFS) {
-            sigma_asc <- min((LFS - L5)/sqrt(-log(0.05, 2)), 0.25 * diff(range(MARSdata@Dmodel@lmid)))
+            sigma_asc <- min((LFS - L5)/sqrt(-2 * log(0.05)), 0.25 * diff(range(MARSdata@Dmodel@lmid)))
             val[2:3] <- log(sigma_asc)
             val[1] <- qlogis(LFS/max(0.95 * MARSdata@Dmodel@lmid))
           }
@@ -633,12 +633,12 @@ make_map <- function(p, MARSdata, map = list(),
       }
 
       if (grepl("logistic", Dfishery@sel_f[bb])) {
-        sel5 <- -sqrt(-log(0.05, 2)) * fsel_start[2, bb] + fsel_start[1, bb]
+        sel5 <- -sqrt(-2 * log(0.05)) * fsel_start[2, bb] + fsel_start[1, bb]
         message_info("   Selectivity start values: full sel = ", round(fsel_start[1, bb], 2),
                      ", ascending limb SD = ", round(fsel_start[2, bb], 2), " (5% sel = ", round(sel5, 2), ")")
       }
       if (grepl("dome", Dfishery@sel_f[bb])) {
-        sel5 <- -sqrt(-log(0.05, 2)) * fsel_start[2, bb] + fsel_start[1, bb]
+        sel5 <- -sqrt(-2 * log(0.05)) * fsel_start[2, bb] + fsel_start[1, bb]
         message_info("   Selectivity start values: full sel = ", round(fsel_start[1, bb], 2),
                      ", ascending limb SD = ", round(fsel_start[2, bb], 2), " (5% sel = ", round(sel5, 2), ")",
                      ", descending limb SD = ", round(fsel_start[3, bb], 2))
@@ -689,12 +689,12 @@ make_map <- function(p, MARSdata, map = list(),
       }
 
       if (grepl("logistic", sel_i)) {
-        sel5 <- -sqrt(-log(0.05, 2)) * isel_start[2, bb] + isel_start[1, bb]
+        sel5 <- -sqrt(-2 * log(0.05)) * isel_start[2, bb] + isel_start[1, bb]
         message_info("   Selectivity start values: full sel = ", round(isel_start[1, i], 2),
                      ", ascending limb SD = ", round(isel_start[2, i], 2), " (5% sel = ", round(sel5, 2), ")")
       }
       if (grepl("dome", sel_i)) {
-        sel5 <- -sqrt(-log(0.05, 2)) * isel_start[2, bb] + isel_start[1, bb]
+        sel5 <- -sqrt(-2 * log(0.05)) * isel_start[2, bb] + isel_start[1, bb]
         message_info("   Selectivity start values: full sel = ", round(isel_start[1, i], 2),
                      ", ascending limb SD = ", round(isel_start[2, i], 2),  " (5% sel = ", round(sel5, 2), ")",
                      ", descending limb SD = ", round(isel_start[3, i], 2))
