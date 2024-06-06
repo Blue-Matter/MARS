@@ -13,7 +13,7 @@
 \item{vars}{Character vector to indicate which residuals will be calculated.
 Available choices from \linkS4class{MARSdata} object are:
 "Cinit_mfr", "Cobs_ymfr", "CAAobs_ymafr", "CALobs_ymlfr",
-"Iobs_ymi", "IAAobs_ymai", "IALobs_ymli"}
+"Iobs_ymi", "IAAobs_ymai", "IALobs_ymli", "SC_ymafrs"}
 
 \item{type}{Character, 'response' for the \code{log(observed/predicted)} values or 'pearson' for calculating Z-scores.
 Composition data always use 'pearson'.}

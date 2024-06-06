@@ -133,11 +133,17 @@ setMethod("show",
               det_h <- det(h)
               cat(paste("\nDeterminant of Hessian:"), round(det_h, 4))
 
-              zero_rows <- apply(h, 1, function(x) all(x == 0))
-              if (any(zero_rows, na.rm = TRUE)) {
+              zero_rows <- apply(h, 1, function(x) all(x == 0, na.rm = TRUE))
+              na_rows <- apply(h, 1, function(x) all(is.na(x)))
+              if (any(zero_rows)) {
                 cat("\nParameters with all zeros in Hessian:\n")
                 par_zero <- names(zero_rows)[zero_rows]
                 for(i in par_zero) cat(i, "\n")
+              }
+              if (any(na_rows)) {
+                cat("\nParameters with all NAs in Hessian:\n")
+                par_na <- names(na_rows)[na_rows]
+                for(i in par_na) cat(i, "\n")
               }
             }
 

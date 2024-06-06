@@ -363,10 +363,13 @@ plot_Fstock <- function(fit, s, by = c("annual", "season")) {
 #' @rdname plot-MARS-state
 #' @aliases plot_self
 #' @param f Integer for the corresponding fleet
+#' @param type For `plot_self`, indicates whether to plot the selectivity by age or length.
 #' @details
 #' - `plot_self` plots fishery selectivity
 #' @export
-plot_self <- function(fit, f = 1) {
+plot_self <- function(fit, f = 1, type = c("length", "age")) {
+  type <- match.arg(type)
+
   dat <- get_MARSdata(fit)
   Dfishery <- dat@Dfishery
 
@@ -376,7 +379,7 @@ plot_self <- function(fit, f = 1) {
 
   year <- dat@Dlabel@year
 
-  if (all(grepl("length", sel_b))) {
+  if (type == "length" && all(grepl("length", sel_b))) {
     lmid <- dat@Dmodel@lmid
     x <- fit@report$sel_lf[, unique(sel_block), drop = FALSE]
 
@@ -395,7 +398,7 @@ plot_self <- function(fit, f = 1) {
       })
       legend("topright", legend = name, col = color, lwd = 1, pch = 16)
     }
-  } else {
+  } else if (type == "age") {
 
     m <- 1
     s <- 1

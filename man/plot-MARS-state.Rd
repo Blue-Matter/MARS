@@ -30,7 +30,7 @@ plot_Rdev(fit, s = 1, log = TRUE)
 
 plot_Fstock(fit, s, by = c("annual", "season"))
 
-plot_self(fit, f = 1)
+plot_self(fit, f = 1, type = c("length", "age"))
 
 plot_seli(fit, i = 1)
 
@@ -68,6 +68,8 @@ plot_recdist(fit)
 \item{log}{Logical, whether to plot the natural logarithm of the response variable}
 
 \item{f}{Integer for the corresponding fleet}
+
+\item{type}{For \code{plot_self}, indicates whether to plot the selectivity by age or length.}
 
 \item{i}{Integer for the corresponding survey}
 
