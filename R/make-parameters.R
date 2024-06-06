@@ -307,7 +307,7 @@ make_map <- function(p, MARSdata, map = list(),
   nf <- MARSdata@Dfishery@nf
 
   random <- NULL
-  #map <- list()
+  map <- lapply(map, factor)
 
   # Stock parameters ----
   if (!silent) {
