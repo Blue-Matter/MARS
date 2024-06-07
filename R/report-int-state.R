@@ -533,7 +533,9 @@ plot_selstock <- function(fit, s = 1, by = c("annual", "season"), plot2d = c("co
       t()
   }
 
-  plot2d(x = year, y = age, xlab = "Year", ylab = "Age", z = sel_ya, levels = seq(0, 1, 0.1), ...)
+  if (exists("sel_ya", inherits = FALSE)) {
+    plot2d(x = year, y = age, xlab = "Year", ylab = "Age", z = sel_ya, levels = seq(0, 1, 0.1), ...)
+  }
 
   invisible()
 }
