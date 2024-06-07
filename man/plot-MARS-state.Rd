@@ -111,7 +111,7 @@ A set of functions to plot state variables (biomass, recruitment time series, et
 }
 
 \itemize{
-\item \code{plot_Fstock} plots apical instantaneous fishing mortality (per year) by stock
+\item \code{plot_Fstock} plots apical instantaneous fishing mortality (per year or per season) by stock
 }
 
 \itemize{

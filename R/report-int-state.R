@@ -285,7 +285,7 @@ plot_Rdev <- function(fit, s = 1, log = TRUE) {
 #' @rdname plot-MARS-state
 #' @aliases plot_Fstock
 #' @details
-#' - `plot_Fstock` plots apical instantaneous fishing mortality (per year) by stock
+#' - `plot_Fstock` plots apical instantaneous fishing mortality (per year or per season) by stock
 #'
 #' @export
 plot_Fstock <- function(fit, s, by = c("annual", "season")) {
