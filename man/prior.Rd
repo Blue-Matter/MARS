@@ -32,19 +32,22 @@ prior_q(MARSdata, i = 1, meanlog, sdlog)
 Character.
 }
 \description{
-text
+Priors in MARS are set by providing character strings which are then parsed into an expression and evaluated in the model environment
+(see example). This provides flexibility to set a prior for any desired model parameter or variable. See list of parameters in the
+documentation for \verb{[check_parameters()]} for options (note that priors for \code{log_rdev_ys} and \code{log_initrdev_as} are not needed as they're hard-coded into the model).
+Several functions below generate the character string for the prior for important dynamics parameters, such as natural mortality and steepness.
 }
 \details{
 \itemize{
-\item \code{prior_h} returns the prior for stock-recruit steepness. Beta distribution for the Beverton-Holt function and normal distribution for Ricker function.
+\item \code{prior_h} returns the log prior for stock-recruit steepness. Beta distribution for the Beverton-Holt function and normal distribution for Ricker function.
 }
 
 \itemize{
-\item \code{prior_M} returns the prior for natural mortality. Lognormal distribution.
+\item \code{prior_M} returns the log prior for natural mortality. Lognormal distribution.
 }
 
 \itemize{
-\item \code{prior_q} returns the prior for index catchability. Lognormal distribution.
+\item \code{prior_q} returns the log prior for index catchability. Lognormal distribution.
 }
 }
 \examples{

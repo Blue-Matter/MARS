@@ -42,7 +42,7 @@ observed catch with the dimension following the underscore, following this templ
 \item{\code{y_Fmult_f}}{Integer vector by fleet, the year in which to directly estimate F. Choose a year/season/region combination when the catch is average relative to the time series. Only used if \code{condition = "F"}.}
 \item{\code{m_Fmult_f}}{Integer vector by fleet, the season in which to directly estimate F. Choose a year/season/region combination when the catch is average relative to the time series. Only used if \code{condition = "F"}.}
 \item{\code{r_Fmult_f}}{Integer vector by fleet, the region in which to directly estimate F. Choose a year/season/region combination when the catch is average relative to the time series. Only used if \code{condition = "F"}.}
-\item{\code{prior}}{Character vector to be evaluated in the model to return the log prior for a parameter.}
+\item{\code{prior}}{Character vector to be evaluated in the model to return the log prior for a parameter. See example in documentation for \link{prior}.}
 }
 }
 

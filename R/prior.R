@@ -17,7 +17,10 @@ sdconv <- function(m, sd) (log(1 + ((sd^2)/(m^2))))^0.5
 #'
 #' @title Priors for MARS model
 #' @description
-#' text
+#' Priors in MARS are set by providing character strings which are then parsed into an expression and evaluated in the model environment
+#' (see example). This provides flexibility to set a prior for any desired model parameter or variable. See list of parameters in the
+#' documentation for `[check_parameters()]` for options (note that priors for `log_rdev_ys` and `log_initrdev_as` are not needed as they're hard-coded into the model).
+#' Several functions below generate the character string for the prior for important dynamics parameters, such as natural mortality and steepness.
 #'
 #' @param MARSdata Data object. Class \linkS4class{MARSdata}
 #' @return Character.
@@ -34,7 +37,7 @@ sdconv <- function(m, sd) (log(1 + ((sd^2)/(m^2))))^0.5
 NULL
 
 #' @name prior
-#' @details - `prior_h` returns the prior for stock-recruit steepness. Beta distribution for the Beverton-Holt function and normal distribution for Ricker function.
+#' @details - `prior_h` returns the log prior for stock-recruit steepness. Beta distribution for the Beverton-Holt function and normal distribution for Ricker function.
 #' @param s Integer for stock
 #' @param m Mean in un-transformed space
 #' @param stdev Standard deviation in un-transformed space
@@ -62,7 +65,7 @@ prior_h <- function(MARSdata, s = 1, m, stdev) {
 }
 
 #' @name prior
-#' @details - `prior_M` returns the prior for natural mortality. Lognormal distribution.
+#' @details - `prior_M` returns the log prior for natural mortality. Lognormal distribution.
 #' @aliases prior_M
 #' @param meanlog Mean of the lognormal distribution on the log scale
 #' @param sdlog Standard of the lognormal distribution on the log scale
@@ -73,7 +76,7 @@ prior_M <- function(MARSdata, s = 1, meanlog, sdlog) {
 }
 
 #' @name prior
-#' @details - `prior_q` returns the prior for index catchability. Lognormal distribution.
+#' @details - `prior_q` returns the log prior for index catchability. Lognormal distribution.
 #' @aliases prior_q
 #' @param i Integer for the corresponding index
 #' @export
