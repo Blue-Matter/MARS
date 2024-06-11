@@ -63,6 +63,7 @@ reference:
   - calc_recruitment
   - conv_mov
   - conv_selpar
+  - calc_eqdist
 
 - title: Likelihood and prior functions
   desc: Calculate the log-likelihood or log-prior density functions from data and estimated parameters.

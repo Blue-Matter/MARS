@@ -670,10 +670,6 @@ plot_mov <- function(fit, s = 1, y, a) {
   mname <- dat@Dlabel@season
 
   mov <- array(fit@report$mov_ymarrs[y, , a, , , s], c(nm, nr, nr))
-  dist_eq <- mov_proj(mov, start = fit@report$recdist_rs[, s])
-
-  #dist_start <- ifelse(dat@Dstock@presence_rs[, s], 1/sum(dat@Dstock@presence_rs[, s]), 0)
-  #dist_eq <- mov_proj(mov, start = dist_start)
 
   if (nm > 1) {
     old_mar <- par()$mar
@@ -685,7 +681,12 @@ plot_mov <- function(fit, s = 1, y, a) {
   }
 
   for(m in 1:nm) {
-    .plot_mov(m = mov[m, , ], p = dist_eq[m, ], rname = rname, xlab = "", ylab = "")
+    dist_eq <- calc_eqdist(mov[m, , ], start = fit@report$recdist_rs[, s])
+
+    #dist_start <- ifelse(dat@Dstock@presence_rs[, s], 1/sum(dat@Dstock@presence_rs[, s]), 0)
+    #dist_eq <- calc_eqdist(mov[m, , ], start = dist_start)
+
+    .plot_mov(m = mov[m, , ], p = dist_eq, rname = rname, xlab = "", ylab = "")
     if (nm > 1) title(mname[m], font.main = 1)
   }
 
@@ -761,20 +762,4 @@ plot_recdist <- function(fit) {
   axis(1, at = c(1:nr, nr+2) + 0.5, labels = c(as.character(rname), "Eq."), font = 2, cex.axis = 0.75)
 
   invisible()
-}
-
-
-mov_proj <- function(x, nm = dim(x)[1], nr = dim(x)[2], start = rep(1/nr, nr), nit = 20) {
-  N <- array(NA, c(nit, nm, nr))
-  N[1, 1, ] <- start
-  for (i in 2:nit - 1) {
-    for(m in 1:nm) {
-      if (m == nm) {
-        N[i+1, 1, ] <- N[i, m, ] %*% x[m, , ]
-      } else {
-        N[i, m+1, ] <- N[i, m, ] %*% x[m, , ]
-      }
-    }
-  }
-  return(array(N[nit-1, , ], c(nm, nr)))
 }

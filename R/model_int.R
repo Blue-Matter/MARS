@@ -522,6 +522,26 @@ conv_mov <- function(x, g, v, na = dim(x)[1], nr = dim(x)[2], aref = ceiling(0.5
   return(aperm(mov_rra, 3:1))
 }
 
+#' Equilibrium distribution from movement matrix
+#'
+#' Applies the movement matrix several times in order to obtain the equilibrium spatial distribution of a movement matrix.
+#' Not used in the model but useful for reporting.
+#' @return Numeric vector of length `nr`
+#' @param x Movement matrix, a square matrix with rows corresponding to origin (sum to 1), and columns corresponding to destination
+#' @param nr Number of regions
+#' @param start The initial distribution. Vector of length `nr`
+#' @param nit Integer, the number of times the movement matrix will be applied
+#' @export
+calc_eqdist <- function(x, nr = dim(x)[2], start = rep(1/nr, nr), nit = 20) {
+  if (inherits(start, "advector") || inherits(x, "advector")) {
+    `[<-` <- RTMB::ADoverload("[<-")
+  }
+
+  N <- array(NA_real_, c(nit, nr))
+  N[1, ] <- start
+  for (i in 2:nit - 1) N[i+1, ] <- colSums(N[i, ] * x)
+  return(N[nit-1, ])
+}
 
 #' Predict the probability of CKMR kinship pairs
 #'
