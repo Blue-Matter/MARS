@@ -363,11 +363,16 @@ make_rmd_SC <- function(f, a, r, fname, aname, rname, header = TRUE) {
 
 make_rmd_tagmov <- function(y, a, s, yname, aname, sname, header = TRUE) {
   cap <- paste0("Fits to tag movement (observed in black, predicted in red) for ", sname, ", ", yname, ", ", aname)
+  cap_resid <- paste0("Z-score residuals of tag movement for ", sname, ", ", yname, ", ", aname)
 
   rmd <- c(
     ifelse(header, paste0("### ", sname, " {.tabset}\n\n"), ""),
     paste0("```{r tagmov-y", y, "a-", a, "-s", s, ", fig.cap=\"", cap, ".\"}"),
     paste0("plot_tagmov(x, s = ", s, ", yy = ", y, ", aa = ", a, ")"),
+    "```",
+    "",
+    paste0("```{r tagmov-resid-y", y, "a-", a, "-s", s, ", fig.cap=\"", cap, ".\"}"),
+    paste0("plot_resid_tagmov(x, s = ", s, ", yy = ", y, ", aa = ", a, ")"),
     "```",
     ""
   )

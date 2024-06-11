@@ -20,7 +20,7 @@
 residuals.MARSassess <- function(object, vars, type = c("response", "pearson"), ...) {
 
   vars_choices <- c("Cinit_mfr", "Cobs_ymfr", "CAAobs_ymafr", "CALobs_ymlfr",
-                    "Iobs_ymi", "IAAobs_ymai", "IALobs_ymli", "SC_ymafrs")
+                    "Iobs_ymi", "IAAobs_ymai", "IALobs_ymli", "SC_ymafrs", "tag_ymarrs")
   if (missing(vars)) vars <- vars_choices
   vars <- match.arg(vars, choices = vars_choices, several.ok = TRUE)
   type <- match.arg(type)
@@ -156,8 +156,8 @@ residuals.MARSassess <- function(object, vars, type = c("response", "pearson"), 
     for(y in 1:dat@Dmodel@ny) {
       for(m in 1:dat@Dmodel@nm) {
         for(a in 1:dim(SC_ymafrs)[3]) {
-          for (f in 1:dim(SC_ymafrs)[4]) {
-            for (r in 1:dat@Dmodel@nr) {
+          for(f in 1:dim(SC_ymafrs)[4]) {
+            for(r in 1:dat@Dmodel@nr) {
               res$SC_ymafrs[y, m, a, f, r, ] <- resid_comp(
                 obs = SC_ymafrs[y, m, a, f, r, ],
                 pred = pred[y, m, a, f, r, ],
@@ -165,6 +165,57 @@ residuals.MARSassess <- function(object, vars, type = c("response", "pearson"), 
                 N = dat@Dfishery@SCN_ymafr[y, m, a, f, r],
                 theta = dat@Dfishery@SCtheta_f[f],
                 stdev = dat@Dfishery@SCstdev_ymafrs[y, m, a, f, r, ]
+              )
+            }
+          }
+        }
+      }
+    }
+  }
+
+
+  # Stock composition (at age) ----
+  if (any(vars == "SC_ymafrs") && length(dat@Dfishery@SC_ymafrs)) {
+    SC_ymafrs <- dat@Dfishery@SC_ymafrs
+    res$SC_ymafrs <- array(NA, dim(SC_ymafrs))
+    pred <- object@report$SCpred_ymafrs
+    for(y in 1:dat@Dmodel@ny) {
+      for(m in 1:dat@Dmodel@nm) {
+        for(a in 1:dim(SC_ymafrs)[3]) {
+          for(f in 1:dim(SC_ymafrs)[4]) {
+            for(r in 1:dat@Dmodel@nr) {
+              res$SC_ymafrs[y, m, a, f, r, ] <- resid_comp(
+                obs = SC_ymafrs[y, m, a, f, r, ],
+                pred = pred[y, m, a, f, r, ],
+                like = dat@Dfishery@SC_like,
+                N = dat@Dfishery@SCN_ymafr[y, m, a, f, r],
+                theta = dat@Dfishery@SCtheta_f[f],
+                stdev = dat@Dfishery@SCstdev_ymafrs[y, m, a, f, r, ]
+              )
+            }
+          }
+        }
+      }
+    }
+  }
+
+  # Tag movement ----
+  if (any(vars == "tag_ymarrs") && length(dat@Dtag@tag_ymarrs)) {
+    tag_ymarrs <- dat@Dtag@tag_ymarrs
+    res$tag_ymarrs <- array(NA, dim(tag_ymarrs))
+    pred <- object@report$tagpred_ymarrs
+    for(y in 1:dim(tag_ymarrs)[1]) {
+      for(m in 1:dat@Dmodel@nm) {
+        for(a in 1:dim(tag_ymarrs)[3]) {
+          for(rf in 1:dat@Dmodel@nr) {
+            for(s in 1:dat@Dmodel@ns) {
+              res$tag_ymarrs[y, m, a, rf, , s] <- resid_comp(
+                obs = tag_ymarrs[y, m, a, rf, , s],
+                pred = pred[y, m, a, rf, , s],
+                like = dat@Dtag@tag_like,
+                N = dat@Dtag@tagN_ymars[y, m, a, rf, s],
+                theta = dat@Dtag@tagtheta_s[s],
+                stdev = dat@Dtag@tagstdev_s[s]
               )
             }
           }
@@ -277,11 +328,6 @@ plot_resid_CAA <- function(fit, f = 1, r = 1, do_hist = FALSE, ...) {
   )
 }
 
-plot_resid_SC <- function(fit, f = 1, r = 1, do_hist = FALSE, ...) {
-
-}
-
-
 plot_resid_CAL <- function(fit, f = 1, r = 1, do_hist = FALSE, ...) {
   vars <- "CALobs_ymlfr"
 
@@ -353,7 +399,6 @@ plot_resid_IAL <- function(fit, i = 1, do_hist = FALSE, ...) {
 
 plot_resid_SC <- function(fit, a = 1, f = 1, r = 1, do_hist = FALSE, ...) {
   vars <- "SC_ymafrs"
-
   dat <- get_MARSdata(fit)
 
   res <- residuals(fit, vars = vars, ...)[[vars]]
@@ -372,6 +417,18 @@ plot_resid_SC <- function(fit, a = 1, f = 1, r = 1, do_hist = FALSE, ...) {
     xlab = "Year", ylab = "Stock", do_hist = do_hist,
     xdiff = yeardiff[ind]
   )
+}
+
+plot_resid_tagmov <- function(fit, yy = 1, aa = 1, s = 1, ...) {
+  vars <- "tag_ymars"
+  dat <- get_MARSdata(fit)
+
+  res <- residuals(fit, vars = vars, ...)[[vars]]
+  if (is.null(res)) return(invisible())
+
+  x <- apply(res[yy, , aa, , , s, drop = FALSE], c(2, 4, 5), identity)
+
+  .plot_resid_comp(z = x, do_hist = TRUE)
 }
 
 #' @importFrom graphics hist box
