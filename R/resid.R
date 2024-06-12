@@ -420,7 +420,7 @@ plot_resid_SC <- function(fit, a = 1, f = 1, r = 1, do_hist = FALSE, ...) {
 }
 
 plot_resid_tagmov <- function(fit, yy = 1, aa = 1, s = 1, ...) {
-  vars <- "tag_ymars"
+  vars <- "tag_ymarrs"
   dat <- get_MARSdata(fit)
 
   res <- residuals(fit, vars = vars, ...)[[vars]]
