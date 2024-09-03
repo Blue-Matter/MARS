@@ -5,65 +5,49 @@
 <meta charset="utf-8">
 <meta http-equiv="X-UA-Compatible" content="IE=edge">
 <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
-<meta name="description" content="MARS">
 <title>Model equations • MARS</title>
 <script src="../deps/jquery-3.6.0/jquery-3.6.0.min.js"></script><meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
 <link href="../deps/bootstrap-5.3.1/bootstrap.min.css" rel="stylesheet">
-<script src="../deps/bootstrap-5.3.1/bootstrap.bundle.min.js"></script><!-- Font Awesome icons --><link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.12.1/css/all.min.css" integrity="sha256-mmgLkCYLUQbXn0B1SRqzHar6dCnv9oZFPEC1g1cwlkk=" crossorigin="anonymous">
-<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.12.1/css/v4-shims.min.css" integrity="sha256-wZjR52fzng1pJHwx4aV2AO3yyTOXrcDW7jBpJtTwVxw=" crossorigin="anonymous">
-<!-- bootstrap-toc --><script src="https://cdn.jsdelivr.net/gh/afeld/bootstrap-toc@v1.0.1/dist/bootstrap-toc.min.js" integrity="sha256-4veVQbu7//Lk5TSmc7YV48MxtMy98e26cf5MrgZYnwo=" crossorigin="anonymous"></script><!-- headroom.js --><script src="https://cdnjs.cloudflare.com/ajax/libs/headroom/0.11.0/headroom.min.js" integrity="sha256-AsUX4SJE1+yuDu5+mAVzJbuYNPHj/WroHuZ8Ir/CkE0=" crossorigin="anonymous"></script><script src="https://cdnjs.cloudflare.com/ajax/libs/headroom/0.11.0/jQuery.headroom.min.js" integrity="sha256-ZX/yNShbjqsohH1k95liqY9Gd8uOiE1S4vZc+9KQ1K4=" crossorigin="anonymous"></script><!-- clipboard.js --><script src="https://cdnjs.cloudflare.com/ajax/libs/clipboard.js/2.0.11/clipboard.min.js" integrity="sha512-7O5pXpc0oCRrxk8RUfDYFgn0nO1t+jLuIOQdOMRp4APB7uZ4vSjspzp5y6YDtDs4VzUSTbWzBFZ/LKJhnyFOKw==" crossorigin="anonymous" referrerpolicy="no-referrer"></script><!-- search --><script src="https://cdnjs.cloudflare.com/ajax/libs/fuse.js/6.4.6/fuse.js" integrity="sha512-zv6Ywkjyktsohkbp9bb45V6tEMoWhzFzXis+LrMehmJZZSys19Yxf1dopHx7WzIKxr5tK2dVcYmaCk2uqdjF4A==" crossorigin="anonymous"></script><script src="https://cdnjs.cloudflare.com/ajax/libs/autocomplete.js/0.38.0/autocomplete.jquery.min.js" integrity="sha512-GU9ayf+66Xx2TmpxqJpliWbT5PiGYxpaG8rfnBEk1LL8l1KGkRShhngwdXK1UgqhAzWpZHSiYPc09/NwDQIGyg==" crossorigin="anonymous"></script><script src="https://cdnjs.cloudflare.com/ajax/libs/mark.js/8.11.1/mark.min.js" integrity="sha512-5CYOlHXGh6QpOFA/TeTylKLWfB3ftPsde7AnmhuitiTX4K5SqCLBeKro6sPS8ilsz1Q4NRx3v8Ko2IBiszzdww==" crossorigin="anonymous"></script><!-- pkgdown --><script src="../pkgdown.js"></script><meta property="og:title" content="Model equations">
-<meta property="og:description" content="MARS">
-<!-- mathjax --><script src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.5/MathJax.js" integrity="sha256-nvJJv9wWKEm88qvoQl9ekL2J+k/RWIsaSScxxlsrv8k=" crossorigin="anonymous"></script><script src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.5/config/TeX-AMS-MML_HTMLorMML.js" integrity="sha256-84DKXVJXs0/F8OTMzX4UR909+jtl4G7SPypPavF+GfA=" crossorigin="anonymous"></script><!--[if lt IE 9]>
-<script src="https://oss.maxcdn.com/html5shiv/3.7.3/html5shiv.min.js"></script>
-<script src="https://oss.maxcdn.com/respond/1.4.2/respond.min.js"></script>
-<![endif]-->
+<script src="../deps/bootstrap-5.3.1/bootstrap.bundle.min.js"></script><link href="../deps/font-awesome-6.4.2/css/all.min.css" rel="stylesheet">
+<link href="../deps/font-awesome-6.4.2/css/v4-shims.min.css" rel="stylesheet">
+<script src="../deps/headroom-0.11.0/headroom.min.js"></script><script src="../deps/headroom-0.11.0/jQuery.headroom.min.js"></script><script src="../deps/bootstrap-toc-1.0.1/bootstrap-toc.min.js"></script><script src="../deps/clipboard.js-2.0.11/clipboard.min.js"></script><script src="../deps/search-1.0.0/autocomplete.jquery.min.js"></script><script src="../deps/search-1.0.0/fuse.min.js"></script><script src="../deps/search-1.0.0/mark.min.js"></script><!-- pkgdown --><script src="../pkgdown.js"></script><meta property="og:title" content="Model equations">
 </head>
 <body>
     <a href="#main" class="visually-hidden-focusable">Skip to contents</a>
-    
 
-    <nav class="navbar fixed-top navbar-light navbar-expand-lg bg-light" data-bs-theme="light"><div class="container">
-    
+
+    <nav class="navbar navbar-expand-lg fixed-top bg-light" data-bs-theme="light" aria-label="Site navigation"><div class="container">
+
     <a class="navbar-brand me-2" href="../index.html">MARS</a>
 
     <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">0.0.0.9000</small>
 
-    
+
     <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbar" aria-controls="navbar" aria-expanded="false" aria-label="Toggle navigation">
       <span class="navbar-toggler-icon"></span>
     </button>
 
     <div id="navbar" class="collapse navbar-collapse ms-3">
       <ul class="navbar-nav me-auto">
-<li class="nav-item">
-  <a class="nav-link" href="../reference/index.html">Reference</a>
-</li>
+<li class="nav-item"><a class="nav-link" href="../reference/index.html">Reference</a></li>
 <li class="active nav-item dropdown">
-  <a href="#" class="nav-link dropdown-toggle" data-bs-toggle="dropdown" role="button" aria-expanded="false" aria-haspopup="true" id="dropdown-topics">Topics</a>
-  <div class="dropdown-menu" aria-labelledby="dropdown-topics">
-    <a class="dropdown-item" href="../articles/introduction.html">Introduction</a>
-    <a class="dropdown-item" href="../articles/equations.html">Model equations</a>
-  </div>
+  <button class="nav-link dropdown-toggle" type="button" id="dropdown-topics" data-bs-toggle="dropdown" aria-expanded="false" aria-haspopup="true">Topics</button>
+  <ul class="dropdown-menu" aria-labelledby="dropdown-topics">
+<li><a class="dropdown-item" href="../articles/introduction.html">Introduction</a></li>
+    <li><a class="dropdown-item" href="../articles/equations.html">Model equations</a></li>
+  </ul>
 </li>
-<li class="nav-item">
-  <a class="nav-link" href="../news/index.html">Changelog</a>
-</li>
+<li class="nav-item"><a class="nav-link" href="../news/index.html">Changelog</a></li>
       </ul>
-<form class="form-inline my-2 my-lg-0" role="search">
-        <input type="search" class="form-control me-sm-2" aria-label="Toggle navigation" name="search-input" data-search-index="../search.json" id="search-input" placeholder="Search for" autocomplete="off">
-</form>
-
-      <ul class="navbar-nav">
-<li class="nav-item">
-  <a class="external-link nav-link" href="https://github.com/Blue-Matter/MARS/" aria-label="github">
-    <span class="fab fa fab fa-github fa-lg"></span>
-     
-  </a>
-</li>
+<ul class="navbar-nav">
+<li class="nav-item"><form class="form-inline" role="search">
+ <input class="form-control" type="search" name="search-input" id="search-input" autocomplete="off" aria-label="Search site" placeholder="Search for" data-search-index="../search.json">
+</form></li>
+<li class="nav-item"><a class="external-link nav-link" href="https://github.com/Blue-Matter/MARS/" aria-label="GitHub"><span class="fa fab fa-github fa-lg"></span></a></li>
       </ul>
 </div>
 
-    
+
   </div>
 </nav><div class="container template-article">
 
@@ -72,11 +56,12 @@
 
 <div class="row">
   <main id="main" class="col-md-9"><div class="page-header">
-      <img src="" class="logo" alt=""><h1>Model equations</h1>
+
+      <h1>Model equations</h1>
             
-            <h4 data-toc-skip class="date">2024-06-12</h4>
+            <h4 data-toc-skip class="date">2024-09-03</h4>
       
-      <small class="dont-index">Source: <a href="https://github.com/Blue-Matter/MARS/blob/HEAD/vignettes/equations.Rmd" class="external-link"><code>vignettes/equations.Rmd</code></a></small>
+      <small class="dont-index">Source: <a href="https://github.com/Blue-Matter/MARS/blob/master/vignettes/equations.Rmd" class="external-link"><code>vignettes/equations.Rmd</code></a></small>
       <div class="d-none name"><code>equations.Rmd</code></div>
     </div>
 
@@ -98,42 +83,42 @@ dimension and indexing for model variables.</p>
 </tr></thead>
 <tbody>
 <tr class="odd">
-<td align="left"><span class="math inline">\(y\)</span></td>
+<td align="left"><math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mi>y</mi><annotation encoding="application/x-tex">y</annotation></semantics></math></td>
 <td align="left">Year</td>
 <td align="left">1.1</td>
 </tr>
 <tr class="even">
-<td align="left"><span class="math inline">\(m\)</span></td>
+<td align="left"><math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mi>m</mi><annotation encoding="application/x-tex">m</annotation></semantics></math></td>
 <td align="left">Season</td>
 <td align="left">1.2</td>
 </tr>
 <tr class="odd">
-<td align="left"><span class="math inline">\(a\)</span></td>
+<td align="left"><math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mi>a</mi><annotation encoding="application/x-tex">a</annotation></semantics></math></td>
 <td align="left">Age</td>
 <td align="left">1.3</td>
 </tr>
 <tr class="even">
-<td align="left"><span class="math inline">\(r\)</span></td>
+<td align="left"><math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mi>r</mi><annotation encoding="application/x-tex">r</annotation></semantics></math></td>
 <td align="left">Region (spatial area)</td>
 <td align="left">1.4</td>
 </tr>
 <tr class="odd">
-<td align="left"><span class="math inline">\(f\)</span></td>
+<td align="left"><math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mi>f</mi><annotation encoding="application/x-tex">f</annotation></semantics></math></td>
 <td align="left">Fleet</td>
 <td align="left">1.5</td>
 </tr>
 <tr class="even">
-<td align="left"><span class="math inline">\(s\)</span></td>
+<td align="left"><math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mi>s</mi><annotation encoding="application/x-tex">s</annotation></semantics></math></td>
 <td align="left">Stock</td>
 <td align="left">1.6</td>
 </tr>
 <tr class="odd">
-<td align="left"><span class="math inline">\(i\)</span></td>
+<td align="left"><math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mi>i</mi><annotation encoding="application/x-tex">i</annotation></semantics></math></td>
 <td align="left">Index of abundance</td>
 <td align="left">1.7</td>
 </tr>
 <tr class="even">
-<td align="left"><span class="math inline">\(\ell\)</span></td>
+<td align="left"><math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mo>ℓ</mo><annotation encoding="application/x-tex">\ell</annotation></semantics></math></td>
 <td align="left">Length bin</td>
 <td align="left">1.8</td>
 </tr>
@@ -159,79 +144,78 @@ model.</p>
 <tbody>
 <tr class="odd">
 <td align="left">Stock weight at age</td>
-<td align="left"><span class="math inline">\(w_{y,m,a,s}\)</span></td>
+<td align="left"><math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><msub><mi>w</mi><mrow><mi>y</mi><mo>,</mo><mi>m</mi><mo>,</mo><mi>a</mi><mo>,</mo><mi>s</mi></mrow></msub><annotation encoding="application/x-tex">w_{y,m,a,s}</annotation></semantics></math></td>
 <td align="left">2.1</td>
 </tr>
 <tr class="even">
 <td align="left">Fishery weight at age</td>
-<td align="left"><span class="math inline">\(w^F_{y,m,a,f,s}\)</span></td>
+<td align="left"><math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><msubsup><mi>w</mi><mrow><mi>y</mi><mo>,</mo><mi>m</mi><mo>,</mo><mi>a</mi><mo>,</mo><mi>f</mi><mo>,</mo><mi>s</mi></mrow><mi>F</mi></msubsup><annotation encoding="application/x-tex">w^F_{y,m,a,f,s}</annotation></semantics></math></td>
 <td align="left">2.2</td>
 </tr>
 <tr class="odd">
 <td align="left">Maturity ogive</td>
-<td align="left"><span class="math inline">\(m_{y,a,s}\)</span></td>
+<td align="left"><math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><msub><mi>m</mi><mrow><mi>y</mi><mo>,</mo><mi>a</mi><mo>,</mo><mi>s</mi></mrow></msub><annotation encoding="application/x-tex">m_{y,a,s}</annotation></semantics></math></td>
 <td align="left">2.3</td>
 </tr>
 <tr class="even">
 <td align="left">Fecundity</td>
-<td align="left"><span class="math inline">\(f_{y,a,s}\)</span></td>
+<td align="left"><math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><msub><mi>f</mi><mrow><mi>y</mi><mo>,</mo><mi>a</mi><mo>,</mo><mi>s</mi></mrow></msub><annotation encoding="application/x-tex">f_{y,a,s}</annotation></semantics></math></td>
 <td align="left">2.4</td>
 </tr>
 <tr class="odd">
 <td align="left">Natural mortality (instantaneous per year)</td>
-<td align="left"><span class="math inline">\(M_{y,a,s}\)</span></td>
+<td align="left"><math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><msub><mi>M</mi><mrow><mi>y</mi><mo>,</mo><mi>a</mi><mo>,</mo><mi>s</mi></mrow></msub><annotation encoding="application/x-tex">M_{y,a,s}</annotation></semantics></math></td>
 <td align="left">2.5</td>
 </tr>
 <tr class="even">
 <td align="left">Length-at-age probability</td>
-<td align="left"><span class="math inline">\(\textrm{Pr}(\ell \mid a
-)_{y,m,s}\)</span></td>
+<td align="left"><math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mtext mathvariant="normal">Pr</mtext><msub><mrow><mo stretchy="true" form="prefix">(</mo><mo>ℓ</mo><mo>∣</mo><mi>a</mi><mo stretchy="true" form="postfix">)</mo></mrow><mrow><mi>y</mi><mo>,</mo><mi>m</mi><mo>,</mo><mi>s</mi></mrow></msub></mrow><annotation encoding="application/x-tex">\textrm{Pr}(\ell \mid a )_{y,m,s}</annotation></semantics></math></td>
 <td align="left">2.6</td>
 </tr>
 <tr class="odd">
 <td align="left">Fractional parameter (between 0 - 1)</td>
-<td align="left"><span class="math inline">\(\Delta\)</span></td>
+<td align="left"><math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mi>Δ</mi><annotation encoding="application/x-tex">\Delta</annotation></semantics></math></td>
 <td align="left">2.7</td>
 </tr>
 <tr class="even">
 <td align="left">Season length (relative to year)</td>
-<td align="left"><span class="math inline">\(\Delta_m\)</span></td>
+<td align="left"><math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><msub><mi>Δ</mi><mi>m</mi></msub><annotation encoding="application/x-tex">\Delta_m</annotation></semantics></math></td>
 <td align="left">2.8</td>
 </tr>
 <tr class="odd">
 <td align="left">Spawn timing (within season)</td>
-<td align="left"><span class="math inline">\(\Delta_{sp}\)</span></td>
+<td align="left"><math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><msub><mi>Δ</mi><mrow><mi>s</mi><mi>p</mi></mrow></msub><annotation encoding="application/x-tex">\Delta_{sp}</annotation></semantics></math></td>
 <td align="left">2.9</td>
 </tr>
 <tr class="even">
 <td align="left">Season of spawning (subscript)</td>
-<td align="left"><span class="math inline">\(m_\textrm{sp}\)</span></td>
+<td align="left"><math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><msub><mi>m</mi><mtext mathvariant="normal">sp</mtext></msub><annotation encoding="application/x-tex">m_\textrm{sp}</annotation></semantics></math></td>
 <td align="left">2.10</td>
 </tr>
 <tr class="odd">
 <td align="left">Season of recruitment (subscript)</td>
-<td align="left"><span class="math inline">\(m_\textrm{rec}\)</span></td>
+<td align="left"><math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><msub><mi>m</mi><mtext mathvariant="normal">rec</mtext></msub><annotation encoding="application/x-tex">m_\textrm{rec}</annotation></semantics></math></td>
 <td align="left">2.11</td>
 </tr>
 <tr class="even">
 <td align="left">Natal spawning (proportion of mature individuals that
 spawn)</td>
-<td align="left"><span class="math inline">\(n_{r,s}\)</span></td>
+<td align="left"><math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><msub><mi>n</mi><mrow><mi>r</mi><mo>,</mo><mi>s</mi></mrow></msub><annotation encoding="application/x-tex">n_{r,s}</annotation></semantics></math></td>
 <td align="left">2.12</td>
 </tr>
 <tr class="odd">
 <td align="left">Stock scaling parameter</td>
-<td align="left"><span class="math inline">\(r_s\)</span></td>
+<td align="left"><math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><msub><mi>r</mi><mi>s</mi></msub><annotation encoding="application/x-tex">r_s</annotation></semantics></math></td>
 <td align="left">2.13</td>
 </tr>
 <tr class="even">
 <td align="left">Survey timing</td>
-<td align="left"><span class="math inline">\(\Delta_i\)</span></td>
+<td align="left"><math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><msub><mi>Δ</mi><mi>i</mi></msub><annotation encoding="application/x-tex">\Delta_i</annotation></semantics></math></td>
 <td align="left">2.14</td>
 </tr>
 <tr class="odd">
 <td align="left">Survey sampling coverage</td>
-<td align="left"><span class="math inline">\(\delta_{i,r,s}\)</span></td>
+<td align="left"><math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><msub><mi>δ</mi><mrow><mi>i</mi><mo>,</mo><mi>r</mi><mo>,</mo><mi>s</mi></mrow></msub><annotation encoding="application/x-tex">\delta_{i,r,s}</annotation></semantics></math></td>
 <td align="left">2.15</td>
 </tr>
 </tbody>
@@ -241,18 +225,22 @@ spawn)</td>
 <h3 id="estimated-parameters">Estimated parameters<a class="anchor" aria-label="anchor" href="#estimated-parameters"></a>
 </h3>
 <p>The parameters here are set up to be either estimated or fixed in the
-model. Such parameters are identified as <span class="math inline">\(x\)</span> which is estimated over all real
-numbers and transformed to the appropriate model parameter described
-below.</p>
+model. Such parameters are identified as
+<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mi>x</mi><annotation encoding="application/x-tex">x</annotation></semantics></math>
+which is estimated over all real numbers and transformed to the
+appropriate model parameter described below.</p>
 <ul>
-<li>Unfished recruitment is scaled by an additional user parameter <span class="math inline">\(r_s\)</span> which is intended to aid convergence.
-For multi-stock models, <span class="math inline">\(r_s\)</span> should
-be proportional to the expected stock size, i.e., large values for large
-stocks.</li>
+<li>Unfished recruitment is scaled by an additional user parameter
+<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><msub><mi>r</mi><mi>s</mi></msub><annotation encoding="application/x-tex">r_s</annotation></semantics></math>
+which is intended to aid convergence. For multi-stock models,
+<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><msub><mi>r</mi><mi>s</mi></msub><annotation encoding="application/x-tex">r_s</annotation></semantics></math>
+should be proportional to the expected stock size, i.e., large values
+for large stocks.</li>
 <li>Maturity and natural mortality can either be estimated or defined by
 the user as above.</li>
 <li>Fishing mortality is fixed to zero when the corresponding catch is
-less than <span class="math inline">\(10^{-8}\)</span>.</li>
+less than
+<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><msup><mn>10</mn><mrow><mo>−</mo><mn>8</mn></mrow></msup><annotation encoding="application/x-tex">10^{-8}</annotation></semantics></math>.</li>
 </ul>
 <table style="width:100%;" class="table">
 <colgroup>
@@ -268,111 +256,107 @@ less than <span class="math inline">\(10^{-8}\)</span>.</li>
 <tbody>
 <tr class="odd">
 <td align="left">Estimated parameter (all real numbers)</td>
-<td align="left"><span class="math inline">\(x\)</span></td>
+<td align="left"><math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mi>x</mi><annotation encoding="application/x-tex">x</annotation></semantics></math></td>
 <td align="left">3.1</td>
 </tr>
 <tr class="even">
 <td align="left">Unfished recruitment</td>
-<td align="left"><span class="math inline">\(R_{0,s} = r_s
-\exp(x^{R0}_s)\)</span></td>
+<td align="left"><math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><msub><mi>R</mi><mrow><mn>0</mn><mo>,</mo><mi>s</mi></mrow></msub><mo>=</mo><msub><mi>r</mi><mi>s</mi></msub><mo>exp</mo><mrow><mo stretchy="true" form="prefix">(</mo><msubsup><mi>x</mi><mi>s</mi><mrow><mi>R</mi><mn>0</mn></mrow></msubsup><mo stretchy="true" form="postfix">)</mo></mrow></mrow><annotation encoding="application/x-tex">R_{0,s} = r_s \exp(x^{R0}_s)</annotation></semantics></math></td>
 <td align="left">3.2</td>
 </tr>
 <tr class="odd">
 <td align="left">Beverton-Holt stock-recruit steepness</td>
-<td align="left"><span class="math inline">\(h_s = 0.8 \times
-\textrm{logit}^{-1}(x^h_s) + 0.2\)</span></td>
+<td align="left"><math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><msub><mi>h</mi><mi>s</mi></msub><mo>=</mo><mn>0.8</mn><mo>×</mo><msup><mtext mathvariant="normal">logit</mtext><mrow><mo>−</mo><mn>1</mn></mrow></msup><mrow><mo stretchy="true" form="prefix">(</mo><msubsup><mi>x</mi><mi>s</mi><mi>h</mi></msubsup><mo stretchy="true" form="postfix">)</mo></mrow><mo>+</mo><mn>0.2</mn></mrow><annotation encoding="application/x-tex">h_s = 0.8 \times \textrm{logit}^{-1}(x^h_s) + 0.2</annotation></semantics></math></td>
 <td align="left">3.3</td>
 </tr>
 <tr class="even">
 <td align="left">Ricker stock-recruit steepness</td>
-<td align="left"><span class="math inline">\(h_s = \exp(x^h_s) +
-0.2\)</span></td>
+<td align="left"><math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><msub><mi>h</mi><mi>s</mi></msub><mo>=</mo><mo>exp</mo><mrow><mo stretchy="true" form="prefix">(</mo><msubsup><mi>x</mi><mi>s</mi><mi>h</mi></msubsup><mo stretchy="true" form="postfix">)</mo></mrow><mo>+</mo><mn>0.2</mn></mrow><annotation encoding="application/x-tex">h_s = \exp(x^h_s) + 0.2</annotation></semantics></math></td>
 <td align="left">3.4</td>
 </tr>
 <tr class="odd">
-<td align="left">Age of 50% maturity (<span class="math inline">\(A\)</span> is the maximum age)</td>
-<td align="left"><span class="math inline">\(a^{50}_s=A\times\textrm{logit}^{-1}(x^{a50}_s)\)</span></td>
+<td align="left">Age of 50% maturity
+(<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mi>A</mi><annotation encoding="application/x-tex">A</annotation></semantics></math>
+is the maximum age)</td>
+<td align="left"><math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><msubsup><mi>a</mi><mi>s</mi><mn>50</mn></msubsup><mo>=</mo><mi>A</mi><mo>×</mo><msup><mtext mathvariant="normal">logit</mtext><mrow><mo>−</mo><mn>1</mn></mrow></msup><mrow><mo stretchy="true" form="prefix">(</mo><msubsup><mi>x</mi><mi>s</mi><mrow><mi>a</mi><mn>50</mn></mrow></msubsup><mo stretchy="true" form="postfix">)</mo></mrow></mrow><annotation encoding="application/x-tex">a^{50}_s=A\times\textrm{logit}^{-1}(x^{a50}_s)</annotation></semantics></math></td>
 <td align="left">3.5</td>
 </tr>
 <tr class="even">
 <td align="left">Age of 95% maturity</td>
-<td align="left"><span class="math inline">\(a^{95}_s = a^{50}_s +
-\exp(x^{a95}_s)\)</span></td>
+<td align="left"><math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><msubsup><mi>a</mi><mi>s</mi><mn>95</mn></msubsup><mo>=</mo><msubsup><mi>a</mi><mi>s</mi><mn>50</mn></msubsup><mo>+</mo><mo>exp</mo><mrow><mo stretchy="true" form="prefix">(</mo><msubsup><mi>x</mi><mi>s</mi><mrow><mi>a</mi><mn>95</mn></mrow></msubsup><mo stretchy="true" form="postfix">)</mo></mrow></mrow><annotation encoding="application/x-tex">a^{95}_s = a^{50}_s + \exp(x^{a95}_s)</annotation></semantics></math></td>
 <td align="left">3.6</td>
 </tr>
 <tr class="odd">
 <td align="left">Natural mortality</td>
-<td align="left"><span class="math inline">\(M_s =
-\exp(x^M_s)\)</span></td>
+<td align="left"><math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><msub><mi>M</mi><mi>s</mi></msub><mo>=</mo><mo>exp</mo><mrow><mo stretchy="true" form="prefix">(</mo><msubsup><mi>x</mi><mi>s</mi><mi>M</mi></msubsup><mo stretchy="true" form="postfix">)</mo></mrow></mrow><annotation encoding="application/x-tex">M_s = \exp(x^M_s)</annotation></semantics></math></td>
 <td align="left">3.7</td>
 </tr>
 <tr class="even">
 <td align="left">Recruitment deviates</td>
-<td align="left"><span class="math inline">\(x^R_{y,s}\)</span></td>
+<td align="left"><math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><msubsup><mi>x</mi><mrow><mi>y</mi><mo>,</mo><mi>s</mi></mrow><mi>R</mi></msubsup><annotation encoding="application/x-tex">x^R_{y,s}</annotation></semantics></math></td>
 <td align="left">3.8</td>
 </tr>
 <tr class="odd">
 <td align="left">Standard deviation of recruitment deviates</td>
-<td align="left"><span class="math inline">\(\sigma^R_s=\exp(x^{\sigma_R}_s)\)</span></td>
+<td align="left"><math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><msubsup><mi>σ</mi><mi>s</mi><mi>R</mi></msubsup><mo>=</mo><mo>exp</mo><mrow><mo stretchy="true" form="prefix">(</mo><msubsup><mi>x</mi><mi>s</mi><msub><mi>σ</mi><mi>R</mi></msub></msubsup><mo stretchy="true" form="postfix">)</mo></mrow></mrow><annotation encoding="application/x-tex">\sigma^R_s=\exp(x^{\sigma_R}_s)</annotation></semantics></math></td>
 <td align="left">3.9</td>
 </tr>
 <tr class="even">
 <td align="left">Fleet catchability by stock</td>
-<td align="left"><span class="math inline">\(q^F_{f,s}=
-\exp(x^{qF}_{f,s})\)</span></td>
+<td align="left"><math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><msubsup><mi>q</mi><mrow><mi>f</mi><mo>,</mo><mi>s</mi></mrow><mi>F</mi></msubsup><mo>=</mo><mo>exp</mo><mrow><mo stretchy="true" form="prefix">(</mo><msubsup><mi>x</mi><mrow><mi>f</mi><mo>,</mo><mi>s</mi></mrow><mrow><mi>q</mi><mi>F</mi></mrow></msubsup><mo stretchy="true" form="postfix">)</mo></mrow></mrow><annotation encoding="application/x-tex">q^F_{f,s}= \exp(x^{qF}_{f,s})</annotation></semantics></math></td>
 <td align="left">3.10</td>
 </tr>
 <tr class="odd">
 <td align="left">Fishing mortality</td>
-<td align="left"><span class="math inline">\(F_{y,m,f,r} =
-\begin{cases}  \exp(x^{\textrm{Fmult}}_f) \quad &amp; y =
-y_{\textrm{ref}}, m = m_{\textrm{ref}}, r = r_{\textrm{ref}}\\
-\exp(x^{\textrm{Fmult}}_f + x^{\textrm{Fdev}}_{y,m,r}) \quad &amp;
-\textrm{otherwise} \end{cases}\)</span></td>
+<td align="left"><math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><msub><mi>F</mi><mrow><mi>y</mi><mo>,</mo><mi>m</mi><mo>,</mo><mi>f</mi><mo>,</mo><mi>r</mi></mrow></msub><mo>=</mo><mrow><mo stretchy="true" form="prefix">{</mo><mtable><mtr><mtd columnalign="left" style="text-align: left"><mo>exp</mo><mrow><mo stretchy="true" form="prefix">(</mo><msubsup><mi>x</mi><mi>f</mi><mtext mathvariant="normal">Fmult</mtext></msubsup><mo stretchy="true" form="postfix">)</mo></mrow><mspace width="1.0em"></mspace></mtd><mtd columnalign="left" style="text-align: left"><mi>y</mi><mo>=</mo><msub><mi>y</mi><mtext mathvariant="normal">ref</mtext></msub><mo>,</mo><mi>m</mi><mo>=</mo><msub><mi>m</mi><mtext mathvariant="normal">ref</mtext></msub><mo>,</mo><mi>r</mi><mo>=</mo><msub><mi>r</mi><mtext mathvariant="normal">ref</mtext></msub></mtd></mtr><mtr><mtd columnalign="left" style="text-align: left"><mo>exp</mo><mrow><mo stretchy="true" form="prefix">(</mo><msubsup><mi>x</mi><mi>f</mi><mtext mathvariant="normal">Fmult</mtext></msubsup><mo>+</mo><msubsup><mi>x</mi><mrow><mi>y</mi><mo>,</mo><mi>m</mi><mo>,</mo><mi>r</mi></mrow><mtext mathvariant="normal">Fdev</mtext></msubsup><mo stretchy="true" form="postfix">)</mo></mrow><mspace width="1.0em"></mspace></mtd><mtd columnalign="left" style="text-align: left"><mtext mathvariant="normal">otherwise</mtext></mtd></mtr></mtable></mrow></mrow><annotation encoding="application/x-tex">F_{y,m,f,r} = \begin{cases}  \exp(x^{\textrm{Fmult}}_f) \quad &amp; y = y_{\textrm{ref}}, m = m_{\textrm{ref}}, r = r_{\textrm{ref}}\\ \exp(x^{\textrm{Fmult}}_f + x^{\textrm{Fdev}}_{y,m,r}) \quad &amp; \textrm{otherwise} \end{cases}</annotation></semantics></math></td>
 <td align="left">3.11</td>
 </tr>
 <tr class="even">
-<td align="left">Selectivity - length of full selectivity (<span class="math inline">\(f\)</span> and <span class="math inline">\(i\)</span> subscripts are interchangeable)</td>
-<td align="left"><span class="math inline">\(\mu_f = L_{\textrm{max}}
-\times \textrm{logit}^{-1}(x^{\mu}_f)\)</span></td>
+<td align="left">Selectivity - length of full selectivity
+(<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mi>f</mi><annotation encoding="application/x-tex">f</annotation></semantics></math>
+and
+<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mi>i</mi><annotation encoding="application/x-tex">i</annotation></semantics></math>
+subscripts are interchangeable)</td>
+<td align="left"><math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><msub><mi>μ</mi><mi>f</mi></msub><mo>=</mo><msub><mi>L</mi><mtext mathvariant="normal">max</mtext></msub><mo>×</mo><msup><mtext mathvariant="normal">logit</mtext><mrow><mo>−</mo><mn>1</mn></mrow></msup><mrow><mo stretchy="true" form="prefix">(</mo><msubsup><mi>x</mi><mi>f</mi><mi>μ</mi></msubsup><mo stretchy="true" form="postfix">)</mo></mrow></mrow><annotation encoding="application/x-tex">\mu_f = L_{\textrm{max}} \times \textrm{logit}^{-1}(x^{\mu}_f)</annotation></semantics></math></td>
 <td align="left">3.12</td>
 </tr>
 <tr class="odd">
 <td align="left">Selectivity - width of ascending limb</td>
-<td align="left"><span class="math inline">\(\sigma^{\textrm{asc}}_f =
-\exp(x^{\textrm{asc}}_f)\)</span></td>
+<td align="left"><math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><msubsup><mi>σ</mi><mi>f</mi><mtext mathvariant="normal">asc</mtext></msubsup><mo>=</mo><mo>exp</mo><mrow><mo stretchy="true" form="prefix">(</mo><msubsup><mi>x</mi><mi>f</mi><mtext mathvariant="normal">asc</mtext></msubsup><mo stretchy="true" form="postfix">)</mo></mrow></mrow><annotation encoding="application/x-tex">\sigma^{\textrm{asc}}_f = \exp(x^{\textrm{asc}}_f)</annotation></semantics></math></td>
 <td align="left">3.13</td>
 </tr>
 <tr class="even">
 <td align="left">Selectivity - width of descending limb</td>
-<td align="left"><span class="math inline">\(\sigma^{\textrm{dsc}}_f =
-\exp(x^{\textrm{dsc}}_f)\)</span></td>
+<td align="left"><math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><msubsup><mi>σ</mi><mi>f</mi><mtext mathvariant="normal">dsc</mtext></msubsup><mo>=</mo><mo>exp</mo><mrow><mo stretchy="true" form="prefix">(</mo><msubsup><mi>x</mi><mi>f</mi><mtext mathvariant="normal">dsc</mtext></msubsup><mo stretchy="true" form="postfix">)</mo></mrow></mrow><annotation encoding="application/x-tex">\sigma^{\textrm{dsc}}_f = \exp(x^{\textrm{dsc}}_f)</annotation></semantics></math></td>
 <td align="left">3.14</td>
 </tr>
 <tr class="odd">
-<td align="left">Base movement parameters from origin <span class="math inline">\(r\)</span> to destination <span class="math inline">\(r'\)</span>
+<td align="left">Base movement parameters from origin
+<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mi>r</mi><annotation encoding="application/x-tex">r</annotation></semantics></math>
+to destination
+<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mi>r</mi><mi>′</mi></mrow><annotation encoding="application/x-tex">r'</annotation></semantics></math>
 </td>
-<td align="left"><span class="math inline">\(x^b_{m,a,r,r',s}\)</span></td>
+<td align="left"><math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><msubsup><mi>x</mi><mrow><mi>m</mi><mo>,</mo><mi>a</mi><mo>,</mo><mi>r</mi><mo>,</mo><mi>r</mi><mi>′</mi><mo>,</mo><mi>s</mi></mrow><mi>b</mi></msubsup><annotation encoding="application/x-tex">x^b_{m,a,r,r',s}</annotation></semantics></math></td>
 <td align="left">3.15</td>
 </tr>
 <tr class="even">
 <td align="left">Attractivity term - movement</td>
-<td align="left"><span class="math inline">\(x^g_{y,m,a,r',s}\)</span></td>
+<td align="left"><math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><msubsup><mi>x</mi><mrow><mi>y</mi><mo>,</mo><mi>m</mi><mo>,</mo><mi>a</mi><mo>,</mo><mi>r</mi><mi>′</mi><mo>,</mo><mi>s</mi></mrow><mi>g</mi></msubsup><annotation encoding="application/x-tex">x^g_{y,m,a,r',s}</annotation></semantics></math></td>
 <td align="left">3.16</td>
 </tr>
 <tr class="odd">
 <td align="left">Viscosity term - movement</td>
-<td align="left"><span class="math inline">\(x^v_{y,m,a,s}\)</span></td>
+<td align="left"><math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><msubsup><mi>x</mi><mrow><mi>y</mi><mo>,</mo><mi>m</mi><mo>,</mo><mi>a</mi><mo>,</mo><mi>s</mi></mrow><mi>v</mi></msubsup><annotation encoding="application/x-tex">x^v_{y,m,a,s}</annotation></semantics></math></td>
 <td align="left">3.17</td>
 </tr>
 <tr class="even">
 <td align="left">Initial equilibrium fishing mortality</td>
-<td align="left"><span class="math inline">\(F^{\textrm{eq}}_{m,f,r}=\exp(x^{\textrm{Feq}}_{m,f,r})\)</span></td>
+<td align="left"><math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><msubsup><mi>F</mi><mrow><mi>m</mi><mo>,</mo><mi>f</mi><mo>,</mo><mi>r</mi></mrow><mtext mathvariant="normal">eq</mtext></msubsup><mo>=</mo><mo>exp</mo><mrow><mo stretchy="true" form="prefix">(</mo><msubsup><mi>x</mi><mrow><mi>m</mi><mo>,</mo><mi>f</mi><mo>,</mo><mi>r</mi></mrow><mtext mathvariant="normal">Feq</mtext></msubsup><mo stretchy="true" form="postfix">)</mo></mrow></mrow><annotation encoding="application/x-tex">F^{\textrm{eq}}_{m,f,r}=\exp(x^{\textrm{Feq}}_{m,f,r})</annotation></semantics></math></td>
 <td align="left">3.18</td>
 </tr>
 <tr class="odd">
 <td align="left">Deviations from the equilibrium age structure</td>
-<td align="left"><span class="math inline">\(x^{\textrm{Req}}_{a,s}\)</span></td>
+<td align="left"><math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><msubsup><mi>x</mi><mrow><mi>a</mi><mo>,</mo><mi>s</mi></mrow><mtext mathvariant="normal">Req</mtext></msubsup><annotation encoding="application/x-tex">x^{\textrm{Req}}_{a,s}</annotation></semantics></math></td>
 <td align="left">3.19</td>
 </tr>
 </tbody>
@@ -392,13 +376,17 @@ pattern.</li>
 configurations are possible.</li>
 <li>Stock-recruit functions use the steepness parameterization, along
 with the unfished recruitment and the unfished spawning output per
-recruit (<span class="math inline">\(\phi_0\)</span>). In seasonal and
-multi-region models, the population dynamics model is used to
-numerically obtain <span class="math inline">\(\phi_0\)</span> by
-setting <span class="math inline">\(F_{y,m,f,r} = 0\)</span>,
+recruit
+(<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><msub><mi>ϕ</mi><mn>0</mn></msub><annotation encoding="application/x-tex">\phi_0</annotation></semantics></math>).
+In seasonal and multi-region models, the population dynamics model is
+used to numerically obtain
+<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><msub><mi>ϕ</mi><mn>0</mn></msub><annotation encoding="application/x-tex">\phi_0</annotation></semantics></math>
+by setting
+<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><msub><mi>F</mi><mrow><mi>y</mi><mo>,</mo><mi>m</mi><mo>,</mo><mi>f</mi><mo>,</mo><mi>r</mi></mrow></msub><mo>=</mo><mn>0</mn></mrow><annotation encoding="application/x-tex">F_{y,m,f,r} = 0</annotation></semantics></math>,
 recruitment to 1, and all other parameters to constant seasonal values.
-<span class="math inline">\(\phi_0\)</span> is the equilibrium spawning
-output at the end of this numerical spool-up.</li>
+<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><msub><mi>ϕ</mi><mn>0</mn></msub><annotation encoding="application/x-tex">\phi_0</annotation></semantics></math>
+is the equilibrium spawning output at the end of this numerical
+spool-up.</li>
 </ul>
 <table class="table">
 <colgroup>
@@ -414,49 +402,36 @@ output at the end of this numerical spool-up.</li>
 <tbody>
 <tr class="odd">
 <td align="left">Selectivity at length</td>
-<td align="left"><span class="math inline">\(s_{\ell,f} = \begin{cases}
-\exp\left(-0.5\left[\dfrac{L_\ell -
-\mu_f}{\sigma^{\textrm{asc}}_f}\right]^2\right) &amp;, L_\ell &lt; \mu_f
-\\ \exp\left(-0.5\left[\dfrac{L_\ell -
-\mu_f}{\sigma^{\textrm{dsc}}_f}\right]^2\right) &amp;, L_\ell \ge \mu_f
-\end{cases}\)</span></td>
+<td align="left"><math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><msub><mi>s</mi><mrow><mo>ℓ</mo><mo>,</mo><mi>f</mi></mrow></msub><mo>=</mo><mrow><mo stretchy="true" form="prefix">{</mo><mtable><mtr><mtd columnalign="left" style="text-align: left"><mo>exp</mo><mrow><mo stretchy="true" form="prefix">(</mo><mo>−</mo><mn>0.5</mn><msup><mrow><mo stretchy="true" form="prefix">[</mo><mfrac displaystyle="true"><mrow><msub><mi>L</mi><mo>ℓ</mo></msub><mo>−</mo><msub><mi>μ</mi><mi>f</mi></msub></mrow><msubsup><mi>σ</mi><mi>f</mi><mtext mathvariant="normal">asc</mtext></msubsup></mfrac><mo stretchy="true" form="postfix">]</mo></mrow><mn>2</mn></msup><mo stretchy="true" form="postfix">)</mo></mrow></mtd><mtd columnalign="left" style="text-align: left"><mo>,</mo><msub><mi>L</mi><mo>ℓ</mo></msub><mo>&lt;</mo><msub><mi>μ</mi><mi>f</mi></msub></mtd></mtr><mtr><mtd columnalign="left" style="text-align: left"><mo>exp</mo><mrow><mo stretchy="true" form="prefix">(</mo><mo>−</mo><mn>0.5</mn><msup><mrow><mo stretchy="true" form="prefix">[</mo><mfrac displaystyle="true"><mrow><msub><mi>L</mi><mo>ℓ</mo></msub><mo>−</mo><msub><mi>μ</mi><mi>f</mi></msub></mrow><msubsup><mi>σ</mi><mi>f</mi><mtext mathvariant="normal">dsc</mtext></msubsup></mfrac><mo stretchy="true" form="postfix">]</mo></mrow><mn>2</mn></msup><mo stretchy="true" form="postfix">)</mo></mrow></mtd><mtd columnalign="left" style="text-align: left"><mo>,</mo><msub><mi>L</mi><mo>ℓ</mo></msub><mo>≥</mo><msub><mi>μ</mi><mi>f</mi></msub></mtd></mtr></mtable></mrow></mrow><annotation encoding="application/x-tex">s_{\ell,f} = \begin{cases} \exp\left(-0.5\left[\dfrac{L_\ell - \mu_f}{\sigma^{\textrm{asc}}_f}\right]^2\right) &amp;, L_\ell &lt; \mu_f \\ \exp\left(-0.5\left[\dfrac{L_\ell - \mu_f}{\sigma^{\textrm{dsc}}_f}\right]^2\right) &amp;, L_\ell \ge \mu_f \end{cases}</annotation></semantics></math></td>
 <td align="left">4.1</td>
 </tr>
 <tr class="even">
 <td align="left">Selectivity at age</td>
-<td align="left"><span class="math inline">\(s_{y,m,a,f,s} = \sum_\ell
-\textrm{Pr}(\ell \mid a )_{y,m,s} \times s_{\ell,f}\)</span></td>
+<td align="left"><math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><msub><mi>s</mi><mrow><mi>y</mi><mo>,</mo><mi>m</mi><mo>,</mo><mi>a</mi><mo>,</mo><mi>f</mi><mo>,</mo><mi>s</mi></mrow></msub><mo>=</mo><msub><mo>∑</mo><mo>ℓ</mo></msub><mtext mathvariant="normal">Pr</mtext><msub><mrow><mo stretchy="true" form="prefix">(</mo><mo>ℓ</mo><mo>∣</mo><mi>a</mi><mo stretchy="true" form="postfix">)</mo></mrow><mrow><mi>y</mi><mo>,</mo><mi>m</mi><mo>,</mo><mi>s</mi></mrow></msub><mo>×</mo><msub><mi>s</mi><mrow><mo>ℓ</mo><mo>,</mo><mi>f</mi></mrow></msub></mrow><annotation encoding="application/x-tex">s_{y,m,a,f,s} = \sum_\ell \textrm{Pr}(\ell \mid a )_{y,m,s} \times s_{\ell,f}</annotation></semantics></math></td>
 <td align="left">4.2</td>
 </tr>
 <tr class="odd">
 <td align="left">Maturity (if estimated)</td>
-<td align="left"><span class="math inline">\(m_{a,s} = \left[1 +
-\exp\left(-\log(19)\frac{a-a^{50}_s}{a^{95}_s -
-a^{50}_s}\right)\right]^{-1}\)</span></td>
+<td align="left"><math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><msub><mi>m</mi><mrow><mi>a</mi><mo>,</mo><mi>s</mi></mrow></msub><mo>=</mo><msup><mrow><mo stretchy="true" form="prefix">[</mo><mn>1</mn><mo>+</mo><mo>exp</mo><mrow><mo stretchy="true" form="prefix">(</mo><mo>−</mo><mo>log</mo><mrow><mo stretchy="true" form="prefix">(</mo><mn>19</mn><mo stretchy="true" form="postfix">)</mo></mrow><mfrac><mrow><mi>a</mi><mo>−</mo><msubsup><mi>a</mi><mi>s</mi><mn>50</mn></msubsup></mrow><mrow><msubsup><mi>a</mi><mi>s</mi><mn>95</mn></msubsup><mo>−</mo><msubsup><mi>a</mi><mi>s</mi><mn>50</mn></msubsup></mrow></mfrac><mo stretchy="true" form="postfix">)</mo></mrow><mo stretchy="true" form="postfix">]</mo></mrow><mrow><mo>−</mo><mn>1</mn></mrow></msup></mrow><annotation encoding="application/x-tex">m_{a,s} = \left[1 + \exp\left(-\log(19)\frac{a-a^{50}_s}{a^{95}_s - a^{50}_s}\right)\right]^{-1}</annotation></semantics></math></td>
 <td align="left">4.3</td>
 </tr>
 <tr class="even">
-<td align="left">Movement from <span class="math inline">\(r\)</span> to
-<span class="math inline">\(r'\)</span>
+<td align="left">Movement from
+<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mi>r</mi><annotation encoding="application/x-tex">r</annotation></semantics></math>
+to
+<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mi>r</mi><mi>′</mi></mrow><annotation encoding="application/x-tex">r'</annotation></semantics></math>
 </td>
-<td align="left"><span class="math inline">\(\textrm{mov}_{y,m,a,r,r',s} =
-\dfrac{\exp(x^b_{m,a,r,r',s} + x^g_{y,m,a,r,s} +
-x^v_{y,m,a,s})}{\sum_{r'} \exp(x^b_{m,a,r,r',s} +
-x^g_{y,m,a,r,s} + x^v_{y,m,a,s})}\)</span></td>
+<td align="left"><math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><msub><mtext mathvariant="normal">mov</mtext><mrow><mi>y</mi><mo>,</mo><mi>m</mi><mo>,</mo><mi>a</mi><mo>,</mo><mi>r</mi><mo>,</mo><mi>r</mi><mi>′</mi><mo>,</mo><mi>s</mi></mrow></msub><mo>=</mo><mfrac displaystyle="true"><mrow><mo>exp</mo><mrow><mo stretchy="true" form="prefix">(</mo><msubsup><mi>x</mi><mrow><mi>m</mi><mo>,</mo><mi>a</mi><mo>,</mo><mi>r</mi><mo>,</mo><mi>r</mi><mi>′</mi><mo>,</mo><mi>s</mi></mrow><mi>b</mi></msubsup><mo>+</mo><msubsup><mi>x</mi><mrow><mi>y</mi><mo>,</mo><mi>m</mi><mo>,</mo><mi>a</mi><mo>,</mo><mi>r</mi><mo>,</mo><mi>s</mi></mrow><mi>g</mi></msubsup><mo>+</mo><msubsup><mi>x</mi><mrow><mi>y</mi><mo>,</mo><mi>m</mi><mo>,</mo><mi>a</mi><mo>,</mo><mi>s</mi></mrow><mi>v</mi></msubsup><mo stretchy="true" form="postfix">)</mo></mrow></mrow><mrow><msub><mo>∑</mo><mrow><mi>r</mi><mi>′</mi></mrow></msub><mo>exp</mo><mrow><mo stretchy="true" form="prefix">(</mo><msubsup><mi>x</mi><mrow><mi>m</mi><mo>,</mo><mi>a</mi><mo>,</mo><mi>r</mi><mo>,</mo><mi>r</mi><mi>′</mi><mo>,</mo><mi>s</mi></mrow><mi>b</mi></msubsup><mo>+</mo><msubsup><mi>x</mi><mrow><mi>y</mi><mo>,</mo><mi>m</mi><mo>,</mo><mi>a</mi><mo>,</mo><mi>r</mi><mo>,</mo><mi>s</mi></mrow><mi>g</mi></msubsup><mo>+</mo><msubsup><mi>x</mi><mrow><mi>y</mi><mo>,</mo><mi>m</mi><mo>,</mo><mi>a</mi><mo>,</mo><mi>s</mi></mrow><mi>v</mi></msubsup><mo stretchy="true" form="postfix">)</mo></mrow></mrow></mfrac></mrow><annotation encoding="application/x-tex">\textrm{mov}_{y,m,a,r,r',s} = \dfrac{\exp(x^b_{m,a,r,r',s} + x^g_{y,m,a,r,s} + x^v_{y,m,a,s})}{\sum_{r'} \exp(x^b_{m,a,r,r',s} + x^g_{y,m,a,r,s} + x^v_{y,m,a,s})}</annotation></semantics></math></td>
 <td align="left">4.4</td>
 </tr>
 <tr class="odd">
 <td align="left">Beverton-Holt stock recruit parameters</td>
-<td align="left"><span class="math inline">\(\begin{align} \alpha_s
-&amp;= \dfrac{4h_s}{(1-h_s)\phi_{0,s}}\\ \beta_s &amp;=
-\dfrac{5h_s-1}{(1-h_s)R_{0,s}\phi_{0,s}}\end{align}\)</span></td>
+<td align="left"><math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mtable><mtr><mtd columnalign="right" style="text-align: right"><msub><mi>α</mi><mi>s</mi></msub></mtd><mtd columnalign="left" style="text-align: left"><mo>=</mo><mfrac displaystyle="true"><mrow><mn>4</mn><msub><mi>h</mi><mi>s</mi></msub></mrow><mrow><mrow><mo stretchy="true" form="prefix">(</mo><mn>1</mn><mo>−</mo><msub><mi>h</mi><mi>s</mi></msub><mo stretchy="true" form="postfix">)</mo></mrow><msub><mi>ϕ</mi><mrow><mn>0</mn><mo>,</mo><mi>s</mi></mrow></msub></mrow></mfrac></mtd></mtr><mtr><mtd columnalign="right" style="text-align: right"><msub><mi>β</mi><mi>s</mi></msub></mtd><mtd columnalign="left" style="text-align: left"><mo>=</mo><mfrac displaystyle="true"><mrow><mn>5</mn><msub><mi>h</mi><mi>s</mi></msub><mo>−</mo><mn>1</mn></mrow><mrow><mrow><mo stretchy="true" form="prefix">(</mo><mn>1</mn><mo>−</mo><msub><mi>h</mi><mi>s</mi></msub><mo stretchy="true" form="postfix">)</mo></mrow><msub><mi>R</mi><mrow><mn>0</mn><mo>,</mo><mi>s</mi></mrow></msub><msub><mi>ϕ</mi><mrow><mn>0</mn><mo>,</mo><mi>s</mi></mrow></msub></mrow></mfrac></mtd></mtr></mtable><annotation encoding="application/x-tex">\begin{align} \alpha_s &amp;= \dfrac{4h_s}{(1-h_s)\phi_{0,s}}\\ \beta_s &amp;= \dfrac{5h_s-1}{(1-h_s)R_{0,s}\phi_{0,s}}\end{align}</annotation></semantics></math></td>
 <td align="left">4.5</td>
 </tr>
 <tr class="even">
 <td align="left">Ricker stock recruit parameters</td>
-<td align="left"><span class="math inline">\(\begin{align} \alpha_s
-&amp;= \dfrac{5h^{1.25}}{\phi_{0,s}}\\ \beta_s &amp;=
-\dfrac{\log([5h_s]^{1.25})}{R_{0,s}\phi_{0,s}}\end{align}\)</span></td>
+<td align="left"><math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mtable><mtr><mtd columnalign="right" style="text-align: right"><msub><mi>α</mi><mi>s</mi></msub></mtd><mtd columnalign="left" style="text-align: left"><mo>=</mo><mfrac displaystyle="true"><mrow><mn>5</mn><msup><mi>h</mi><mn>1.25</mn></msup></mrow><msub><mi>ϕ</mi><mrow><mn>0</mn><mo>,</mo><mi>s</mi></mrow></msub></mfrac></mtd></mtr><mtr><mtd columnalign="right" style="text-align: right"><msub><mi>β</mi><mi>s</mi></msub></mtd><mtd columnalign="left" style="text-align: left"><mo>=</mo><mfrac displaystyle="true"><mrow><mo>log</mo><mrow><mo stretchy="true" form="prefix">(</mo><msup><mrow><mo stretchy="true" form="prefix">[</mo><mn>5</mn><msub><mi>h</mi><mi>s</mi></msub><mo stretchy="true" form="postfix">]</mo></mrow><mn>1.25</mn></msup><mo stretchy="true" form="postfix">)</mo></mrow></mrow><mrow><msub><mi>R</mi><mrow><mn>0</mn><mo>,</mo><mi>s</mi></mrow></msub><msub><mi>ϕ</mi><mrow><mn>0</mn><mo>,</mo><mi>s</mi></mrow></msub></mrow></mfrac></mtd></mtr></mtable><annotation encoding="application/x-tex">\begin{align} \alpha_s &amp;= \dfrac{5h^{1.25}}{\phi_{0,s}}\\ \beta_s &amp;= \dfrac{\log([5h_s]^{1.25})}{R_{0,s}\phi_{0,s}}\end{align}</annotation></semantics></math></td>
 <td align="left">4.6</td>
 </tr>
 </tbody>
@@ -468,21 +443,26 @@ x^g_{y,m,a,r,s} + x^v_{y,m,a,s})}\)</span></td>
 </h2>
 <p>The following equations project the population forward in time.</p>
 <ul>
-<li>To obtain the initial abundance <span class="math inline">\(N_{y=1,m=1,a,r,s}\)</span> array in seasonal and
-multi-region models, a numerical spool-up is performed with the seasonal
-fishing mortality equal to <span class="math inline">\(F^{\textrm{eq}}_{m,f,r}\)</span>, recruitment to
-1, and all other parameters set to constant seasonal values from the
-first year of the model. From this initialization, the equilibrium
-spawners per recruit <span class="math inline">\(\phi_{eq}\)</span> is
-the final spawning output, and the seasonal numbers per recruit <span class="math inline">\(\textrm{NPR}^{\textrm{eq}}_{m,a,r,s}\)</span> is
-obtained from the abundance array. The initial abundance is the product
-of the equilibrium recruitment and numbers per recruit.</li>
+<li>To obtain the initial abundance
+<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><msub><mi>N</mi><mrow><mi>y</mi><mo>=</mo><mn>1</mn><mo>,</mo><mi>m</mi><mo>=</mo><mn>1</mn><mo>,</mo><mi>a</mi><mo>,</mo><mi>r</mi><mo>,</mo><mi>s</mi></mrow></msub><annotation encoding="application/x-tex">N_{y=1,m=1,a,r,s}</annotation></semantics></math>
+array in seasonal and multi-region models, a numerical spool-up is
+performed with the seasonal fishing mortality equal to
+<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><msubsup><mi>F</mi><mrow><mi>m</mi><mo>,</mo><mi>f</mi><mo>,</mo><mi>r</mi></mrow><mtext mathvariant="normal">eq</mtext></msubsup><annotation encoding="application/x-tex">F^{\textrm{eq}}_{m,f,r}</annotation></semantics></math>,
+recruitment to 1, and all other parameters set to constant seasonal
+values from the first year of the model. From this initialization, the
+equilibrium spawners per recruit
+<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><msub><mi>ϕ</mi><mrow><mi>e</mi><mi>q</mi></mrow></msub><annotation encoding="application/x-tex">\phi_{eq}</annotation></semantics></math>
+is the final spawning output, and the seasonal numbers per recruit
+<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><msubsup><mtext mathvariant="normal">NPR</mtext><mrow><mi>m</mi><mo>,</mo><mi>a</mi><mo>,</mo><mi>r</mi><mo>,</mo><mi>s</mi></mrow><mtext mathvariant="normal">eq</mtext></msubsup><annotation encoding="application/x-tex">\textrm{NPR}^{\textrm{eq}}_{m,a,r,s}</annotation></semantics></math>
+is obtained from the abundance array. The initial abundance is the
+product of the equilibrium recruitment and numbers per recruit.</li>
 <li>It is possible that some proportion of the mature population do not
 contribute to the annual spawning based on the natal spawning parameter
 specifying the spatial spawning pattern. Thus, there is a distinction
 between potential spawners and realized spawners. The unfished
-replacement line of the stock-recruit relationship (<span class="math inline">\(R_s = 1/\phi_0\)</span>) is based on the realized
-spawning in equilibrium.</li>
+replacement line of the stock-recruit relationship
+(<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><msub><mi>R</mi><mi>s</mi></msub><mo>=</mo><mn>1</mn><mi>/</mi><msub><mi>ϕ</mi><mn>0</mn></msub></mrow><annotation encoding="application/x-tex">R_s = 1/\phi_0</annotation></semantics></math>)
+is based on the realized spawning in equilibrium.</li>
 </ul>
 <table class="table">
 <colgroup>
@@ -498,96 +478,71 @@ spawning in equilibrium.</li>
 <tbody>
 <tr class="odd">
 <td align="left">Index of fishing effort (instantaneous per season)</td>
-<td align="left"><span class="math inline">\(F_{y,m,f,r}\)</span></td>
+<td align="left"><math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><msub><mi>F</mi><mrow><mi>y</mi><mo>,</mo><mi>m</mi><mo>,</mo><mi>f</mi><mo>,</mo><mi>r</mi></mrow></msub><annotation encoding="application/x-tex">F_{y,m,f,r}</annotation></semantics></math></td>
 <td align="left">5.1</td>
 </tr>
 <tr class="even">
 <td align="left">Stock abundance</td>
-<td align="left"><span class="math inline">\(N_{y,m,a,r,s}\)</span></td>
+<td align="left"><math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><msub><mi>N</mi><mrow><mi>y</mi><mo>,</mo><mi>m</mi><mo>,</mo><mi>a</mi><mo>,</mo><mi>r</mi><mo>,</mo><mi>s</mi></mrow></msub><annotation encoding="application/x-tex">N_{y,m,a,r,s}</annotation></semantics></math></td>
 <td align="left">5.2</td>
 </tr>
 <tr class="odd">
 <td align="left">Equilibrium recruitment</td>
-<td align="left"><span class="math inline">\(R_{\textrm{eq},s} =
-\begin{cases} \dfrac{\alpha_s \phi_{eq,s} - 1}{\beta_s\phi_{eq,s}} &amp;
-\textrm{Beverton-Holt}\\ \dfrac{\log(\alpha_s
-\phi_{eq,s})}{\beta_s\phi_{eq,s}} &amp; \textrm{Ricker}
-\end{cases}\)</span></td>
+<td align="left"><math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><msub><mi>R</mi><mrow><mtext mathvariant="normal">eq</mtext><mo>,</mo><mi>s</mi></mrow></msub><mo>=</mo><mrow><mo stretchy="true" form="prefix">{</mo><mtable><mtr><mtd columnalign="left" style="text-align: left"><mfrac displaystyle="true"><mrow><msub><mi>α</mi><mi>s</mi></msub><msub><mi>ϕ</mi><mrow><mi>e</mi><mi>q</mi><mo>,</mo><mi>s</mi></mrow></msub><mo>−</mo><mn>1</mn></mrow><mrow><msub><mi>β</mi><mi>s</mi></msub><msub><mi>ϕ</mi><mrow><mi>e</mi><mi>q</mi><mo>,</mo><mi>s</mi></mrow></msub></mrow></mfrac></mtd><mtd columnalign="left" style="text-align: left"><mtext mathvariant="normal">Beverton-Holt</mtext></mtd></mtr><mtr><mtd columnalign="left" style="text-align: left"><mfrac displaystyle="true"><mrow><mo>log</mo><mrow><mo stretchy="true" form="prefix">(</mo><msub><mi>α</mi><mi>s</mi></msub><msub><mi>ϕ</mi><mrow><mi>e</mi><mi>q</mi><mo>,</mo><mi>s</mi></mrow></msub><mo stretchy="true" form="postfix">)</mo></mrow></mrow><mrow><msub><mi>β</mi><mi>s</mi></msub><msub><mi>ϕ</mi><mrow><mi>e</mi><mi>q</mi><mo>,</mo><mi>s</mi></mrow></msub></mrow></mfrac></mtd><mtd columnalign="left" style="text-align: left"><mtext mathvariant="normal">Ricker</mtext></mtd></mtr></mtable></mrow></mrow><annotation encoding="application/x-tex">R_{\textrm{eq},s} = \begin{cases} \dfrac{\alpha_s \phi_{eq,s} - 1}{\beta_s\phi_{eq,s}} &amp; \textrm{Beverton-Holt}\\ \dfrac{\log(\alpha_s \phi_{eq,s})}{\beta_s\phi_{eq,s}} &amp; \textrm{Ricker} \end{cases}</annotation></semantics></math></td>
 <td align="left">5.3</td>
 </tr>
 <tr class="even">
 <td align="left">Initial abundance</td>
-<td align="left"><span class="math inline">\(N_{y=1,m=1,a,r,s} =
-R_{\textrm{eq},s}\exp(x^{\textrm{Req}}_{a,s}) \times
-\textrm{NPR}^{\textrm{eq}}_{m=1,a,r,s}\)</span></td>
+<td align="left"><math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><msub><mi>N</mi><mrow><mi>y</mi><mo>=</mo><mn>1</mn><mo>,</mo><mi>m</mi><mo>=</mo><mn>1</mn><mo>,</mo><mi>a</mi><mo>,</mo><mi>r</mi><mo>,</mo><mi>s</mi></mrow></msub><mo>=</mo><msub><mi>R</mi><mrow><mtext mathvariant="normal">eq</mtext><mo>,</mo><mi>s</mi></mrow></msub><mo>exp</mo><mrow><mo stretchy="true" form="prefix">(</mo><msubsup><mi>x</mi><mrow><mi>a</mi><mo>,</mo><mi>s</mi></mrow><mtext mathvariant="normal">Req</mtext></msubsup><mo stretchy="true" form="postfix">)</mo></mrow><mo>×</mo><msubsup><mtext mathvariant="normal">NPR</mtext><mrow><mi>m</mi><mo>=</mo><mn>1</mn><mo>,</mo><mi>a</mi><mo>,</mo><mi>r</mi><mo>,</mo><mi>s</mi></mrow><mtext mathvariant="normal">eq</mtext></msubsup></mrow><annotation encoding="application/x-tex">N_{y=1,m=1,a,r,s} = R_{\textrm{eq},s}\exp(x^{\textrm{Req}}_{a,s}) \times \textrm{NPR}^{\textrm{eq}}_{m=1,a,r,s}</annotation></semantics></math></td>
 <td align="left">5.4</td>
 </tr>
 <tr class="odd">
 <td align="left">Fishing mortality by time, age, fleet, region,
 stock</td>
-<td align="left"><span class="math inline">\(F_{y,m,a,f,r,s} =
-q^F_{f,s}s_{y,m,a,f,s}F_{y,m,f,r}\)</span></td>
+<td align="left"><math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><msub><mi>F</mi><mrow><mi>y</mi><mo>,</mo><mi>m</mi><mo>,</mo><mi>a</mi><mo>,</mo><mi>f</mi><mo>,</mo><mi>r</mi><mo>,</mo><mi>s</mi></mrow></msub><mo>=</mo><msubsup><mi>q</mi><mrow><mi>f</mi><mo>,</mo><mi>s</mi></mrow><mi>F</mi></msubsup><msub><mi>s</mi><mrow><mi>y</mi><mo>,</mo><mi>m</mi><mo>,</mo><mi>a</mi><mo>,</mo><mi>f</mi><mo>,</mo><mi>s</mi></mrow></msub><msub><mi>F</mi><mrow><mi>y</mi><mo>,</mo><mi>m</mi><mo>,</mo><mi>f</mi><mo>,</mo><mi>r</mi></mrow></msub></mrow><annotation encoding="application/x-tex">F_{y,m,a,f,r,s} = q^F_{f,s}s_{y,m,a,f,s}F_{y,m,f,r}</annotation></semantics></math></td>
 <td align="left">5.5</td>
 </tr>
 <tr class="even">
 <td align="left">Total mortality (instantaneous per season)</td>
-<td align="left"><span class="math inline">\(Z_{y,m,a,r,s} = \Delta_m
-M_{y,a,s} + \sum_f F_{y,m,a,f,r,s}\)</span></td>
+<td align="left"><math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><msub><mi>Z</mi><mrow><mi>y</mi><mo>,</mo><mi>m</mi><mo>,</mo><mi>a</mi><mo>,</mo><mi>r</mi><mo>,</mo><mi>s</mi></mrow></msub><mo>=</mo><msub><mi>Δ</mi><mi>m</mi></msub><msub><mi>M</mi><mrow><mi>y</mi><mo>,</mo><mi>a</mi><mo>,</mo><mi>s</mi></mrow></msub><mo>+</mo><msub><mo>∑</mo><mi>f</mi></msub><msub><mi>F</mi><mrow><mi>y</mi><mo>,</mo><mi>m</mi><mo>,</mo><mi>a</mi><mo>,</mo><mi>f</mi><mo>,</mo><mi>r</mi><mo>,</mo><mi>s</mi></mrow></msub></mrow><annotation encoding="application/x-tex">Z_{y,m,a,r,s} = \Delta_m M_{y,a,s} + \sum_f F_{y,m,a,f,r,s}</annotation></semantics></math></td>
 <td align="left">5.6</td>
 </tr>
 <tr class="odd">
 <td align="left">Seasonal abundance without incoming recruitment (after
 survival and movement)</td>
-<td align="left"><span class="math inline">\(N_{y,m,a,r',s} = \sum_r
-N_{y,m-1,a,r,s}\exp(-Z_{y,m-1,a,r,s})
-\textrm{mov}_{y,m,a,r,r',s}\)</span></td>
+<td align="left"><math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><msub><mi>N</mi><mrow><mi>y</mi><mo>,</mo><mi>m</mi><mo>,</mo><mi>a</mi><mo>,</mo><mi>r</mi><mi>′</mi><mo>,</mo><mi>s</mi></mrow></msub><mo>=</mo><msub><mo>∑</mo><mi>r</mi></msub><msub><mi>N</mi><mrow><mi>y</mi><mo>,</mo><mi>m</mi><mo>−</mo><mn>1</mn><mo>,</mo><mi>a</mi><mo>,</mo><mi>r</mi><mo>,</mo><mi>s</mi></mrow></msub><mo>exp</mo><mrow><mo stretchy="true" form="prefix">(</mo><mo>−</mo><msub><mi>Z</mi><mrow><mi>y</mi><mo>,</mo><mi>m</mi><mo>−</mo><mn>1</mn><mo>,</mo><mi>a</mi><mo>,</mo><mi>r</mi><mo>,</mo><mi>s</mi></mrow></msub><mo stretchy="true" form="postfix">)</mo></mrow><msub><mtext mathvariant="normal">mov</mtext><mrow><mi>y</mi><mo>,</mo><mi>m</mi><mo>,</mo><mi>a</mi><mo>,</mo><mi>r</mi><mo>,</mo><mi>r</mi><mi>′</mi><mo>,</mo><mi>s</mi></mrow></msub></mrow><annotation encoding="application/x-tex">N_{y,m,a,r',s} = \sum_r N_{y,m-1,a,r,s}\exp(-Z_{y,m-1,a,r,s}) \textrm{mov}_{y,m,a,r,r',s}</annotation></semantics></math></td>
 <td align="left">5.7</td>
 </tr>
 <tr class="even">
 <td align="left">Potential spawners (PS)</td>
-<td align="left"><span class="math inline">\(N^{\textrm{PS}}_{y,a,r,s} =
-N_{y,m =
-m_\textrm{sp},a,r,s}\exp(-\Delta_\textrm{sp}Z_{y,m=m_\textrm{sp},a,r,s})m_{y,a,s}\)</span></td>
+<td align="left"><math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><msubsup><mi>N</mi><mrow><mi>y</mi><mo>,</mo><mi>a</mi><mo>,</mo><mi>r</mi><mo>,</mo><mi>s</mi></mrow><mtext mathvariant="normal">PS</mtext></msubsup><mo>=</mo><msub><mi>N</mi><mrow><mi>y</mi><mo>,</mo><mi>m</mi><mo>=</mo><msub><mi>m</mi><mtext mathvariant="normal">sp</mtext></msub><mo>,</mo><mi>a</mi><mo>,</mo><mi>r</mi><mo>,</mo><mi>s</mi></mrow></msub><mo>exp</mo><mrow><mo stretchy="true" form="prefix">(</mo><mo>−</mo><msub><mi>Δ</mi><mtext mathvariant="normal">sp</mtext></msub><msub><mi>Z</mi><mrow><mi>y</mi><mo>,</mo><mi>m</mi><mo>=</mo><msub><mi>m</mi><mtext mathvariant="normal">sp</mtext></msub><mo>,</mo><mi>a</mi><mo>,</mo><mi>r</mi><mo>,</mo><mi>s</mi></mrow></msub><mo stretchy="true" form="postfix">)</mo></mrow><msub><mi>m</mi><mrow><mi>y</mi><mo>,</mo><mi>a</mi><mo>,</mo><mi>s</mi></mrow></msub></mrow><annotation encoding="application/x-tex">N^{\textrm{PS}}_{y,a,r,s} = N_{y,m = m_\textrm{sp},a,r,s}\exp(-\Delta_\textrm{sp}Z_{y,m=m_\textrm{sp},a,r,s})m_{y,a,s}</annotation></semantics></math></td>
 <td align="left">5.8</td>
 </tr>
 <tr class="odd">
 <td align="left">Active spawners</td>
-<td align="left"><span class="math inline">\(N^{\textrm{S}}_{y,a,r,s} =
-N^{\textrm{PS}}_{y,m = m_{\textrm{sp}},a,r,s}\times
-n_{r,s}\)</span></td>
+<td align="left"><math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><msubsup><mi>N</mi><mrow><mi>y</mi><mo>,</mo><mi>a</mi><mo>,</mo><mi>r</mi><mo>,</mo><mi>s</mi></mrow><mtext mathvariant="normal">S</mtext></msubsup><mo>=</mo><msubsup><mi>N</mi><mrow><mi>y</mi><mo>,</mo><mi>m</mi><mo>=</mo><msub><mi>m</mi><mtext mathvariant="normal">sp</mtext></msub><mo>,</mo><mi>a</mi><mo>,</mo><mi>r</mi><mo>,</mo><mi>s</mi></mrow><mtext mathvariant="normal">PS</mtext></msubsup><mo>×</mo><msub><mi>n</mi><mrow><mi>r</mi><mo>,</mo><mi>s</mi></mrow></msub></mrow><annotation encoding="application/x-tex">N^{\textrm{S}}_{y,a,r,s} = N^{\textrm{PS}}_{y,m = m_{\textrm{sp}},a,r,s}\times n_{r,s}</annotation></semantics></math></td>
 <td align="left">5.9</td>
 </tr>
 <tr class="even">
 <td align="left">Spawning output</td>
-<td align="left"><span class="math inline">\(S_{y,r,s} = \sum_a
-N^{\textrm{S}}_{y,a,r,s} f_{y,a,s}\)</span></td>
+<td align="left"><math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><msub><mi>S</mi><mrow><mi>y</mi><mo>,</mo><mi>r</mi><mo>,</mo><mi>s</mi></mrow></msub><mo>=</mo><msub><mo>∑</mo><mi>a</mi></msub><msubsup><mi>N</mi><mrow><mi>y</mi><mo>,</mo><mi>a</mi><mo>,</mo><mi>r</mi><mo>,</mo><mi>s</mi></mrow><mtext mathvariant="normal">S</mtext></msubsup><msub><mi>f</mi><mrow><mi>y</mi><mo>,</mo><mi>a</mi><mo>,</mo><mi>s</mi></mrow></msub></mrow><annotation encoding="application/x-tex">S_{y,r,s} = \sum_a N^{\textrm{S}}_{y,a,r,s} f_{y,a,s}</annotation></semantics></math></td>
 <td align="left">5.10</td>
 </tr>
 <tr class="odd">
 <td align="left">Recruitment: Beverton-Holt</td>
-<td align="left"><span class="math inline">\(R_{y,s} = \dfrac{\alpha_s
-\sum_r S_{y,r,s}}{1 + \beta_s \sum_r
-S_{y,r,s}}\exp(x^R_{y,s})\)</span></td>
+<td align="left"><math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><msub><mi>R</mi><mrow><mi>y</mi><mo>,</mo><mi>s</mi></mrow></msub><mo>=</mo><mfrac displaystyle="true"><mrow><msub><mi>α</mi><mi>s</mi></msub><msub><mo>∑</mo><mi>r</mi></msub><msub><mi>S</mi><mrow><mi>y</mi><mo>,</mo><mi>r</mi><mo>,</mo><mi>s</mi></mrow></msub></mrow><mrow><mn>1</mn><mo>+</mo><msub><mi>β</mi><mi>s</mi></msub><msub><mo>∑</mo><mi>r</mi></msub><msub><mi>S</mi><mrow><mi>y</mi><mo>,</mo><mi>r</mi><mo>,</mo><mi>s</mi></mrow></msub></mrow></mfrac><mo>exp</mo><mrow><mo stretchy="true" form="prefix">(</mo><msubsup><mi>x</mi><mrow><mi>y</mi><mo>,</mo><mi>s</mi></mrow><mi>R</mi></msubsup><mo stretchy="true" form="postfix">)</mo></mrow></mrow><annotation encoding="application/x-tex">R_{y,s} = \dfrac{\alpha_s \sum_r S_{y,r,s}}{1 + \beta_s \sum_r S_{y,r,s}}\exp(x^R_{y,s})</annotation></semantics></math></td>
 <td align="left">5.11</td>
 </tr>
 <tr class="even">
 <td align="left">Recruitment: Ricker</td>
-<td align="left"><span class="math inline">\(R_{y,s} = \alpha_s \sum_r
-S_{y,r,s} \exp(-\beta_s \times \sum_r
-S_{y,r,s})\exp(x^R_{y,s})\)</span></td>
+<td align="left"><math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><msub><mi>R</mi><mrow><mi>y</mi><mo>,</mo><mi>s</mi></mrow></msub><mo>=</mo><msub><mi>α</mi><mi>s</mi></msub><msub><mo>∑</mo><mi>r</mi></msub><msub><mi>S</mi><mrow><mi>y</mi><mo>,</mo><mi>r</mi><mo>,</mo><mi>s</mi></mrow></msub><mo>exp</mo><mrow><mo stretchy="true" form="prefix">(</mo><mo>−</mo><msub><mi>β</mi><mi>s</mi></msub><mo>×</mo><msub><mo>∑</mo><mi>r</mi></msub><msub><mi>S</mi><mrow><mi>y</mi><mo>,</mo><mi>r</mi><mo>,</mo><mi>s</mi></mrow></msub><mo stretchy="true" form="postfix">)</mo></mrow><mo>exp</mo><mrow><mo stretchy="true" form="prefix">(</mo><msubsup><mi>x</mi><mrow><mi>y</mi><mo>,</mo><mi>s</mi></mrow><mi>R</mi></msubsup><mo stretchy="true" form="postfix">)</mo></mrow></mrow><annotation encoding="application/x-tex">R_{y,s} = \alpha_s \sum_r S_{y,r,s} \exp(-\beta_s \times \sum_r S_{y,r,s})\exp(x^R_{y,s})</annotation></semantics></math></td>
 <td align="left">5.12</td>
 </tr>
 <tr class="odd">
 <td align="left">Seasonal abundance (incoming recruitment and advancing
-age class when <span class="math inline">\(m =
-m_{\textrm{rec}}\)</span>)</td>
-<td align="left"><span class="math inline">\(N_{y,m,a,r',s} =
-\begin{cases} R_{y,s} \textrm{mov}_{y,m,1,r,r',s} &amp; a = 1\\
-\sum_r N_{y,m-1,a-1,r,s}\exp(-Z_{y,m-1,a-1,r,s})
-\textrm{mov}_{y,m,a,r,r',s} &amp; a = 2, \ldots, A-1\\
-\sum_{a'=A-1}^A\sum_r
-N_{y,m-1,a',r,s}\exp(-Z_{y,m-1,a',r,s})\textrm{mov}_{y,m,a,r,r',s}
-&amp; a = A\end{cases}\)</span></td>
+age class when
+<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mi>m</mi><mo>=</mo><msub><mi>m</mi><mtext mathvariant="normal">rec</mtext></msub></mrow><annotation encoding="application/x-tex">m = m_{\textrm{rec}}</annotation></semantics></math>)</td>
+<td align="left"><math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><msub><mi>N</mi><mrow><mi>y</mi><mo>,</mo><mi>m</mi><mo>,</mo><mi>a</mi><mo>,</mo><mi>r</mi><mi>′</mi><mo>,</mo><mi>s</mi></mrow></msub><mo>=</mo><mrow><mo stretchy="true" form="prefix">{</mo><mtable><mtr><mtd columnalign="left" style="text-align: left"><msub><mi>R</mi><mrow><mi>y</mi><mo>,</mo><mi>s</mi></mrow></msub><msub><mtext mathvariant="normal">mov</mtext><mrow><mi>y</mi><mo>,</mo><mi>m</mi><mo>,</mo><mn>1</mn><mo>,</mo><mi>r</mi><mo>,</mo><mi>r</mi><mi>′</mi><mo>,</mo><mi>s</mi></mrow></msub></mtd><mtd columnalign="left" style="text-align: left"><mi>a</mi><mo>=</mo><mn>1</mn></mtd></mtr><mtr><mtd columnalign="left" style="text-align: left"><msub><mo>∑</mo><mi>r</mi></msub><msub><mi>N</mi><mrow><mi>y</mi><mo>,</mo><mi>m</mi><mo>−</mo><mn>1</mn><mo>,</mo><mi>a</mi><mo>−</mo><mn>1</mn><mo>,</mo><mi>r</mi><mo>,</mo><mi>s</mi></mrow></msub><mo>exp</mo><mrow><mo stretchy="true" form="prefix">(</mo><mo>−</mo><msub><mi>Z</mi><mrow><mi>y</mi><mo>,</mo><mi>m</mi><mo>−</mo><mn>1</mn><mo>,</mo><mi>a</mi><mo>−</mo><mn>1</mn><mo>,</mo><mi>r</mi><mo>,</mo><mi>s</mi></mrow></msub><mo stretchy="true" form="postfix">)</mo></mrow><msub><mtext mathvariant="normal">mov</mtext><mrow><mi>y</mi><mo>,</mo><mi>m</mi><mo>,</mo><mi>a</mi><mo>,</mo><mi>r</mi><mo>,</mo><mi>r</mi><mi>′</mi><mo>,</mo><mi>s</mi></mrow></msub></mtd><mtd columnalign="left" style="text-align: left"><mi>a</mi><mo>=</mo><mn>2</mn><mo>,</mo><mi>…</mi><mo>,</mo><mi>A</mi><mo>−</mo><mn>1</mn></mtd></mtr><mtr><mtd columnalign="left" style="text-align: left"><msubsup><mo>∑</mo><mrow><mi>a</mi><mi>′</mi><mo>=</mo><mi>A</mi><mo>−</mo><mn>1</mn></mrow><mi>A</mi></msubsup><msub><mo>∑</mo><mi>r</mi></msub><msub><mi>N</mi><mrow><mi>y</mi><mo>,</mo><mi>m</mi><mo>−</mo><mn>1</mn><mo>,</mo><mi>a</mi><mi>′</mi><mo>,</mo><mi>r</mi><mo>,</mo><mi>s</mi></mrow></msub><mo>exp</mo><mrow><mo stretchy="true" form="prefix">(</mo><mo>−</mo><msub><mi>Z</mi><mrow><mi>y</mi><mo>,</mo><mi>m</mi><mo>−</mo><mn>1</mn><mo>,</mo><mi>a</mi><mi>′</mi><mo>,</mo><mi>r</mi><mo>,</mo><mi>s</mi></mrow></msub><mo stretchy="true" form="postfix">)</mo></mrow><msub><mtext mathvariant="normal">mov</mtext><mrow><mi>y</mi><mo>,</mo><mi>m</mi><mo>,</mo><mi>a</mi><mo>,</mo><mi>r</mi><mo>,</mo><mi>r</mi><mi>′</mi><mo>,</mo><mi>s</mi></mrow></msub></mtd><mtd columnalign="left" style="text-align: left"><mi>a</mi><mo>=</mo><mi>A</mi></mtd></mtr></mtable></mrow></mrow><annotation encoding="application/x-tex">N_{y,m,a,r',s} = \begin{cases} R_{y,s} \textrm{mov}_{y,m,1,r,r',s} &amp; a = 1\\ \sum_r N_{y,m-1,a-1,r,s}\exp(-Z_{y,m-1,a-1,r,s}) \textrm{mov}_{y,m,a,r,r',s} &amp; a = 2, \ldots, A-1\\ \sum_{a'=A-1}^A\sum_r N_{y,m-1,a',r,s}\exp(-Z_{y,m-1,a',r,s})\textrm{mov}_{y,m,a,r,r',s} &amp; a = A\end{cases}</annotation></semantics></math></td>
 <td align="left">5.13</td>
 </tr>
 </tbody>
@@ -601,23 +556,41 @@ population dynamics model, but are of interest for fitting the model or
 for reporting.</p>
 <ul>
 <li>In a multi-region and/or seasonal model, we may want a summary
-fishing mortality (per year) across all regions and fleets (<span class="math inline">\(F_{y,a,s}\)</span>) which calculated from the
-Baranov equation with natural mortality <span class="math inline">\(M_{y,a,s}\)</span>, total stock abundance at the
-beginning of the year <span class="math inline">\(N_{y,a,s}\)</span>,
-and total catch <span class="math inline">\(C^N_{y,a,s}\)</span>. The
-summary total mortality (per year) is then <span class="math inline">\(Z_{y,a,s} = F_{y,a,s} + M_{y,a,s}\)</span>.</li>
+fishing mortality (per year) across all regions and fleets
+(<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><msub><mi>F</mi><mrow><mi>y</mi><mo>,</mo><mi>a</mi><mo>,</mo><mi>s</mi></mrow></msub><annotation encoding="application/x-tex">F_{y,a,s}</annotation></semantics></math>)
+which calculated from the Baranov equation with natural mortality
+<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><msub><mi>M</mi><mrow><mi>y</mi><mo>,</mo><mi>a</mi><mo>,</mo><mi>s</mi></mrow></msub><annotation encoding="application/x-tex">M_{y,a,s}</annotation></semantics></math>,
+total stock abundance at the beginning of the year
+<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><msub><mi>N</mi><mrow><mi>y</mi><mo>,</mo><mi>a</mi><mo>,</mo><mi>s</mi></mrow></msub><annotation encoding="application/x-tex">N_{y,a,s}</annotation></semantics></math>,
+and total catch
+<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><msubsup><mi>C</mi><mrow><mi>y</mi><mo>,</mo><mi>a</mi><mo>,</mo><mi>s</mi></mrow><mi>N</mi></msubsup><annotation encoding="application/x-tex">C^N_{y,a,s}</annotation></semantics></math>.
+The summary total mortality (per year) is then
+<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><msub><mi>Z</mi><mrow><mi>y</mi><mo>,</mo><mi>a</mi><mo>,</mo><mi>s</mi></mrow></msub><mo>=</mo><msub><mi>F</mi><mrow><mi>y</mi><mo>,</mo><mi>a</mi><mo>,</mo><mi>s</mi></mrow></msub><mo>+</mo><msub><mi>M</mi><mrow><mi>y</mi><mo>,</mo><mi>a</mi><mo>,</mo><mi>s</mi></mrow></msub></mrow><annotation encoding="application/x-tex">Z_{y,a,s} = F_{y,a,s} + M_{y,a,s}</annotation></semantics></math>.</li>
 <li>Vulnerable biomass is the availability of the stock to individual
 fleets.</li>
 <li>When fitting to close-kin genetic data, we can calculate the
 probability of parent-offspring pairs (POP) with the cohort year of the
-offspring is <span class="math inline">\(y\)</span>, the parental age at
-capture is <span class="math inline">\(a'\)</span>, and the capture
-year of the parent <span class="math inline">\(t\)</span>.</li>
+offspring is
+<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mi>y</mi><annotation encoding="application/x-tex">y</annotation></semantics></math>,
+the parental age at capture is
+<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mi>a</mi><mi>′</mi></mrow><annotation encoding="application/x-tex">a'</annotation></semantics></math>,
+and the capture year of the parent
+<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mi>t</mi><annotation encoding="application/x-tex">t</annotation></semantics></math>.</li>
 <li>The half-offspring pair probability is calculated from the parental
-probability in years <span class="math inline">\(i\)</span> and <span class="math inline">\(j\)</span>, the cohort year of the older and
-younger sibling, respectively, and the parental survival from year <span class="math inline">\(i\)</span> to year <span class="math inline">\(j\)</span>. The parental age is not observed, so
-we calculate the probability across all potential ages and follow each
-cohort from <span class="math inline">\(i\)</span> to <span class="math inline">\(j\)</span>.</li>
+probability in years
+<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mi>i</mi><annotation encoding="application/x-tex">i</annotation></semantics></math>
+and
+<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mi>j</mi><annotation encoding="application/x-tex">j</annotation></semantics></math>,
+the cohort year of the older and younger sibling, respectively, and the
+parental survival from year
+<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mi>i</mi><annotation encoding="application/x-tex">i</annotation></semantics></math>
+to year
+<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mi>j</mi><annotation encoding="application/x-tex">j</annotation></semantics></math>.
+The parental age is not observed, so we calculate the probability across
+all potential ages and follow each cohort from
+<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mi>i</mi><annotation encoding="application/x-tex">i</annotation></semantics></math>
+to
+<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mi>j</mi><annotation encoding="application/x-tex">j</annotation></semantics></math>.</li>
 </ul>
 <table class="table">
 <colgroup>
@@ -633,122 +606,103 @@ cohort from <span class="math inline">\(i\)</span> to <span class="math inline">
 <tbody>
 <tr class="odd">
 <td align="left">Equilibrium catch (abundance, age)</td>
-<td align="left"><span class="math inline">\(C^{Neq}_{m,a,f,r,s} =
-\dfrac{F^{\textrm{eq}}_{m,a,f,r,s}}{Z^{\textrm{eq}}_{m,a,r,s}} (1 -
-\exp(-Z^{\textrm{eq}}_{y,m,a,r,s}))
-N^{\textrm{eq}}_{m,a,r,s}\)</span></td>
+<td align="left"><math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><msubsup><mi>C</mi><mrow><mi>m</mi><mo>,</mo><mi>a</mi><mo>,</mo><mi>f</mi><mo>,</mo><mi>r</mi><mo>,</mo><mi>s</mi></mrow><mrow><mi>N</mi><mi>e</mi><mi>q</mi></mrow></msubsup><mo>=</mo><mfrac displaystyle="true"><msubsup><mi>F</mi><mrow><mi>m</mi><mo>,</mo><mi>a</mi><mo>,</mo><mi>f</mi><mo>,</mo><mi>r</mi><mo>,</mo><mi>s</mi></mrow><mtext mathvariant="normal">eq</mtext></msubsup><msubsup><mi>Z</mi><mrow><mi>m</mi><mo>,</mo><mi>a</mi><mo>,</mo><mi>r</mi><mo>,</mo><mi>s</mi></mrow><mtext mathvariant="normal">eq</mtext></msubsup></mfrac><mrow><mo stretchy="true" form="prefix">(</mo><mn>1</mn><mo>−</mo><mo>exp</mo><mrow><mo stretchy="true" form="prefix">(</mo><mo>−</mo><msubsup><mi>Z</mi><mrow><mi>y</mi><mo>,</mo><mi>m</mi><mo>,</mo><mi>a</mi><mo>,</mo><mi>r</mi><mo>,</mo><mi>s</mi></mrow><mtext mathvariant="normal">eq</mtext></msubsup><mo stretchy="true" form="postfix">)</mo></mrow><mo stretchy="true" form="postfix">)</mo></mrow><msubsup><mi>N</mi><mrow><mi>m</mi><mo>,</mo><mi>a</mi><mo>,</mo><mi>r</mi><mo>,</mo><mi>s</mi></mrow><mtext mathvariant="normal">eq</mtext></msubsup></mrow><annotation encoding="application/x-tex">C^{Neq}_{m,a,f,r,s} = \dfrac{F^{\textrm{eq}}_{m,a,f,r,s}}{Z^{\textrm{eq}}_{m,a,r,s}} (1 - \exp(-Z^{\textrm{eq}}_{y,m,a,r,s})) N^{\textrm{eq}}_{m,a,r,s}</annotation></semantics></math></td>
 <td align="left">6.1</td>
 </tr>
 <tr class="even">
 <td align="left">Equilibrium catch (biomass)</td>
-<td align="left"><span class="math inline">\(C^{Beq}_{m,f,r,s} = \sum_a
-w^F_{y=1,m,a,f,s} C^{Neq}_{m,a,f,r,s}\)</span></td>
+<td align="left"><math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><msubsup><mi>C</mi><mrow><mi>m</mi><mo>,</mo><mi>f</mi><mo>,</mo><mi>r</mi><mo>,</mo><mi>s</mi></mrow><mrow><mi>B</mi><mi>e</mi><mi>q</mi></mrow></msubsup><mo>=</mo><msub><mo>∑</mo><mi>a</mi></msub><msubsup><mi>w</mi><mrow><mi>y</mi><mo>=</mo><mn>1</mn><mo>,</mo><mi>m</mi><mo>,</mo><mi>a</mi><mo>,</mo><mi>f</mi><mo>,</mo><mi>s</mi></mrow><mi>F</mi></msubsup><msubsup><mi>C</mi><mrow><mi>m</mi><mo>,</mo><mi>a</mi><mo>,</mo><mi>f</mi><mo>,</mo><mi>r</mi><mo>,</mo><mi>s</mi></mrow><mrow><mi>N</mi><mi>e</mi><mi>q</mi></mrow></msubsup></mrow><annotation encoding="application/x-tex">C^{Beq}_{m,f,r,s} = \sum_a w^F_{y=1,m,a,f,s} C^{Neq}_{m,a,f,r,s}</annotation></semantics></math></td>
 <td align="left">6.2</td>
 </tr>
 <tr class="odd">
 <td align="left">Catch (abundance, age)</td>
-<td align="left"><span class="math inline">\(C^N_{y,m,a,f,r,s} =
-\dfrac{F_{y,m,a,f,r,s}}{Z_{y,m,a,r,s}} (1 - \exp(-Z_{y,m,a,r,s}))
-N_{y,m,a,r,s}\)</span></td>
+<td align="left"><math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><msubsup><mi>C</mi><mrow><mi>y</mi><mo>,</mo><mi>m</mi><mo>,</mo><mi>a</mi><mo>,</mo><mi>f</mi><mo>,</mo><mi>r</mi><mo>,</mo><mi>s</mi></mrow><mi>N</mi></msubsup><mo>=</mo><mfrac displaystyle="true"><msub><mi>F</mi><mrow><mi>y</mi><mo>,</mo><mi>m</mi><mo>,</mo><mi>a</mi><mo>,</mo><mi>f</mi><mo>,</mo><mi>r</mi><mo>,</mo><mi>s</mi></mrow></msub><msub><mi>Z</mi><mrow><mi>y</mi><mo>,</mo><mi>m</mi><mo>,</mo><mi>a</mi><mo>,</mo><mi>r</mi><mo>,</mo><mi>s</mi></mrow></msub></mfrac><mrow><mo stretchy="true" form="prefix">(</mo><mn>1</mn><mo>−</mo><mo>exp</mo><mrow><mo stretchy="true" form="prefix">(</mo><mo>−</mo><msub><mi>Z</mi><mrow><mi>y</mi><mo>,</mo><mi>m</mi><mo>,</mo><mi>a</mi><mo>,</mo><mi>r</mi><mo>,</mo><mi>s</mi></mrow></msub><mo stretchy="true" form="postfix">)</mo></mrow><mo stretchy="true" form="postfix">)</mo></mrow><msub><mi>N</mi><mrow><mi>y</mi><mo>,</mo><mi>m</mi><mo>,</mo><mi>a</mi><mo>,</mo><mi>r</mi><mo>,</mo><mi>s</mi></mrow></msub></mrow><annotation encoding="application/x-tex">C^N_{y,m,a,f,r,s} = \dfrac{F_{y,m,a,f,r,s}}{Z_{y,m,a,r,s}} (1 - \exp(-Z_{y,m,a,r,s})) N_{y,m,a,r,s}</annotation></semantics></math></td>
 <td align="left">6.3</td>
 </tr>
 <tr class="even">
 <td align="left">Catch (abundance, length)</td>
-<td align="left"><span class="math inline">\(C^N_{y,m,l,f,r,s} = \sum_a
-C^N_{y,m,a,f,r,s} \textrm{Pr}(\ell\mid a)_{y,m,s}\)</span></td>
+<td align="left"><math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><msubsup><mi>C</mi><mrow><mi>y</mi><mo>,</mo><mi>m</mi><mo>,</mo><mi>l</mi><mo>,</mo><mi>f</mi><mo>,</mo><mi>r</mi><mo>,</mo><mi>s</mi></mrow><mi>N</mi></msubsup><mo>=</mo><msub><mo>∑</mo><mi>a</mi></msub><msubsup><mi>C</mi><mrow><mi>y</mi><mo>,</mo><mi>m</mi><mo>,</mo><mi>a</mi><mo>,</mo><mi>f</mi><mo>,</mo><mi>r</mi><mo>,</mo><mi>s</mi></mrow><mi>N</mi></msubsup><mtext mathvariant="normal">Pr</mtext><msub><mrow><mo stretchy="true" form="prefix">(</mo><mo>ℓ</mo><mo>∣</mo><mi>a</mi><mo stretchy="true" form="postfix">)</mo></mrow><mrow><mi>y</mi><mo>,</mo><mi>m</mi><mo>,</mo><mi>s</mi></mrow></msub></mrow><annotation encoding="application/x-tex">C^N_{y,m,l,f,r,s} = \sum_a C^N_{y,m,a,f,r,s} \textrm{Pr}(\ell\mid a)_{y,m,s}</annotation></semantics></math></td>
 <td align="left">6.4</td>
 </tr>
 <tr class="odd">
 <td align="left">Catch (biomass)</td>
-<td align="left"><span class="math inline">\(C^B_{y,m,f,r,s} = \sum_a
-w^F_{y,m,a,f,s} C^N_{y,m,a,f,r,s}\)</span></td>
+<td align="left"><math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><msubsup><mi>C</mi><mrow><mi>y</mi><mo>,</mo><mi>m</mi><mo>,</mo><mi>f</mi><mo>,</mo><mi>r</mi><mo>,</mo><mi>s</mi></mrow><mi>B</mi></msubsup><mo>=</mo><msub><mo>∑</mo><mi>a</mi></msub><msubsup><mi>w</mi><mrow><mi>y</mi><mo>,</mo><mi>m</mi><mo>,</mo><mi>a</mi><mo>,</mo><mi>f</mi><mo>,</mo><mi>s</mi></mrow><mi>F</mi></msubsup><msubsup><mi>C</mi><mrow><mi>y</mi><mo>,</mo><mi>m</mi><mo>,</mo><mi>a</mi><mo>,</mo><mi>f</mi><mo>,</mo><mi>r</mi><mo>,</mo><mi>s</mi></mrow><mi>N</mi></msubsup></mrow><annotation encoding="application/x-tex">C^B_{y,m,f,r,s} = \sum_a w^F_{y,m,a,f,s} C^N_{y,m,a,f,r,s}</annotation></semantics></math></td>
 <td align="left">6.5</td>
 </tr>
 <tr class="even">
 <td align="left">Total biomass</td>
-<td align="left"><span class="math inline">\(B_{y,m,r,s} = \sum_a
-w_{y,m,a,s} N_{y,m,a,r,s}\)</span></td>
+<td align="left"><math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><msub><mi>B</mi><mrow><mi>y</mi><mo>,</mo><mi>m</mi><mo>,</mo><mi>r</mi><mo>,</mo><mi>s</mi></mrow></msub><mo>=</mo><msub><mo>∑</mo><mi>a</mi></msub><msub><mi>w</mi><mrow><mi>y</mi><mo>,</mo><mi>m</mi><mo>,</mo><mi>a</mi><mo>,</mo><mi>s</mi></mrow></msub><msub><mi>N</mi><mrow><mi>y</mi><mo>,</mo><mi>m</mi><mo>,</mo><mi>a</mi><mo>,</mo><mi>r</mi><mo>,</mo><mi>s</mi></mrow></msub></mrow><annotation encoding="application/x-tex">B_{y,m,r,s} = \sum_a w_{y,m,a,s} N_{y,m,a,r,s}</annotation></semantics></math></td>
 <td align="left">6.6</td>
 </tr>
 <tr class="odd">
 <td align="left">Vulnerable biomass</td>
-<td align="left"><span class="math inline">\(V_{y,m,r,s} = \sum_a
-s_{y,m,a,f,s} w^F_{y,m,a,f,s} N_{y,m,a,r,s}\)</span></td>
+<td align="left"><math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><msub><mi>V</mi><mrow><mi>y</mi><mo>,</mo><mi>m</mi><mo>,</mo><mi>r</mi><mo>,</mo><mi>s</mi></mrow></msub><mo>=</mo><msub><mo>∑</mo><mi>a</mi></msub><msub><mi>s</mi><mrow><mi>y</mi><mo>,</mo><mi>m</mi><mo>,</mo><mi>a</mi><mo>,</mo><mi>f</mi><mo>,</mo><mi>s</mi></mrow></msub><msubsup><mi>w</mi><mrow><mi>y</mi><mo>,</mo><mi>m</mi><mo>,</mo><mi>a</mi><mo>,</mo><mi>f</mi><mo>,</mo><mi>s</mi></mrow><mi>F</mi></msubsup><msub><mi>N</mi><mrow><mi>y</mi><mo>,</mo><mi>m</mi><mo>,</mo><mi>a</mi><mo>,</mo><mi>r</mi><mo>,</mo><mi>s</mi></mrow></msub></mrow><annotation encoding="application/x-tex">V_{y,m,r,s} = \sum_a s_{y,m,a,f,s} w^F_{y,m,a,f,s} N_{y,m,a,r,s}</annotation></semantics></math></td>
 <td align="left">6.7</td>
 </tr>
 <tr class="even">
 <td align="left">Index age composition</td>
-<td align="left"><span class="math inline">\(I^A_{y,m,a,i,s} = q_i
-\sum_r s_{y,m,a,i,s} N_{y,m,a,r,s} \exp(-\Delta_i \times
-Z_{y,m,a,r,s})\delta_{i,r,s}\)</span></td>
+<td align="left"><math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><msubsup><mi>I</mi><mrow><mi>y</mi><mo>,</mo><mi>m</mi><mo>,</mo><mi>a</mi><mo>,</mo><mi>i</mi><mo>,</mo><mi>s</mi></mrow><mi>A</mi></msubsup><mo>=</mo><msub><mi>q</mi><mi>i</mi></msub><msub><mo>∑</mo><mi>r</mi></msub><msub><mi>s</mi><mrow><mi>y</mi><mo>,</mo><mi>m</mi><mo>,</mo><mi>a</mi><mo>,</mo><mi>i</mi><mo>,</mo><mi>s</mi></mrow></msub><msub><mi>N</mi><mrow><mi>y</mi><mo>,</mo><mi>m</mi><mo>,</mo><mi>a</mi><mo>,</mo><mi>r</mi><mo>,</mo><mi>s</mi></mrow></msub><mo>exp</mo><mrow><mo stretchy="true" form="prefix">(</mo><mo>−</mo><msub><mi>Δ</mi><mi>i</mi></msub><mo>×</mo><msub><mi>Z</mi><mrow><mi>y</mi><mo>,</mo><mi>m</mi><mo>,</mo><mi>a</mi><mo>,</mo><mi>r</mi><mo>,</mo><mi>s</mi></mrow></msub><mo stretchy="true" form="postfix">)</mo></mrow><msub><mi>δ</mi><mrow><mi>i</mi><mo>,</mo><mi>r</mi><mo>,</mo><mi>s</mi></mrow></msub></mrow><annotation encoding="application/x-tex">I^A_{y,m,a,i,s} = q_i \sum_r s_{y,m,a,i,s} N_{y,m,a,r,s} \exp(-\Delta_i \times Z_{y,m,a,r,s})\delta_{i,r,s}</annotation></semantics></math></td>
 <td align="left">6.8</td>
 </tr>
 <tr class="odd">
 <td align="left">Index length composition</td>
-<td align="left"><span class="math inline">\(I^L_{y,m,\ell,i,s} = \sum_a
-I^A_{y,m,a,i,s} \textrm{Pr}(\ell\mid a)_{y,m,s}\)</span></td>
+<td align="left"><math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><msubsup><mi>I</mi><mrow><mi>y</mi><mo>,</mo><mi>m</mi><mo>,</mo><mo>ℓ</mo><mo>,</mo><mi>i</mi><mo>,</mo><mi>s</mi></mrow><mi>L</mi></msubsup><mo>=</mo><msub><mo>∑</mo><mi>a</mi></msub><msubsup><mi>I</mi><mrow><mi>y</mi><mo>,</mo><mi>m</mi><mo>,</mo><mi>a</mi><mo>,</mo><mi>i</mi><mo>,</mo><mi>s</mi></mrow><mi>A</mi></msubsup><mtext mathvariant="normal">Pr</mtext><msub><mrow><mo stretchy="true" form="prefix">(</mo><mo>ℓ</mo><mo>∣</mo><mi>a</mi><mo stretchy="true" form="postfix">)</mo></mrow><mrow><mi>y</mi><mo>,</mo><mi>m</mi><mo>,</mo><mi>s</mi></mrow></msub></mrow><annotation encoding="application/x-tex">I^L_{y,m,\ell,i,s} = \sum_a I^A_{y,m,a,i,s} \textrm{Pr}(\ell\mid a)_{y,m,s}</annotation></semantics></math></td>
 <td align="left">6.9</td>
 </tr>
 <tr class="even">
 <td align="left">Biomass index</td>
-<td align="left"><span class="math inline">\(I_{y,m,i} = q_i \sum_a
-\sum_s w_{y,m,a,s} I^A_{y,m,a,i,s}\)</span></td>
+<td align="left"><math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><msub><mi>I</mi><mrow><mi>y</mi><mo>,</mo><mi>m</mi><mo>,</mo><mi>i</mi></mrow></msub><mo>=</mo><msub><mi>q</mi><mi>i</mi></msub><msub><mo>∑</mo><mi>a</mi></msub><msub><mo>∑</mo><mi>s</mi></msub><msub><mi>w</mi><mrow><mi>y</mi><mo>,</mo><mi>m</mi><mo>,</mo><mi>a</mi><mo>,</mo><mi>s</mi></mrow></msub><msubsup><mi>I</mi><mrow><mi>y</mi><mo>,</mo><mi>m</mi><mo>,</mo><mi>a</mi><mo>,</mo><mi>i</mi><mo>,</mo><mi>s</mi></mrow><mi>A</mi></msubsup></mrow><annotation encoding="application/x-tex">I_{y,m,i} = q_i \sum_a \sum_s w_{y,m,a,s} I^A_{y,m,a,i,s}</annotation></semantics></math></td>
 <td align="left">6.10</td>
 </tr>
 <tr class="odd">
 <td align="left">Annual catch at age (all seasons, fleets, and
 regions)</td>
-<td align="left"><span class="math inline">\(C^N_{y,a,s} =
-\sum_m\sum_f\sum_rC^N_{y,m,a,f,r,s}\)</span></td>
+<td align="left"><math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><msubsup><mi>C</mi><mrow><mi>y</mi><mo>,</mo><mi>a</mi><mo>,</mo><mi>s</mi></mrow><mi>N</mi></msubsup><mo>=</mo><msub><mo>∑</mo><mi>m</mi></msub><msub><mo>∑</mo><mi>f</mi></msub><msub><mo>∑</mo><mi>r</mi></msub><msubsup><mi>C</mi><mrow><mi>y</mi><mo>,</mo><mi>m</mi><mo>,</mo><mi>a</mi><mo>,</mo><mi>f</mi><mo>,</mo><mi>r</mi><mo>,</mo><mi>s</mi></mrow><mi>N</mi></msubsup></mrow><annotation encoding="application/x-tex">C^N_{y,a,s} = \sum_m\sum_f\sum_rC^N_{y,m,a,f,r,s}</annotation></semantics></math></td>
 <td align="left">6.11</td>
 </tr>
 <tr class="even">
 <td align="left">Abundance at year start across regions</td>
-<td align="left"><span class="math inline">\(N_{y,a,s} = \sum_r
-N_{y,m=1,a,r,s}\)</span></td>
+<td align="left"><math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><msub><mi>N</mi><mrow><mi>y</mi><mo>,</mo><mi>a</mi><mo>,</mo><mi>s</mi></mrow></msub><mo>=</mo><msub><mo>∑</mo><mi>r</mi></msub><msub><mi>N</mi><mrow><mi>y</mi><mo>,</mo><mi>m</mi><mo>=</mo><mn>1</mn><mo>,</mo><mi>a</mi><mo>,</mo><mi>r</mi><mo>,</mo><mi>s</mi></mrow></msub></mrow><annotation encoding="application/x-tex">N_{y,a,s} = \sum_r N_{y,m=1,a,r,s}</annotation></semantics></math></td>
 <td align="left">6.12</td>
 </tr>
 <tr class="odd">
-<td align="left">Summary fishing mortality per year <span class="math inline">\(F_{y,a,s}\)</span>
+<td align="left">Summary fishing mortality per year
+<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><msub><mi>F</mi><mrow><mi>y</mi><mo>,</mo><mi>a</mi><mo>,</mo><mi>s</mi></mrow></msub><annotation encoding="application/x-tex">F_{y,a,s}</annotation></semantics></math>
 </td>
-<td align="left"><span class="math inline">\(C^N_{y,a,s} =
-\dfrac{F_{y,a,s}}{F_{y,a,s} + M_{y,a,s}}(1 - \exp(-[F_{y,a,s} +
-M_{y,a,s}])) N_{y,a,s}\)</span></td>
+<td align="left"><math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><msubsup><mi>C</mi><mrow><mi>y</mi><mo>,</mo><mi>a</mi><mo>,</mo><mi>s</mi></mrow><mi>N</mi></msubsup><mo>=</mo><mfrac displaystyle="true"><msub><mi>F</mi><mrow><mi>y</mi><mo>,</mo><mi>a</mi><mo>,</mo><mi>s</mi></mrow></msub><mrow><msub><mi>F</mi><mrow><mi>y</mi><mo>,</mo><mi>a</mi><mo>,</mo><mi>s</mi></mrow></msub><mo>+</mo><msub><mi>M</mi><mrow><mi>y</mi><mo>,</mo><mi>a</mi><mo>,</mo><mi>s</mi></mrow></msub></mrow></mfrac><mrow><mo stretchy="true" form="prefix">(</mo><mn>1</mn><mo>−</mo><mo>exp</mo><mrow><mo stretchy="true" form="prefix">(</mo><mo>−</mo><mrow><mo stretchy="true" form="prefix">[</mo><msub><mi>F</mi><mrow><mi>y</mi><mo>,</mo><mi>a</mi><mo>,</mo><mi>s</mi></mrow></msub><mo>+</mo><msub><mi>M</mi><mrow><mi>y</mi><mo>,</mo><mi>a</mi><mo>,</mo><mi>s</mi></mrow></msub><mo stretchy="true" form="postfix">]</mo></mrow><mo stretchy="true" form="postfix">)</mo></mrow><mo stretchy="true" form="postfix">)</mo></mrow><msub><mi>N</mi><mrow><mi>y</mi><mo>,</mo><mi>a</mi><mo>,</mo><mi>s</mi></mrow></msub></mrow><annotation encoding="application/x-tex">C^N_{y,a,s} = \dfrac{F_{y,a,s}}{F_{y,a,s} + M_{y,a,s}}(1 - \exp(-[F_{y,a,s} + M_{y,a,s}])) N_{y,a,s}</annotation></semantics></math></td>
 <td align="left">6.13</td>
 </tr>
 <tr class="even">
 <td align="left">Parent-offspring probability</td>
-<td align="left"><span class="math inline">\(\textrm{Pr}(\textrm{POP}
-\mid y, t, a',s) = 2 \times \dfrac{f_{y,a = y - (t -
-a'),s}}{\sum_a f_{y,a,s}N^{\textrm{S}}_{y,a,s}}\)</span></td>
+<td align="left"><math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mtext mathvariant="normal">Pr</mtext><mrow><mo stretchy="true" form="prefix">(</mo><mtext mathvariant="normal">POP</mtext><mo>∣</mo><mi>y</mi><mo>,</mo><mi>t</mi><mo>,</mo><mi>a</mi><mi>′</mi><mo>,</mo><mi>s</mi><mo stretchy="true" form="postfix">)</mo></mrow><mo>=</mo><mn>2</mn><mo>×</mo><mfrac displaystyle="true"><msub><mi>f</mi><mrow><mi>y</mi><mo>,</mo><mi>a</mi><mo>=</mo><mi>y</mi><mo>−</mo><mrow><mo stretchy="true" form="prefix">(</mo><mi>t</mi><mo>−</mo><mi>a</mi><mi>′</mi><mo stretchy="true" form="postfix">)</mo></mrow><mo>,</mo><mi>s</mi></mrow></msub><mrow><msub><mo>∑</mo><mi>a</mi></msub><msub><mi>f</mi><mrow><mi>y</mi><mo>,</mo><mi>a</mi><mo>,</mo><mi>s</mi></mrow></msub><msubsup><mi>N</mi><mrow><mi>y</mi><mo>,</mo><mi>a</mi><mo>,</mo><mi>s</mi></mrow><mtext mathvariant="normal">S</mtext></msubsup></mrow></mfrac></mrow><annotation encoding="application/x-tex">\textrm{Pr}(\textrm{POP} \mid y, t, a',s) = 2 \times \dfrac{f_{y,a = y - (t - a'),s}}{\sum_a f_{y,a,s}N^{\textrm{S}}_{y,a,s}}</annotation></semantics></math></td>
 <td align="left">6.14</td>
 </tr>
 <tr class="odd">
 <td align="left">Half-sibling probability</td>
-<td align="left"><span class="math inline">\(\textrm{Pr}(\textrm{HSP}
-\mid i,j,s) = 4 \times \sum_a c_{i,a,s} \times \textrm{surv}_{ijs}
-\times c_{j,a,s}\)</span></td>
+<td align="left"><math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mtext mathvariant="normal">Pr</mtext><mrow><mo stretchy="true" form="prefix">(</mo><mtext mathvariant="normal">HSP</mtext><mo>∣</mo><mi>i</mi><mo>,</mo><mi>j</mi><mo>,</mo><mi>s</mi><mo stretchy="true" form="postfix">)</mo></mrow><mo>=</mo><mn>4</mn><mo>×</mo><msub><mo>∑</mo><mi>a</mi></msub><msub><mi>c</mi><mrow><mi>i</mi><mo>,</mo><mi>a</mi><mo>,</mo><mi>s</mi></mrow></msub><mo>×</mo><msub><mtext mathvariant="normal">surv</mtext><mrow><mi>i</mi><mi>j</mi><mi>s</mi></mrow></msub><mo>×</mo><msub><mi>c</mi><mrow><mi>j</mi><mo>,</mo><mi>a</mi><mo>,</mo><mi>s</mi></mrow></msub></mrow><annotation encoding="application/x-tex">\textrm{Pr}(\textrm{HSP} \mid i,j,s) = 4 \times \sum_a c_{i,a,s} \times \textrm{surv}_{ijs} \times c_{j,a,s}</annotation></semantics></math></td>
 <td align="left">6.15</td>
 </tr>
 <tr class="even">
-<td align="left">Parental probability for older sibling <span class="math inline">\(i\)</span>
+<td align="left">Parental probability for older sibling
+<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mi>i</mi><annotation encoding="application/x-tex">i</annotation></semantics></math>
 </td>
-<td align="left"><span class="math inline">\(c_{i,a,s} =
-\dfrac{N_{y=i,a,s}f_{y=i,a,s}}{\sum_{a'}N_{y=i,a',s}f_{y=i,a',s}}\)</span></td>
+<td align="left"><math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><msub><mi>c</mi><mrow><mi>i</mi><mo>,</mo><mi>a</mi><mo>,</mo><mi>s</mi></mrow></msub><mo>=</mo><mfrac displaystyle="true"><mrow><msub><mi>N</mi><mrow><mi>y</mi><mo>=</mo><mi>i</mi><mo>,</mo><mi>a</mi><mo>,</mo><mi>s</mi></mrow></msub><msub><mi>f</mi><mrow><mi>y</mi><mo>=</mo><mi>i</mi><mo>,</mo><mi>a</mi><mo>,</mo><mi>s</mi></mrow></msub></mrow><mrow><msub><mo>∑</mo><mrow><mi>a</mi><mi>′</mi></mrow></msub><msub><mi>N</mi><mrow><mi>y</mi><mo>=</mo><mi>i</mi><mo>,</mo><mi>a</mi><mi>′</mi><mo>,</mo><mi>s</mi></mrow></msub><msub><mi>f</mi><mrow><mi>y</mi><mo>=</mo><mi>i</mi><mo>,</mo><mi>a</mi><mi>′</mi><mo>,</mo><mi>s</mi></mrow></msub></mrow></mfrac></mrow><annotation encoding="application/x-tex">c_{i,a,s} = \dfrac{N_{y=i,a,s}f_{y=i,a,s}}{\sum_{a'}N_{y=i,a',s}f_{y=i,a',s}}</annotation></semantics></math></td>
 <td align="left">6.16</td>
 </tr>
 <tr class="odd">
-<td align="left">Parental survival from year <span class="math inline">\(i\)</span> to <span class="math inline">\(j\)</span>
+<td align="left">Parental survival from year
+<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mi>i</mi><annotation encoding="application/x-tex">i</annotation></semantics></math>
+to
+<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mi>j</mi><annotation encoding="application/x-tex">j</annotation></semantics></math>
 </td>
-<td align="left"><span class="math inline">\(\textrm{surv}_{ijs} =
-\exp\left(-\sum\limits_{t=0}^{j-i-1}Z_{i+t,a+t,s}\right)\)</span></td>
+<td align="left"><math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><msub><mtext mathvariant="normal">surv</mtext><mrow><mi>i</mi><mi>j</mi><mi>s</mi></mrow></msub><mo>=</mo><mo>exp</mo><mrow><mo stretchy="true" form="prefix">(</mo><mo>−</mo><munderover><mo>∑</mo><mrow><mi>t</mi><mo>=</mo><mn>0</mn></mrow><mrow><mi>j</mi><mo>−</mo><mi>i</mi><mo>−</mo><mn>1</mn></mrow></munderover><msub><mi>Z</mi><mrow><mi>i</mi><mo>+</mo><mi>t</mi><mo>,</mo><mi>a</mi><mo>+</mo><mi>t</mi><mo>,</mo><mi>s</mi></mrow></msub><mo stretchy="true" form="postfix">)</mo></mrow></mrow><annotation encoding="application/x-tex">\textrm{surv}_{ijs} = \exp\left(-\sum\limits_{t=0}^{j-i-1}Z_{i+t,a+t,s}\right)</annotation></semantics></math></td>
 <td align="left">6.17</td>
 </tr>
 <tr class="even">
-<td align="left">Parental probability for younger sibling <span class="math inline">\(j\)</span>
+<td align="left">Parental probability for younger sibling
+<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mi>j</mi><annotation encoding="application/x-tex">j</annotation></semantics></math>
 </td>
-<td align="left"><span class="math inline">\(c_{j,a,s} =
-\dfrac{f_{y=j,a,s}}{\sum_{a'}N_{y=j,a',s}f_{y=j,a',s}}\)</span></td>
+<td align="left"><math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><msub><mi>c</mi><mrow><mi>j</mi><mo>,</mo><mi>a</mi><mo>,</mo><mi>s</mi></mrow></msub><mo>=</mo><mfrac displaystyle="true"><msub><mi>f</mi><mrow><mi>y</mi><mo>=</mo><mi>j</mi><mo>,</mo><mi>a</mi><mo>,</mo><mi>s</mi></mrow></msub><mrow><msub><mo>∑</mo><mrow><mi>a</mi><mi>′</mi></mrow></msub><msub><mi>N</mi><mrow><mi>y</mi><mo>=</mo><mi>j</mi><mo>,</mo><mi>a</mi><mi>′</mi><mo>,</mo><mi>s</mi></mrow></msub><msub><mi>f</mi><mrow><mi>y</mi><mo>=</mo><mi>j</mi><mo>,</mo><mi>a</mi><mi>′</mi><mo>,</mo><mi>s</mi></mrow></msub></mrow></mfrac></mrow><annotation encoding="application/x-tex">c_{j,a,s} = \dfrac{f_{y=j,a,s}}{\sum_{a'}N_{y=j,a',s}f_{y=j,a',s}}</annotation></semantics></math></td>
 <td align="left">6.18</td>
 </tr>
 </tbody>
@@ -766,12 +720,14 @@ negative log-priors, and penalty function.</p>
 are described. The dimensions of the data are given below as well as the
 corresponding model variable for the predicted value, which is typically
 summed across stocks, (except for stock composition). Composition data
-are presented as proportions <span class="math inline">\(p\)</span> and
-a separate table provides the mean and variance of the various
+are presented as proportions
+<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mi>p</mi><annotation encoding="application/x-tex">p</annotation></semantics></math>
+and a separate table provides the mean and variance of the various
 likelihood options.</p>
 <p>The close-kin likelihood uses the ratio of matches (for either
 parent-offspring or sibling matches) and the number of pairwise
-comparisons (<span class="math inline">\(N\)</span>).</p>
+comparisons
+(<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mi>N</mi><annotation encoding="application/x-tex">N</annotation></semantics></math>).</p>
 <table class="table">
 <colgroup>
 <col width="15%">
@@ -792,94 +748,82 @@ comparisons (<span class="math inline">\(N\)</span>).</p>
 <tbody>
 <tr class="odd">
 <td align="left">Equilibrium catch (biomass)</td>
-<td align="left"><span class="math inline">\(C^{Beq}_{m,f,r}\)</span></td>
-<td align="left"><span class="math inline">\(\sum_s
-\hat{C}^{Beq}_{m,f,r,s}\)</span></td>
+<td align="left"><math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><msubsup><mi>C</mi><mrow><mi>m</mi><mo>,</mo><mi>f</mi><mo>,</mo><mi>r</mi></mrow><mrow><mi>B</mi><mi>e</mi><mi>q</mi></mrow></msubsup><annotation encoding="application/x-tex">C^{Beq}_{m,f,r}</annotation></semantics></math></td>
+<td align="left"><math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><msub><mo>∑</mo><mi>s</mi></msub><msubsup><mover><mi>C</mi><mo accent="true">̂</mo></mover><mrow><mi>m</mi><mo>,</mo><mi>f</mi><mo>,</mo><mi>r</mi><mo>,</mo><mi>s</mi></mrow><mrow><mi>B</mi><mi>e</mi><mi>q</mi></mrow></msubsup></mrow><annotation encoding="application/x-tex">\sum_s \hat{C}^{Beq}_{m,f,r,s}</annotation></semantics></math></td>
 <td align="left">Lognormal</td>
-<td align="left"><span class="math inline">\(\sigma = 0.01\)</span></td>
+<td align="left"><math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mi>σ</mi><mo>=</mo><mn>0.01</mn></mrow><annotation encoding="application/x-tex">\sigma = 0.01</annotation></semantics></math></td>
 <td align="left">7.1</td>
 </tr>
 <tr class="even">
 <td align="left">Catch (biomass)</td>
-<td align="left"><span class="math inline">\(C^B_{y,m,f,r}\)</span></td>
-<td align="left"><span class="math inline">\(\sum_s
-\hat{C}^B_{y,m,f,r,s}\)</span></td>
+<td align="left"><math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><msubsup><mi>C</mi><mrow><mi>y</mi><mo>,</mo><mi>m</mi><mo>,</mo><mi>f</mi><mo>,</mo><mi>r</mi></mrow><mi>B</mi></msubsup><annotation encoding="application/x-tex">C^B_{y,m,f,r}</annotation></semantics></math></td>
+<td align="left"><math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><msub><mo>∑</mo><mi>s</mi></msub><msubsup><mover><mi>C</mi><mo accent="true">̂</mo></mover><mrow><mi>y</mi><mo>,</mo><mi>m</mi><mo>,</mo><mi>f</mi><mo>,</mo><mi>r</mi><mo>,</mo><mi>s</mi></mrow><mi>B</mi></msubsup></mrow><annotation encoding="application/x-tex">\sum_s \hat{C}^B_{y,m,f,r,s}</annotation></semantics></math></td>
 <td align="left">Lognormal</td>
-<td align="left"><span class="math inline">\(\sigma^C_{y,m,f,r}\)</span></td>
+<td align="left"><math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><msubsup><mi>σ</mi><mrow><mi>y</mi><mo>,</mo><mi>m</mi><mo>,</mo><mi>f</mi><mo>,</mo><mi>r</mi></mrow><mi>C</mi></msubsup><annotation encoding="application/x-tex">\sigma^C_{y,m,f,r}</annotation></semantics></math></td>
 <td align="left">7.2</td>
 </tr>
 <tr class="odd">
 <td align="left">Catch at age</td>
-<td align="left"><span class="math inline">\(p^{CN}_{y,m,a,f,r}\)</span></td>
-<td align="left"><span class="math inline">\(\sum_s
-\hat{C}^N_{y,m,a,f,r,s}/\sum_a\sum_s
-\hat{C}^N_{y,m,a,f,r,s}\)</span></td>
+<td align="left"><math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><msubsup><mi>p</mi><mrow><mi>y</mi><mo>,</mo><mi>m</mi><mo>,</mo><mi>a</mi><mo>,</mo><mi>f</mi><mo>,</mo><mi>r</mi></mrow><mrow><mi>C</mi><mi>N</mi></mrow></msubsup><annotation encoding="application/x-tex">p^{CN}_{y,m,a,f,r}</annotation></semantics></math></td>
+<td align="left"><math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><msub><mo>∑</mo><mi>s</mi></msub><msubsup><mover><mi>C</mi><mo accent="true">̂</mo></mover><mrow><mi>y</mi><mo>,</mo><mi>m</mi><mo>,</mo><mi>a</mi><mo>,</mo><mi>f</mi><mo>,</mo><mi>r</mi><mo>,</mo><mi>s</mi></mrow><mi>N</mi></msubsup><mi>/</mi><msub><mo>∑</mo><mi>a</mi></msub><msub><mo>∑</mo><mi>s</mi></msub><msubsup><mover><mi>C</mi><mo accent="true">̂</mo></mover><mrow><mi>y</mi><mo>,</mo><mi>m</mi><mo>,</mo><mi>a</mi><mo>,</mo><mi>f</mi><mo>,</mo><mi>r</mi><mo>,</mo><mi>s</mi></mrow><mi>N</mi></msubsup></mrow><annotation encoding="application/x-tex">\sum_s \hat{C}^N_{y,m,a,f,r,s}/\sum_a\sum_s \hat{C}^N_{y,m,a,f,r,s}</annotation></semantics></math></td>
 <td align="left">Composition</td>
 <td align="left">See next table</td>
 <td align="left">7.3</td>
 </tr>
 <tr class="even">
 <td align="left">Catch at length</td>
-<td align="left"><span class="math inline">\(p^{CN}_{y,m,l,f,r}\)</span></td>
-<td align="left"><span class="math inline">\(\sum_s
-\hat{C}^N_{y,m,\ell,f,r,s}/\sum_\ell\sum_s
-\hat{C}^N_{y,m,\ell,f,r,s}\)</span></td>
+<td align="left"><math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><msubsup><mi>p</mi><mrow><mi>y</mi><mo>,</mo><mi>m</mi><mo>,</mo><mi>l</mi><mo>,</mo><mi>f</mi><mo>,</mo><mi>r</mi></mrow><mrow><mi>C</mi><mi>N</mi></mrow></msubsup><annotation encoding="application/x-tex">p^{CN}_{y,m,l,f,r}</annotation></semantics></math></td>
+<td align="left"><math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><msub><mo>∑</mo><mi>s</mi></msub><msubsup><mover><mi>C</mi><mo accent="true">̂</mo></mover><mrow><mi>y</mi><mo>,</mo><mi>m</mi><mo>,</mo><mo>ℓ</mo><mo>,</mo><mi>f</mi><mo>,</mo><mi>r</mi><mo>,</mo><mi>s</mi></mrow><mi>N</mi></msubsup><mi>/</mi><msub><mo>∑</mo><mo>ℓ</mo></msub><msub><mo>∑</mo><mi>s</mi></msub><msubsup><mover><mi>C</mi><mo accent="true">̂</mo></mover><mrow><mi>y</mi><mo>,</mo><mi>m</mi><mo>,</mo><mo>ℓ</mo><mo>,</mo><mi>f</mi><mo>,</mo><mi>r</mi><mo>,</mo><mi>s</mi></mrow><mi>N</mi></msubsup></mrow><annotation encoding="application/x-tex">\sum_s \hat{C}^N_{y,m,\ell,f,r,s}/\sum_\ell\sum_s \hat{C}^N_{y,m,\ell,f,r,s}</annotation></semantics></math></td>
 <td align="left">Composition</td>
 <td align="left">See next table</td>
 <td align="left">7.4</td>
 </tr>
 <tr class="odd">
 <td align="left">Total indices</td>
-<td align="left"><span class="math inline">\(I_{y,m,i}\)</span></td>
-<td align="left"><span class="math inline">\(\hat{I}_{y,m,i}\)</span></td>
+<td align="left"><math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><msub><mi>I</mi><mrow><mi>y</mi><mo>,</mo><mi>m</mi><mo>,</mo><mi>i</mi></mrow></msub><annotation encoding="application/x-tex">I_{y,m,i}</annotation></semantics></math></td>
+<td align="left"><math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><msub><mover><mi>I</mi><mo accent="true">̂</mo></mover><mrow><mi>y</mi><mo>,</mo><mi>m</mi><mo>,</mo><mi>i</mi></mrow></msub><annotation encoding="application/x-tex">\hat{I}_{y,m,i}</annotation></semantics></math></td>
 <td align="left">Lognormal</td>
-<td align="left"><span class="math inline">\(\sigma^I_{y,m,i}\)</span></td>
+<td align="left"><math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><msubsup><mi>σ</mi><mrow><mi>y</mi><mo>,</mo><mi>m</mi><mo>,</mo><mi>i</mi></mrow><mi>I</mi></msubsup><annotation encoding="application/x-tex">\sigma^I_{y,m,i}</annotation></semantics></math></td>
 <td align="left">7.5</td>
 </tr>
 <tr class="even">
 <td align="left">Index at age</td>
-<td align="left"><span class="math inline">\(p^{IN}_{y,m,a,i}\)</span></td>
-<td align="left"><span class="math inline">\(\sum_s
-\hat{I}^N_{y,m,a,i,s}/\sum_a\sum_s \hat{I}^N_{y,m,a,i,s}\)</span></td>
+<td align="left"><math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><msubsup><mi>p</mi><mrow><mi>y</mi><mo>,</mo><mi>m</mi><mo>,</mo><mi>a</mi><mo>,</mo><mi>i</mi></mrow><mrow><mi>I</mi><mi>N</mi></mrow></msubsup><annotation encoding="application/x-tex">p^{IN}_{y,m,a,i}</annotation></semantics></math></td>
+<td align="left"><math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><msub><mo>∑</mo><mi>s</mi></msub><msubsup><mover><mi>I</mi><mo accent="true">̂</mo></mover><mrow><mi>y</mi><mo>,</mo><mi>m</mi><mo>,</mo><mi>a</mi><mo>,</mo><mi>i</mi><mo>,</mo><mi>s</mi></mrow><mi>N</mi></msubsup><mi>/</mi><msub><mo>∑</mo><mi>a</mi></msub><msub><mo>∑</mo><mi>s</mi></msub><msubsup><mover><mi>I</mi><mo accent="true">̂</mo></mover><mrow><mi>y</mi><mo>,</mo><mi>m</mi><mo>,</mo><mi>a</mi><mo>,</mo><mi>i</mi><mo>,</mo><mi>s</mi></mrow><mi>N</mi></msubsup></mrow><annotation encoding="application/x-tex">\sum_s \hat{I}^N_{y,m,a,i,s}/\sum_a\sum_s \hat{I}^N_{y,m,a,i,s}</annotation></semantics></math></td>
 <td align="left">Composition</td>
 <td align="left">See next table</td>
 <td align="left">7.6</td>
 </tr>
 <tr class="odd">
 <td align="left">Index at length</td>
-<td align="left"><span class="math inline">\(p^{IN}_{y,m,\ell,i}\)</span></td>
-<td align="left"><span class="math inline">\(\sum_s
-\hat{I}^N_{y,m,\ell,i,s}/\sum_\ell\sum_s
-\hat{I}^N_{y,m,\ell,i,s}\)</span></td>
+<td align="left"><math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><msubsup><mi>p</mi><mrow><mi>y</mi><mo>,</mo><mi>m</mi><mo>,</mo><mo>ℓ</mo><mo>,</mo><mi>i</mi></mrow><mrow><mi>I</mi><mi>N</mi></mrow></msubsup><annotation encoding="application/x-tex">p^{IN}_{y,m,\ell,i}</annotation></semantics></math></td>
+<td align="left"><math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><msub><mo>∑</mo><mi>s</mi></msub><msubsup><mover><mi>I</mi><mo accent="true">̂</mo></mover><mrow><mi>y</mi><mo>,</mo><mi>m</mi><mo>,</mo><mo>ℓ</mo><mo>,</mo><mi>i</mi><mo>,</mo><mi>s</mi></mrow><mi>N</mi></msubsup><mi>/</mi><msub><mo>∑</mo><mo>ℓ</mo></msub><msub><mo>∑</mo><mi>s</mi></msub><msubsup><mover><mi>I</mi><mo accent="true">̂</mo></mover><mrow><mi>y</mi><mo>,</mo><mi>m</mi><mo>,</mo><mo>ℓ</mo><mo>,</mo><mi>i</mi><mo>,</mo><mi>s</mi></mrow><mi>N</mi></msubsup></mrow><annotation encoding="application/x-tex">\sum_s \hat{I}^N_{y,m,\ell,i,s}/\sum_\ell\sum_s \hat{I}^N_{y,m,\ell,i,s}</annotation></semantics></math></td>
 <td align="left">Composition</td>
 <td align="left">See next table</td>
 <td align="left">7.7</td>
 </tr>
 <tr class="even">
 <td align="left">Stock composition</td>
-<td align="left"><span class="math inline">\(p^{SC}_{y,m,a,f,r,s}\)</span></td>
-<td align="left"><span class="math inline">\(\hat{C}^N_{y,m,a,f,r,s}/\sum_s
-\hat{C}^N_{y,m,a,f,r,s}\)</span></td>
+<td align="left"><math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><msubsup><mi>p</mi><mrow><mi>y</mi><mo>,</mo><mi>m</mi><mo>,</mo><mi>a</mi><mo>,</mo><mi>f</mi><mo>,</mo><mi>r</mi><mo>,</mo><mi>s</mi></mrow><mrow><mi>S</mi><mi>C</mi></mrow></msubsup><annotation encoding="application/x-tex">p^{SC}_{y,m,a,f,r,s}</annotation></semantics></math></td>
+<td align="left"><math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><msubsup><mover><mi>C</mi><mo accent="true">̂</mo></mover><mrow><mi>y</mi><mo>,</mo><mi>m</mi><mo>,</mo><mi>a</mi><mo>,</mo><mi>f</mi><mo>,</mo><mi>r</mi><mo>,</mo><mi>s</mi></mrow><mi>N</mi></msubsup><mi>/</mi><msub><mo>∑</mo><mi>s</mi></msub><msubsup><mover><mi>C</mi><mo accent="true">̂</mo></mover><mrow><mi>y</mi><mo>,</mo><mi>m</mi><mo>,</mo><mi>a</mi><mo>,</mo><mi>f</mi><mo>,</mo><mi>r</mi><mo>,</mo><mi>s</mi></mrow><mi>N</mi></msubsup></mrow><annotation encoding="application/x-tex">\hat{C}^N_{y,m,a,f,r,s}/\sum_s \hat{C}^N_{y,m,a,f,r,s}</annotation></semantics></math></td>
 <td align="left">Composition</td>
 <td align="left">See next table</td>
 <td align="left">7.8</td>
 </tr>
 <tr class="odd">
 <td align="left">Parent-offspring pairs</td>
-<td align="left"><span class="math inline">\(p^{POP}_{y,t,a,s}\)</span></td>
-<td align="left"><span class="math inline">\(\hat{p}^{POP}_{y,t,a,s}\)</span></td>
+<td align="left"><math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><msubsup><mi>p</mi><mrow><mi>y</mi><mo>,</mo><mi>t</mi><mo>,</mo><mi>a</mi><mo>,</mo><mi>s</mi></mrow><mrow><mi>P</mi><mi>O</mi><mi>P</mi></mrow></msubsup><annotation encoding="application/x-tex">p^{POP}_{y,t,a,s}</annotation></semantics></math></td>
+<td align="left"><math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><msubsup><mover><mi>p</mi><mo accent="true">̂</mo></mover><mrow><mi>y</mi><mo>,</mo><mi>t</mi><mo>,</mo><mi>a</mi><mo>,</mo><mi>s</mi></mrow><mrow><mi>P</mi><mi>O</mi><mi>P</mi></mrow></msubsup><annotation encoding="application/x-tex">\hat{p}^{POP}_{y,t,a,s}</annotation></semantics></math></td>
 <td align="left">Binomial</td>
-<td align="left"><span class="math inline">\(N\hat{p}^{POP}(1 -
-\hat{p}^{POP})\)</span></td>
+<td align="left"><math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mi>N</mi><msup><mover><mi>p</mi><mo accent="true">̂</mo></mover><mrow><mi>P</mi><mi>O</mi><mi>P</mi></mrow></msup><mrow><mo stretchy="true" form="prefix">(</mo><mn>1</mn><mo>−</mo><msup><mover><mi>p</mi><mo accent="true">̂</mo></mover><mrow><mi>P</mi><mi>O</mi><mi>P</mi></mrow></msup><mo stretchy="true" form="postfix">)</mo></mrow></mrow><annotation encoding="application/x-tex">N\hat{p}^{POP}(1 - \hat{p}^{POP})</annotation></semantics></math></td>
 <td align="left">7.9</td>
 </tr>
 <tr class="even">
 <td align="left">Half-sibling pairs</td>
-<td align="left"><span class="math inline">\(p^{HSP}_{i,j,s}\)</span></td>
-<td align="left"><span class="math inline">\(\hat{p}^{HSP}_{i,j,s}\)</span></td>
+<td align="left"><math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><msubsup><mi>p</mi><mrow><mi>i</mi><mo>,</mo><mi>j</mi><mo>,</mo><mi>s</mi></mrow><mrow><mi>H</mi><mi>S</mi><mi>P</mi></mrow></msubsup><annotation encoding="application/x-tex">p^{HSP}_{i,j,s}</annotation></semantics></math></td>
+<td align="left"><math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><msubsup><mover><mi>p</mi><mo accent="true">̂</mo></mover><mrow><mi>i</mi><mo>,</mo><mi>j</mi><mo>,</mo><mi>s</mi></mrow><mrow><mi>H</mi><mi>S</mi><mi>P</mi></mrow></msubsup><annotation encoding="application/x-tex">\hat{p}^{HSP}_{i,j,s}</annotation></semantics></math></td>
 <td align="left">Binomial</td>
-<td align="left"><span class="math inline">\(N\hat{p}^{HSP}(1 -
-\hat{p}^{HSP})\)</span></td>
+<td align="left"><math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mi>N</mi><msup><mover><mi>p</mi><mo accent="true">̂</mo></mover><mrow><mi>H</mi><mi>S</mi><mi>P</mi></mrow></msup><mrow><mo stretchy="true" form="prefix">(</mo><mn>1</mn><mo>−</mo><msup><mover><mi>p</mi><mo accent="true">̂</mo></mover><mrow><mi>H</mi><mi>S</mi><mi>P</mi></mrow></msup><mo stretchy="true" form="postfix">)</mo></mrow></mrow><annotation encoding="application/x-tex">N\hat{p}^{HSP}(1 - \hat{p}^{HSP})</annotation></semantics></math></td>
 <td align="left">7.10</td>
 </tr>
 <tr class="odd">
@@ -894,13 +838,16 @@ comparisons (<span class="math inline">\(N\)</span>).</p>
 </table>
 <p>Potential distributions for the likelihoods of composition data,
 which are presented as proportions, and the predicted mean and variance.
-<span class="math inline">\(N\)</span> is the sample size for each
-composition vector and <span class="math inline">\(\theta\)</span> is a
-tuning parameter for the Dirichlet-multinomial distribution, both
-provided as user inputs. <span class="math inline">\(N\)</span> is
-unique to each vector observation, e.g., age composition by season,
-fleet, and region while <span class="math inline">\(\theta\)</span> is
-unique to fleet or survey.</p>
+<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mi>N</mi><annotation encoding="application/x-tex">N</annotation></semantics></math>
+is the sample size for each composition vector and
+<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mi>θ</mi><annotation encoding="application/x-tex">\theta</annotation></semantics></math>
+is a tuning parameter for the Dirichlet-multinomial distribution, both
+provided as user inputs.
+<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mi>N</mi><annotation encoding="application/x-tex">N</annotation></semantics></math>
+is unique to each vector observation, e.g., age composition by season,
+fleet, and region while
+<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mi>θ</mi><annotation encoding="application/x-tex">\theta</annotation></semantics></math>
+is unique to fleet or survey.</p>
 <table style="width:100%;" class="table">
 <colgroup>
 <col width="34%">
@@ -917,27 +864,26 @@ unique to fleet or survey.</p>
 <tbody>
 <tr class="odd">
 <td align="left">Multinomial</td>
-<td align="left"><span class="math inline">\(N\hat{p}\)</span></td>
-<td align="left"><span class="math inline">\(N\hat{p}(1-\hat{p})\)</span></td>
+<td align="left"><math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mi>N</mi><mover><mi>p</mi><mo accent="true">̂</mo></mover></mrow><annotation encoding="application/x-tex">N\hat{p}</annotation></semantics></math></td>
+<td align="left"><math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mi>N</mi><mover><mi>p</mi><mo accent="true">̂</mo></mover><mrow><mo stretchy="true" form="prefix">(</mo><mn>1</mn><mo>−</mo><mover><mi>p</mi><mo accent="true">̂</mo></mover><mo stretchy="true" form="postfix">)</mo></mrow></mrow><annotation encoding="application/x-tex">N\hat{p}(1-\hat{p})</annotation></semantics></math></td>
 <td align="left">8.1</td>
 </tr>
 <tr class="even">
 <td align="left">Dirichlet-multinomial (Type 1)</td>
-<td align="left"><span class="math inline">\(N\hat{p}\)</span></td>
-<td align="left"><span class="math inline">\(N\hat{p}(1-\hat{p})\dfrac{N+\theta N}{1+\theta
-N}\)</span></td>
+<td align="left"><math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mi>N</mi><mover><mi>p</mi><mo accent="true">̂</mo></mover></mrow><annotation encoding="application/x-tex">N\hat{p}</annotation></semantics></math></td>
+<td align="left"><math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mi>N</mi><mover><mi>p</mi><mo accent="true">̂</mo></mover><mrow><mo stretchy="true" form="prefix">(</mo><mn>1</mn><mo>−</mo><mover><mi>p</mi><mo accent="true">̂</mo></mover><mo stretchy="true" form="postfix">)</mo></mrow><mfrac displaystyle="true"><mrow><mi>N</mi><mo>+</mo><mi>θ</mi><mi>N</mi></mrow><mrow><mn>1</mn><mo>+</mo><mi>θ</mi><mi>N</mi></mrow></mfrac></mrow><annotation encoding="application/x-tex">N\hat{p}(1-\hat{p})\dfrac{N+\theta N}{1+\theta N}</annotation></semantics></math></td>
 <td align="left">8.2</td>
 </tr>
 <tr class="odd">
 <td align="left">Dirichlet-multinomial (Type 2)</td>
-<td align="left"><span class="math inline">\(N\hat{p}\)</span></td>
-<td align="left"><span class="math inline">\(N\hat{p}(1-\hat{p})\dfrac{N+\theta}{1+\theta}\)</span></td>
+<td align="left"><math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mi>N</mi><mover><mi>p</mi><mo accent="true">̂</mo></mover></mrow><annotation encoding="application/x-tex">N\hat{p}</annotation></semantics></math></td>
+<td align="left"><math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mi>N</mi><mover><mi>p</mi><mo accent="true">̂</mo></mover><mrow><mo stretchy="true" form="prefix">(</mo><mn>1</mn><mo>−</mo><mover><mi>p</mi><mo accent="true">̂</mo></mover><mo stretchy="true" form="postfix">)</mo></mrow><mfrac displaystyle="true"><mrow><mi>N</mi><mo>+</mo><mi>θ</mi></mrow><mrow><mn>1</mn><mo>+</mo><mi>θ</mi></mrow></mfrac></mrow><annotation encoding="application/x-tex">N\hat{p}(1-\hat{p})\dfrac{N+\theta}{1+\theta}</annotation></semantics></math></td>
 <td align="left">8.3</td>
 </tr>
 <tr class="even">
 <td align="left">Lognormal (summed across positive bins)</td>
-<td align="left"><span class="math inline">\(\log(\hat{p})\)</span></td>
-<td align="left"><span class="math inline">\(\hat{p}^{-1}\)</span></td>
+<td align="left"><math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mo>log</mo><mrow><mo stretchy="true" form="prefix">(</mo><mover><mi>p</mi><mo accent="true">̂</mo></mover><mo stretchy="true" form="postfix">)</mo></mrow></mrow><annotation encoding="application/x-tex">\log(\hat{p})</annotation></semantics></math></td>
+<td align="left"><math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><msup><mover><mi>p</mi><mo accent="true">̂</mo></mover><mrow><mo>−</mo><mn>1</mn></mrow></msup><annotation encoding="application/x-tex">\hat{p}^{-1}</annotation></semantics></math></td>
 <td align="left">8.4</td>
 </tr>
 </tbody>
@@ -964,15 +910,13 @@ N}\)</span></td>
 <tr class="odd">
 <td align="left">Deviations from the equilibrium age structure</td>
 <td align="left">Lognormal</td>
-<td align="left"><span class="math inline">\(x^{\textrm{Req}}_{a,s} \sim
-N(-0.5 (\sigma^R_s)^2, \sigma^R_s)\)</span></td>
+<td align="left"><math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><msubsup><mi>x</mi><mrow><mi>a</mi><mo>,</mo><mi>s</mi></mrow><mtext mathvariant="normal">Req</mtext></msubsup><mo>∼</mo><mi>N</mi><mrow><mo stretchy="true" form="prefix">(</mo><mo>−</mo><mn>0.5</mn><msup><mrow><mo stretchy="true" form="prefix">(</mo><msubsup><mi>σ</mi><mi>s</mi><mi>R</mi></msubsup><mo stretchy="true" form="postfix">)</mo></mrow><mn>2</mn></msup><mo>,</mo><msubsup><mi>σ</mi><mi>s</mi><mi>R</mi></msubsup><mo stretchy="true" form="postfix">)</mo></mrow></mrow><annotation encoding="application/x-tex">x^{\textrm{Req}}_{a,s} \sim N(-0.5 (\sigma^R_s)^2, \sigma^R_s)</annotation></semantics></math></td>
 <td align="left">9.1</td>
 </tr>
 <tr class="even">
 <td align="left">Recruitment deviates</td>
 <td align="left">Lognormal</td>
-<td align="left"><span class="math inline">\(x^R_{y,s} \sim N(-0.5
-(\sigma^R_s)^2, \sigma^R_s)\)</span></td>
+<td align="left"><math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><msubsup><mi>x</mi><mrow><mi>y</mi><mo>,</mo><mi>s</mi></mrow><mi>R</mi></msubsup><mo>∼</mo><mi>N</mi><mrow><mo stretchy="true" form="prefix">(</mo><mo>−</mo><mn>0.5</mn><msup><mrow><mo stretchy="true" form="prefix">(</mo><msubsup><mi>σ</mi><mi>s</mi><mi>R</mi></msubsup><mo stretchy="true" form="postfix">)</mo></mrow><mn>2</mn></msup><mo>,</mo><msubsup><mi>σ</mi><mi>s</mi><mi>R</mi></msubsup><mo stretchy="true" form="postfix">)</mo></mrow></mrow><annotation encoding="application/x-tex">x^R_{y,s} \sim N(-0.5 (\sigma^R_s)^2, \sigma^R_s)</annotation></semantics></math></td>
 <td align="left">9.2</td>
 </tr>
 </tbody>
@@ -981,18 +925,19 @@ N(-0.5 (\sigma^R_s)^2, \sigma^R_s)\)</span></td>
 <div class="section level3">
 <h3 id="penalty-function">Penalty function<a class="anchor" aria-label="anchor" href="#penalty-function"></a>
 </h3>
-<p>A quadratic penalty to the objective function when any <span class="math inline">\(F_{y,m,f,r}\)</span> exceeds the specified
-maximum.</p>
-<p><span class="math display">\[
+<p>A quadratic penalty to the objective function when any
+<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><msub><mi>F</mi><mrow><mi>y</mi><mo>,</mo><mi>m</mi><mo>,</mo><mi>f</mi><mo>,</mo><mi>r</mi></mrow></msub><annotation encoding="application/x-tex">F_{y,m,f,r}</annotation></semantics></math>
+exceeds the specified maximum.</p>
+<p><math display="block" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mtext mathvariant="normal">Penalty</mtext><mo>=</mo><munder><mo>∑</mo><mi>y</mi></munder><munder><mo>∑</mo><mi>m</mi></munder><munder><mo>∑</mo><mi>f</mi></munder><munder><mo>∑</mo><mi>r</mi></munder><mrow><mo stretchy="true" form="prefix">{</mo><mtable><mtr><mtd columnalign="left" style="text-align: left"><mn>0.1</mn><msup><mrow><mo stretchy="true" form="prefix">(</mo><msub><mi>F</mi><mrow><mi>m</mi><mi>a</mi><mi>x</mi></mrow></msub><mo>−</mo><msub><mi>F</mi><mrow><mi>y</mi><mo>,</mo><mi>m</mi><mo>,</mo><mi>f</mi><mo>,</mo><mi>r</mi></mrow></msub><mo stretchy="true" form="postfix">)</mo></mrow><mn>2</mn></msup></mtd><mtd columnalign="left" style="text-align: left"><msub><mi>F</mi><mrow><mi>y</mi><mo>,</mo><mi>m</mi><mo>,</mo><mi>f</mi><mo>,</mo><mi>r</mi></mrow></msub><mo>≥</mo><msub><mi>F</mi><mrow><mi>m</mi><mi>a</mi><mi>x</mi></mrow></msub></mtd></mtr><mtr><mtd columnalign="left" style="text-align: left"><mn>0</mn></mtd><mtd columnalign="left" style="text-align: left"><mtext mathvariant="normal">otherwise</mtext></mtd></mtr></mtable></mrow></mrow><annotation encoding="application/x-tex">
 \textrm{Penalty} = \sum_y\sum_m\sum_f\sum_r
 \begin{cases}
 0.1 (F_{max} - F_{y,m,f,r})^2 &amp; F_{y,m,f,r} \ge F_{max}\\
 0 &amp; \textrm{otherwise}
 \end{cases}
-\]</span></p>
+</annotation></semantics></math></p>
 </div>
 </div>
-  </main><aside class="col-md-3"><nav id="toc"><h2>On this page</h2>
+  </main><aside class="col-md-3"><nav id="toc" aria-label="Table of contents"><h2>On this page</h2>
     </nav></aside>
 </div>
 
@@ -1003,15 +948,15 @@ maximum.</p>
 </div>
 
 <div class="pkgdown-footer-right">
-  <p>Site built with <a href="https://pkgdown.r-lib.org/" class="external-link">pkgdown</a> 2.0.9.</p>
+  <p>Site built with <a href="https://pkgdown.r-lib.org/" class="external-link">pkgdown</a> 2.1.0.</p>
 </div>
 
     </footer>
 </div>
 
-  
 
-  
+
+
 
   </body>
 </html>
