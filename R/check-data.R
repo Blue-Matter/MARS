@@ -261,8 +261,8 @@ check_Dfishery <- function(Dfishery, Dstock, Dmodel, silent = FALSE) {
       Dfishery@CALtheta_f <- rep(1, nf)
     } else if (length(CALtheta_f) == 1) {
       Dfishery@CALtheta_f <- rep(Dfishery@CALtheta_f, nf)
-    } else if (length(CAAtheta_f) != nf) {
-      stop("Vector CAAtheta_f needs to be length ", nf)
+    } else if (length(CALtheta_f) != nf) {
+      stop("Vector CALtheta_f needs to be length ", nf)
     }
   }
 
